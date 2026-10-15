@@ -1,0 +1,668 @@
+/* Askmark 0.6.3 — local-only annotations. No network/API calls. */
+(() => {
+  'use strict';
+  const FLAG = '__questionBasketV1';
+  if (globalThis[FLAG]) { globalThis[FLAG].open(); return; }
+  const PREFIX = 'qb:note:', PREF = 'qb:preferences:v3', LASER_PREF = 'qb:laser-color:v1', AUTO_PREF='qb:auto-insert:v1';
+  let activeId=null, autoInsert=true, autoPreferenceChosen=false;
+  const COMPOSER_SELECTOR='#prompt-textarea,[data-composer-markdown][contenteditable="true"],[data-composer-input] [contenteditable="true"][role="textbox"]';
+  const MESSAGE_ATTRS=['data-message-id','data-dil-message-id','data-dil-source-message-id','data-chatgpt-selection-message-id'];
+  const ANSWER_SELECTORS=['[data-message-author-role="assistant"]','[data-markdown-text-style="assistant-message"]','[data-conversation-role="assistant"]:not(h4)','[data-turn="assistant"]'];
+  const NON_ANSWER='[data-user-message-bubble],[data-message-author-role="user"],[data-conversation-role="user"],[data-turn="user"],nav,aside,[role="navigation"],#prompt-textarea';
+  let selectionDiagnostic=null;
+  const firstMessageId=()=>{const el=document.querySelector('[data-message-id],[data-chatgpt-selection-message-id],[data-dil-message-id],[data-dil-source-message-id]');return el && (el.getAttribute('data-message-id')||el.getAttribute('data-chatgpt-selection-message-id')||el.getAttribute('data-dil-message-id')||el.getAttribute('data-dil-source-message-id'));};
+  const conversationId=url=>{try{const u=new URL(url);return u.origin===location.origin?u.pathname.match(/\/c\/([^/]+)/)?.[1]:null;}catch{return null;}};
+  const COLORS = {red:['빨강','#ff414b','rgba(255,65,75,.30)'],orange:['주황','#ff9528','rgba(255,149,40,.30)'],yellow:['노랑','#e6b92d','rgba(250,204,21,.32)'],indigo:['남색','#696ef0','rgba(105,110,240,.30)'],purple:['보라','#a78bfa','rgba(167,139,250,.32)'],blue:['파랑','#60a5fa','rgba(96,165,250,.32)'],green:['초록','#4ade80','rgba(74,222,128,.28)'],pink:['핑크','#f472b6','rgba(244,114,182,.30)']};
+  const COLOR_ORDER=['red','orange','yellow','green','blue','indigo','purple','pink'];
+  const rgbOf=color=>COLORS[color][1].slice(1).match(/../g).map(v=>parseInt(v,16)).join(',');
+  const colorOf = n => COLORS[n.color] ? n.color : 'yellow';
+  const elOf = n => n?.nodeType === 1 ? n : n?.parentElement;
+  const chatGPT = location.hostname === 'chatgpt.com';
+  // Query strings and hashes on ChatGPT are view state, not conversation identity.
+  const basePageKey = () => chatGPT ? location.origin + location.pathname.replace(/\/$/,'') : location.origin + location.pathname + location.search + location.hash;
+  const pageKey = () => {
+    const base=basePageKey();
+    if(!chatGPT || /\/c\/[^/]+/.test(location.pathname))return base;
+    const first=firstMessageId();
+    return first ? base+'#qb-message='+encodeURIComponent(first) : base;
+  };
+  const storageKey = n => PREFIX + encodeURIComponent(n.scope) + ':' + n.id;
+  let scope = pageKey(), notes = [], lastColor = 'yellow', loadSerial = 0, refreshTimer, routeTimer;
+  let readingMode = false, laserFrame = 0, laserPoint = null;
+  let pointerStart = null, initialized = false, legacyReview = false, hasLegacy = false;
+  let selectionOffer=null,selectionFrame=0;
+  const viewKey = () => legacyReview ? basePageKey() : scope;
+  function sameConversation(savedScope,target=scope) {
+    if(savedScope===target)return true;
+    // Project slugs may change while the conversation ID remains the same.
+    if(chatGPT&&conversationId(target)&&conversationId(savedScope)===conversationId(target))return true;
+    if(legacyReview||!chatGPT||target!==scope||!/\/c\/[^/]+/.test(location.pathname))return false;
+    const first=firstMessageId();
+    if(!first)return false;
+    const suffix='#qb-message='+encodeURIComponent(first);
+    return savedScope===location.origin+suffix || savedScope.startsWith(location.origin+'/')&&savedScope.endsWith(suffix);
+  }
+  const sessions = new Map(), bubbles = new Map(), panelCards = new Map(), ranges = new Map(), queues = new Map();
+  const host = document.createElement('div'); host.id = 'question-basket-extension';
+  host.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:2147483646';
+  const shadow = host.attachShadow({mode:'open'});
+  const baseCSS = `
+    :host{all:initial;font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",sans-serif;color:#23342f;color-scheme:light dark}
+    *{box-sizing:border-box}[hidden]{display:none!important}button,textarea,input{font:inherit}
+    button{cursor:pointer;border:1px solid var(--line,#d9e1dc);border-radius:8px;padding:7px 11px;background:var(--paper,#fff);color:inherit;line-height:1.4}
+    button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:default}.save:disabled{cursor:wait}button:focus-visible,textarea:focus-visible{outline:3px solid #528fdb;outline-offset:2px}
+    .primary{background:#176657;color:#fff;border-color:#176657}.quiet{background:transparent;border:0;padding:4px 6px;font-size:12px}.danger{color:#b04343}
+    textarea{display:block;width:100%;min-height:88px;resize:vertical;background:var(--paper,#fff);color:inherit;border:1px solid var(--line,#ccd8d2);border-radius:8px;padding:10px;line-height:1.65}
+    blockquote{white-space:pre-wrap;overflow-wrap:anywhere;border-left:3px solid var(--accent,#e6b92d);margin:8px 0;padding:0 0 0 10px;font-size:12px;color:var(--muted,#596d63);max-height:100px;overflow:auto}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:8px}.tools{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.hint{font-size:11px;color:var(--muted,#62766d);margin:7px 0 0}
+    .palette{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:9px 0}.swatch{width:23px;height:23px;padding:0;border:2px solid transparent;border-radius:50%;position:relative}
+    .swatch[aria-pressed="true"]{outline:2px solid var(--ink,#284a3c);outline-offset:2px}.swatch[aria-pressed="true"]:after{content:'✓';font-size:14px;color:#13271d;font-weight:800}.color-name{font-size:11px;margin-left:3px;color:var(--muted,#596d63)}
+    .question{max-height:300px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0;font-size:14px}.editor label{display:block;font-size:12px;font-weight:650;margin:6px 0}.editor .tools{margin-top:9px}
+    .card[data-active="true"]{outline:2px solid var(--accent);outline-offset:2px}.card{border:1px solid var(--line,#d9e1dc);border-left:4px solid var(--accent);background:var(--paper,#fff);border-radius:11px;padding:12px;margin-bottom:12px;min-width:0}.tag{font-size:12px;font-weight:700;color:var(--muted,#567064)}.location{font-size:11px;color:#ac6230;margin:4px 0}
+    .surface{--paper:#fff;--line:#d9e1dc;--muted:#596d63;--ink:#284a3c;color:#23342f;background:#f7faf8}
+    @media(prefers-color-scheme:dark){.surface{--paper:#202a27;--line:#475750;--muted:#bfd1c6;--ink:#edf8f1;color:#f0f5f2;background:#18221f}.danger{color:#ffa9a9}}
+    :host([data-theme="dark"]) .surface{--paper:#202a27;--line:#475750;--muted:#bfd1c6;--ink:#edf8f1;color:#f0f5f2;background:#18221f}
+    :host([data-theme="light"]) .surface{--paper:#fff;--line:#d9e1dc;--muted:#596d63;--ink:#284a3c;color:#23342f;background:#f7faf8}
+  `;
+  shadow.innerHTML = `<style>${baseCSS}
+    #mode-compact{position:fixed;right:20px;bottom:138px;pointer-events:auto;background:#174f43;color:white;border-color:#6baf9b;border-radius:22px}#reading-mode[aria-pressed="true"],#mode-compact[aria-pressed="true"]{box-shadow:0 0 0 2px #50bd9b}#laser{position:fixed;left:0;top:0;width:30px;height:30px;border:0;border-radius:50%;background:radial-gradient(circle,rgba(var(--laser-rgb,230,185,45),.58) 0%,rgba(var(--laser-rgb,230,185,45),.42) 28%,rgba(var(--laser-rgb,230,185,45),.18) 55%,rgba(var(--laser-rgb,230,185,45),0) 75%);pointer-events:none!important;z-index:1;will-change:transform}#version{font-size:10px;font-weight:normal}#launcher{position:fixed;right:20px;bottom:84px;pointer-events:auto;border:0;border-radius:25px;background:#174f43;color:white;box-shadow:0 5px 22px #0003;padding:12px 17px}
+    #panel{position:fixed;top:16px;bottom:16px;right:16px;width:min(350px,calc(100vw - 32px));pointer-events:auto;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:17px;box-shadow:0 10px 40px #0002;overflow:hidden}
+    header,footer{padding:15px 17px;background:var(--paper);flex-shrink:0}header{border-bottom:1px solid var(--line)}footer{border-top:1px solid var(--line)}h1,h2{font-size:18px;margin:0}#body{padding:14px;overflow:auto;min-height:0;flex:1;overscroll-behavior:contain}
+    #empty{font-size:13px;padding:20px 10px;line-height:1.9}#generate{width:100%}#status{font-size:12px;white-space:pre-wrap;margin:0 0 8px}#status.error{color:#b24d42}
+    #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);max-width:min(600px,90vw);background:#183d32;color:#fff;border-radius:9px;padding:9px 15px;white-space:pre-wrap;pointer-events:auto;font-size:12px}
+    #preview{position:fixed;top:24px;bottom:24px;left:50%;transform:translateX(-50%);width:min(600px,calc(100vw - 32px));display:flex;flex-direction:column;pointer-events:auto;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 50px #0004;overflow:hidden}
+    #prompt{flex:1;min-height:120px;resize:none;border:0;border-radius:0;padding:18px}#preview footer{display:flex;gap:8px;flex-wrap:wrap}
+    #panel .card .palette{gap:5px;flex-wrap:nowrap;margin:4px 0 5px;min-height:16px}
+    #panel .card .swatch{width:12px;height:12px;flex:0 0 12px;border-width:1px;display:grid;place-items:center;line-height:1}
+    #panel .card .swatch[aria-pressed="true"]{outline-width:1.5px;outline-offset:1.5px}
+    #panel .card .swatch[aria-pressed="true"]:after{font-size:8px;line-height:1}
+    #panel .card .color-name{font-size:10px;line-height:1.2;margin-left:2px;white-space:nowrap}
+    #insert-offer{position:fixed;width:min(320px,calc(100vw - 24px));pointer-events:auto;border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 6px 24px #0003;z-index:2}#insert-offer p{margin:0 0 8px}#insert-offer .hint{margin-bottom:10px}
+    #selection-add{position:fixed;pointer-events:auto;padding:6px 11px;font-size:12px;line-height:1.4;border:1px solid var(--line);border-radius:7px;box-shadow:0 3px 12px #0002;z-index:3;white-space:nowrap}
+  </style><div id="laser" aria-hidden="true" hidden></div><button id="selection-add" class="surface" title="선택한 원문에 질문을 남깁니다" hidden>질문 추가</button><button id="mode-compact" aria-pressed="false">읽기 모드 OFF</button><button id="launcher">Askmark · <span id="small-count">0</span></button>
+  <aside id="panel" class="surface" aria-label="질문 바구니" hidden><header><div class="row"><h1>Askmark <span id="count">0</span> <span id="version">v0.6.3</span></h1><button id="close">접기</button></div><button id="reading-mode" aria-pressed="false" style="margin-top:10px;width:100%">읽기 모드 OFF</button><div id="color-target" class="hint" style="margin-top:10px">다음 질문 · 박스와 포인터 색상</div><div id="color-palette" class="palette" role="group" aria-label="박스와 포인터 색상"></div><p id="mode-hint" class="hint">켜면 원문에 질문을 달 수 있습니다. 기록은 항상 보관됩니다.</p></header>
+  <div id="body"><div id="list"></div><div id="draft-list"></div><div id="empty">답변에서 궁금한 부분을 드래그하세요.<br>작은 질문 추가 버튼을 누르면 글 아래에서 작성합니다.</div></div>
+  <footer><p id="status" role="status" aria-live="polite">아직 저장한 질문이 없습니다. 원문을 드래그하고 질문을 저장해 주세요.</p><button id="use-selection" style="width:100%;margin-bottom:8px" title="선택한 원문에 질문 입력창을 엽니다">선택한 부분에 질문 쓰기</button><label class="hint" style="display:flex;gap:7px;align-items:center;margin:7px 0"><input id="auto-insert" type="checkbox" checked>입력창 클릭 시 모아 입력할지 묻기</label><div class="tools" style="margin:8px 0"><button id="quick-insert" class="primary" style="flex:1" disabled>입력창에 바로 추가</button><button id="quick-copy" style="flex:1" disabled>바로 복사</button></div><button id="generate" title="먼저 질문을 하나 이상 저장해 주세요" disabled>프롬프트 미리보기·수정</button><div class="tools" style="margin-top:8px"><button id="export" class="quiet">전체 기록 백업</button><button id="import" class="quiet">백업 가져오기</button><button id="clear" class="quiet danger" disabled>이 대화 질문 비우기</button><button id="legacy" class="quiet" hidden>이전 주소 기록 보기</button></div><button id="selection-diagnostic" class="quiet" title="선택한 본문·질문·대화 주소는 포함하지 않습니다">선택 인식 진단 복사</button><textarea id="diagnostic-output" aria-label="선택 인식 진단" readonly hidden></textarea><input id="import-file" type="file" accept="application/json,.json" hidden><p class="hint">작성 중인 초안은 프롬프트에 포함하지 않습니다.</p></footer></aside>
+  <section id="preview" class="surface" aria-label="프롬프트 미리보기" hidden><header><div class="row"><h2>모은 질문 미리보기</h2><button id="preview-close">닫기</button></div><p class="hint">인용 원문과 질문을 확인하고, 필요하면 수정하세요.</p></header><textarea id="prompt" aria-label="완성된 프롬프트"></textarea><footer><button id="insert" class="primary">ChatGPT 입력창에 추가</button><button id="copy">프롬프트 복사</button><p class="hint">전송은 사용자가 직접 합니다.</p></footer></section><section id="insert-offer" class="surface" role="dialog" aria-label="모은 질문 입력" hidden><p id="offer-title"></p><p id="offer-hint" class="hint"></p><div class="tools"><button id="offer-accept" class="primary">모아서 입력</button><button id="offer-dismiss">나중에</button></div></section><div id="toast" role="status" hidden></div>`;
+  document.documentElement.append(host);
+  const $ = id => shadow.getElementById(id);
+  function activeColor() {return sessions.get(activeId)?.color||colorOf(notes.find(n=>n.id===activeId)||{color:lastColor});}
+  function showActiveColor() {
+    const color=activeColor(),n=notes.find(n=>n.id===activeId),draft=sessions.get(activeId);
+    $('laser').style.setProperty('--laser-rgb',rgbOf(color));
+    $('color-palette').querySelectorAll('button').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.color===color));b.disabled=!!draft?.saving;});
+    $('color-target').textContent=(n?'질문 '+(notes.indexOf(n)+1):draft?'작성 중인 질문':'다음 질문')+' · 박스와 포인터 색상';
+    $('active-color-name').textContent=COLORS[color][0];
+    for(const [id,rec]of panelCards)rec.card.dataset.active=String(id===activeId);
+  }
+  function activate(id) {activeId=id;showActiveColor();}
+  for(const key of COLOR_ORDER) {
+    const [name,solid]=COLORS[key],b=document.createElement('button');b.className='swatch';b.dataset.color=key;
+    b.style.background=solid;b.title=name;b.setAttribute('aria-label',name);
+    b.onclick=()=>{if(activeId&&(sessions.has(activeId)||notes.some(n=>n.id===activeId)))setColor(activeId,key);else{rememberColor(key);showActiveColor();}};
+    $('color-palette').append(b);
+  }
+  const colorName=document.createElement('span');colorName.id='active-color-name';colorName.className='color-name';$('color-palette').append(colorName);showActiveColor();
+  const highlightStyle = document.createElement('style');
+  highlightStyle.textContent = Object.entries(COLORS).map(([key,v]) => `::highlight(qb-${key}){background-color:${v[2]};}`).join('')+'[data-qb-flow-block]:has(> [data-qb-inline]){display:block!important}[data-qb-flow-block]:is(li):has(> [data-qb-inline]){display:list-item!important}';
+  document.documentElement.append(highlightStyle);
+  let toastTimer;
+  function tell(text, error=false) { $('status').textContent=text; $('status').classList.toggle('error',error); $('toast').textContent=text; $('toast').hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>{$('toast').hidden=true;},4500); }
+  function open() { $('panel').hidden=false; $('launcher').hidden=true; $('mode-compact').hidden=true; }
+  function collapse() { $('panel').hidden=true; $('launcher').hidden=false; $('mode-compact').hidden=false; }
+  globalThis[FLAG]={open};
+  // Mode changes presentation only. Sessions own their text/source independently.
+  function setReadingMode(enabled) {
+    readingMode=enabled;pointerStart=null;manualSelection=null;
+    hideSelectionOffer();
+    // A leftover native selection can turn the next gesture into HTML drag-and-drop.
+    getSelection()?.removeAllRanges();
+    laserPoint=null;$('laser').hidden=true;
+    refresh();
+    tell(enabled?'읽기 모드 ON · 원문을 드래그하고 질문 추가를 누르세요.':'읽기 모드 OFF · 본문 표시를 숨겼습니다. 기록과 초안은 유지됩니다.');
+  }
+  function moveLaser(e) {
+    if(!readingMode||e.pointerType==='touch'||ownEvent(e)||editable(e.target)) {
+      laserPoint=null;$('laser').hidden=true;return;
+    }
+    laserPoint={x:e.clientX,y:e.clientY};
+    if(laserFrame)return;
+    laserFrame=requestAnimationFrame(()=>{
+      laserFrame=0;if(!readingMode||!laserPoint)return;
+      $('laser').style.transform=`translate(${laserPoint.x-15}px,${laserPoint.y-15}px)`;
+      $('laser').hidden=false;
+    });
+  }
+  window.addEventListener('pointermove',moveLaser,{capture:true,passive:true});
+  function hideLaser(){laserPoint=null;$('laser').hidden=true;pointerStart=null;}
+  window.addEventListener('blur',hideLaser);
+  document.addEventListener('pointerleave',hideLaser);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)hideLaser();});
+  window.addEventListener('pointercancel',hideLaser,true);
+  // Document can expose a named `host` element/HTMLCollection. Only ShadowRoot.host is a shadow host.
+  function own(node) {
+    if (node === host || node === highlightStyle || node === shadow) return true;
+    if (!(node instanceof Node)) return false; // composedPath also contains Window.
+    const el = node instanceof Element ? node : node.parentElement;
+    if (!el) return false; // Document, DocumentFragment, etc. are not extension elements.
+    if (Element.prototype.closest.call(el, '[data-qb-inline]')) return true;
+    const root = node.getRootNode();
+    if (root === shadow) return true;
+    return root instanceof ShadowRoot && root.host instanceof Element
+      && Element.prototype.hasAttribute.call(root.host, 'data-qb-inline');
+  }
+  const ownEvent=e=>e.composedPath().some(own);
+  const editable=n=>!!elOf(n)?.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])');
+  function theme(el) { const d=document.documentElement; el.dataset.theme=d.classList.contains('dark') || d.dataset.theme==='dark' ? 'dark' : d.classList.contains('light') || d.dataset.theme==='light' ? 'light' : ''; }
+
+  // Every text index excludes our UI and the site's composer; raw text is never normalized.
+  function indexText(root,includeButtons=false) {
+    const entries=[]; let text='',node;
+    const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>own(n)||elOf(n)?.closest('script,style,noscript,input,textarea,[contenteditable]:not([contenteditable="false"])')||(!includeButtons&&elOf(n)?.closest('button'))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+    while ((node=w.nextNode())) { entries.push({node,start:text.length,end:text.length+node.length}); text+=node.data; }
+    return {text,entries};
+  }
+  function offsetAt(data,node,offset) {
+    if(node.nodeType===3) { const entry=data.entries.find(e=>e.node===node); return entry ? entry.start+offset : null; }
+    const r=document.createRange(); r.setStart(node,offset); r.collapse(true);
+    for(const entry of data.entries) if(r.comparePoint(entry.node,0)>=0) return entry.start;
+    return data.text.length;
+  }
+  function rangeAt(data,start,end) {
+    if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end>data.text.length||end<=start)return null;
+    const a=data.entries.find(e=>e.end>start), b=data.entries.find(e=>e.end>=end && e.start<end);
+    if(!a||!b||end<=start) return null;
+    const r=document.createRange();r.setStart(a.node,start-a.start);r.setEnd(b.node,end-b.start);return r;
+  }
+  function answerRoot(el) {
+    if(!el||own(el)||editable(el)||el.closest(NON_ANSWER))return null;
+    // Renderer IDs must agree when both are present. Missing wrappers are different
+    // from contradictory IDs: ChatGPT serves more than one answer renderer.
+    const dil=el.closest('[data-dil-message-id]');
+    const container=el.closest('[data-chatgpt-selection-message-id]'),source=el.closest('[data-dil-source-message-id]');
+    const ids=[dil?.getAttribute('data-dil-message-id'),source?.getAttribute('data-dil-source-message-id'),container?.getAttribute('data-chatgpt-selection-message-id')].filter(Boolean);
+    if(new Set(ids).size>1)return null;
+    const explicit=el.closest(ANSWER_SELECTORS.join(','));
+    if(explicit)return dil||explicit;
+    if(dil&&ids.length>=2)return dil;
+    // Some versions put the assistant role on a sibling accessibility heading.
+    // Scope this fallback to one turn and one markdown body, never the entire main.
+    const turn=el.closest('[data-testid^="conversation-turn-"],[data-content-search-unit-key]');
+    const body=el.closest('.markdown');
+    if(turn&&body&&turn.contains(body)){
+      const roles=[...turn.querySelectorAll('[data-conversation-role]')];
+      if(roles.length===1&&roles[0].getAttribute('data-conversation-role')==='assistant')return body;
+    }
+    return null;
+  }
+  function diagnoseSelection(reason,range) {
+    // No selected text, URLs, message IDs, class names, or question records.
+    const chain=node=>{const rows=[];for(let el=elOf(node);el&&rows.length<10;el=el.parentElement)rows.push({tag:el.tagName,attributes:el.getAttributeNames().filter(n=>n.startsWith('data-')||n==='role'||n==='contenteditable'),role:el.getAttribute('data-message-author-role')||el.getAttribute('data-conversation-role')||null,answerStyle:el.getAttribute('data-markdown-text-style')==='assistant-message'});return rows;};
+    selectionDiagnostic={version:chrome.runtime.getManifest().version,reason,readingMode,startType:range.startContainer.nodeType,endType:range.endContainer.nodeType,start:chain(range.startContainer),end:chain(range.endContainer)};
+  }
+  function selectedTextRange(range) {
+    // Browser selection endpoints may be parent elements (triple-click, paragraph
+    // boundaries, keyboard selection). Resolve the text actually covered by Range.
+    const root=range.commonAncestorContainer;
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    const parts=[];let node=root.nodeType===3?root:walker.nextNode();
+    while(node){
+      if(range.intersectsNode(node)){
+        const start=node===range.startContainer?range.startOffset:0,end=node===range.endContainer?range.endOffset:node.length;
+        if(end>start)parts.push({node,start,end});
+      }
+      node=walker.nextNode();
+    }
+    // Ignore only whitespace outside answers at the selection's outer edges.
+    if(chatGPT){
+      const blank=p=>!p.node.data.slice(p.start,p.end).trim()&&!answerRoot(p.node.parentElement);
+      while(parts.length&&blank(parts[0]))parts.shift();
+      while(parts.length&&blank(parts[parts.length-1]))parts.pop();
+    }
+    if(!parts.length)return null;
+    const first=parts[0],last=parts[parts.length-1],answer=answerRoot(first.node.parentElement);
+    if(chatGPT&&(!answer||parts.some(p=>!answer.contains(p.node)||!answerRoot(p.node.parentElement))))return null;
+    const resolved=document.createRange();resolved.setStart(first.node,first.start);resolved.setEnd(last.node,last.end);
+    return {range:resolved,answer};
+  }
+  function elementPath(el) {
+    const path=[];while(el&&el!==document.body){const parent=el.parentElement;if(!parent)return null;path.unshift([...parent.children].filter(n=>!own(n)).indexOf(el));el=parent;}
+    return el===document.body?path:null;
+  }
+  function elementAt(path) {
+    if(!Array.isArray(path))return null;
+    let el=document.body;for(const index of path){if(!Number.isInteger(index)||index<0)return null;el=el&&[...el.children].filter(n=>!own(n))[index];}return el||null;
+  }
+  function readSelection(report=false) {
+    checkRoute();
+    if(legacyReview){legacyReview=false;notes=[];load();}
+    const sel=getSelection(); if(!sel?.rangeCount||sel.isCollapsed) return null;
+    const original=sel.getRangeAt(0).cloneRange();
+    if(original.toString().length>30000){if(report)tell('선택 범위가 너무 큽니다. 답변의 일부를 선택해 주세요.',true);return null;}
+    if(own(original.startContainer)||own(original.endContainer)||editable(original.startContainer)||editable(original.endContainer))return null;
+    const selected=selectedTextRange(original);
+    if(!selected) {
+      diagnoseSelection('unsupported-or-mixed-answer',original);
+      if(report)tell('답변 영역을 확인하지 못했습니다. 한 답변 안에서 선택해 주세요. 계속 실패하면 오른쪽의 선택 인식 진단 복사를 눌러 알려 주세요.',true);
+      return null;
+    }
+    const r=selected.range,a=elOf(r.startContainer),b=elOf(r.endContainer),answerA=selected.answer;
+    let root=answerA?.closest(MESSAGE_ATTRS.map(attr=>'['+attr+']').join(','))||answerA||a.closest('[data-message-id]');
+    if(!root?.contains(b)) root=document.querySelector('main') || document.body;
+    if(!root.contains(a)||!root.contains(b)) return null;
+    const data=indexText(root,true), start=offsetAt(data,r.startContainer,r.startOffset),end=offsetAt(data,r.endContainer,r.endOffset);
+    const exact=r.toString(),quote=sel.toString();
+    if(start===null||end===null||!quote.trim()||data.text.slice(start,end)!==exact){if(report)tell('선택 영역이 변경되어 원문 위치를 확인하지 못했습니다. 문장을 다시 선택해 주세요.',true);return null;}
+    if(quote.length>30000 || data.text.length>500000) {tell('선택 범위가 너무 큽니다. 답변의 일부를 선택해 주세요.',true);return null;}
+    const rootAttribute=MESSAGE_ATTRS.find(attr=>root.hasAttribute(attr))||null,messageId=rootAttribute?root.getAttribute(rootAttribute):null;
+    const rootSelector=!messageId&&chatGPT?(ANSWER_SELECTORS.find(selector=>root.matches(selector))||(root.matches('.markdown')?'.markdown':null)):null;
+    return {quote,scope,url:location.href,title:document.title,messageId,anchor:{version:1,textMode:'include-buttons',messageId,rootAttribute,rootSelector,rootPath:rootSelector?elementPath(root):null,rootTag:root.tagName.toLowerCase(),sourceText:data.text,start,end,exact,selectedText:quote},range:r};
+  }
+  function locate(note) {
+    if(!sameConversation(note.scope)) return null;
+    let roots;
+    const id=note.anchor?.messageId || note.messageId;
+    if(id){const attr=MESSAGE_ATTRS.includes(note.anchor?.rootAttribute)?note.anchor.rootAttribute:'data-message-id';roots=Array.from(document.querySelectorAll('['+attr+']')).filter(el=>el.getAttribute(attr)===id);}
+    else if(note.anchor?.rootSelector&&[...ANSWER_SELECTORS,'.markdown'].includes(note.anchor.rootSelector))roots=[...document.querySelectorAll(note.anchor.rootSelector)].filter(el=>answerRoot(el)&&indexText(el,note.anchor.textMode==='include-buttons').text===note.anchor.sourceText);
+    else roots=[document.querySelector('main')||document.body];
+    if(roots.length!==1) return null;
+    // No-ID renderer: require the same structural position as well as a unique
+    // exact body. Never search a different message merely because its text matches.
+    if(note.anchor?.rootSelector&&roots[0]!==elementAt(note.anchor.rootPath))return null;
+    const data=indexText(roots[0],note.anchor?.textMode==='include-buttons');
+    if(note.anchor?.version===1) {
+      const a=note.anchor;
+      // Fail closed. Even an identical quote elsewhere is not evidence of the same source.
+      if(data.text!==a.sourceText || data.text.slice(a.start,a.end)!==a.exact || (a.selectedText??a.exact)!==note.quote) return null;
+      return rangeAt(data,a.start,a.end);
+    }
+    // v0.2 records have no offsets. Require an exact quote and unambiguous context.
+    let pos=data.text.indexOf(note.quote);
+    if(pos<0) return null;
+    if(data.text.indexOf(note.quote,pos+1)>=0) {
+      const context=note.context;
+      if(!context) return null;
+      const c=data.text.indexOf(context);
+      if(c<0||data.text.indexOf(context,c+1)>=0) return null;
+      pos=data.text.indexOf(note.quote,c);
+      if(pos<c||pos+note.quote.length>c+context.length||data.text.indexOf(note.quote,pos+1)<c+context.length && data.text.indexOf(note.quote,pos+1)>=0) return null;
+    }
+    // Legacy records without a message id/context are retained in the list, not guessed.
+    if(!id && !note.context) return null;
+    return rangeAt(data,pos,pos+note.quote.length);
+  }
+  // Selection is only a reading gesture until the user explicitly adds a question.
+  // This candidate never enters sessions/storage or steals focus from the page.
+  function hideSelectionOffer(){selectionOffer=null;$('selection-add').hidden=true;}
+  function positionSelectionOffer(){
+    if(!selectionOffer)return;
+    if(!readingMode||selectionOffer.candidate.scope!==scope){hideSelectionOffer();return;}
+    const range=locate(selectionOffer.candidate);
+    if(!range){hideSelectionOffer();return;}
+    const rects=[...range.getClientRects()].filter(r=>r.width>0&&r.height>0),last=rects.at(-1),button=$('selection-add');
+    if(!last||last.bottom<=0||last.top>=innerHeight||last.right<=0||last.left>=innerWidth){button.hidden=true;return;}
+    for(let el=elOf(range.endContainer);el&&el!==document.body;el=el.parentElement){
+      const style=getComputedStyle(el),clip=el.getBoundingClientRect();
+      if((/auto|scroll|hidden|clip/.test(style.overflowY)&&(last.bottom<=clip.top||last.top>=clip.bottom))||(/auto|scroll|hidden|clip/.test(style.overflowX)&&(last.right<=clip.left||last.left>=clip.right))){button.hidden=true;return;}
+    }
+    button.style.visibility='hidden';button.hidden=false;
+    const box=button.getBoundingClientRect(),gap=6;
+    button.style.left=Math.max(gap,Math.min(Math.max(last.left,last.right-box.width),innerWidth-box.width-gap))+'px';
+    button.style.top=Math.max(gap,Math.min(last.bottom+gap+box.height<=innerHeight?last.bottom+gap:last.top-box.height-gap,innerHeight-box.height-gap))+'px';
+    button.style.visibility='';
+  }
+  function queueSelectionPosition(){if(selectionFrame||!selectionOffer)return;selectionFrame=requestAnimationFrame(()=>{selectionFrame=0;positionSelectionOffer();});}
+  function offerSelection(candidate){
+    hideSelectionOffer();if(!readingMode||!candidate)return;
+    const sel=getSelection();if(!sel?.rangeCount)return;
+    selectionOffer={candidate,nativeRange:sel.getRangeAt(0).cloneRange()};
+    positionSelectionOffer();
+  }
+  $('selection-add').addEventListener('pointerdown',e=>{if(e.button===0)e.preventDefault();});
+  $('selection-add').onclick=()=>{
+    const candidate=selectionOffer?.candidate;hideSelectionOffer();
+    if(!candidate||!readingMode)return;
+    checkRoute();const range=candidate.scope===scope&&locate(candidate);
+    if(!range){tell('선택한 원문이 바뀌었습니다. 질문할 부분을 다시 드래그해 주세요.');return;}
+    startSelection({...candidate,range});
+  };
+  document.addEventListener('selectionchange',()=>{
+    if(!selectionOffer)return;
+    const sel=getSelection(),original=selectionOffer.nativeRange,current=sel?.rangeCount?sel.getRangeAt(0):null;
+    if(!current||sel.isCollapsed||current.startContainer!==original.startContainer||current.startOffset!==original.startOffset||current.endContainer!==original.endContainer||current.endOffset!==original.endOffset)hideSelectionOffer();
+  });
+  window.addEventListener('scroll',queueSelectionPosition,{capture:true,passive:true});
+  window.addEventListener('resize',queueSelectionPosition);
+  window.addEventListener('keydown',e=>{if(e.key==='Escape'&&selectionOffer){e.preventDefault();hideSelectionOffer();}},true);
+  function anchorBlock(range) {
+    const end=elOf(range.endContainer);if(!end?.isConnected)return null;
+    const table=end.closest('table');if(table)return {element:table,inside:false};
+    const block=end.closest('p,li,pre,blockquote,h1,h2,h3,h4,h5,h6,figure,div,article,section');
+    if(!block||block===document.body||block===document.documentElement)return null;
+    // A sibling in a row/grid/contents layout can become a side column. Keep the
+    // bubble in the selected text block in that case, without moving site nodes.
+    let parent=block.parentElement;
+    while(parent&&getComputedStyle(parent).display==='contents')parent=parent.parentElement;
+    const layout=parent&&getComputedStyle(parent),display=getComputedStyle(block).display;
+    const sideLayout=layout&&(layout.display.includes('grid')||layout.display.includes('flex')&&!layout.flexDirection.startsWith('column'));
+    return {element:block,inside:!!sideLayout||display==='contents'||display.startsWith('inline')||block.matches('li,[data-message-id],[data-message-author-role],[data-dil-message-id]')};
+  }
+  function validNote(n) {return n && typeof n.id==='string'&&typeof n.scope==='string'&&typeof n.quote==='string'&&n.quote.trim()&&typeof n.question==='string'&&n.question.trim();}
+  async function load() {
+    const serial=++loadSerial,key=viewKey();
+    try {
+      const data=await chrome.storage.local.get(null);
+      if(serial!==loadSerial||key!==viewKey())return;
+      if(!initialized){lastColor=COLORS[data[PREF]?.lastColor]?data[PREF].lastColor:COLORS[data[LASER_PREF]]?data[LASER_PREF]:'yellow';if(!autoPreferenceChosen)autoInsert=data[AUTO_PREF]!==false;initialized=true;}
+      hasLegacy=scope!==basePageKey()&&Object.entries(data).some(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&n.scope===basePageKey());
+      notes=Object.entries(data).filter(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&sameConversation(n.scope,key)).map(([,n])=>n).sort((a,b)=>(a.created||0)-(b.created||0)||a.id.localeCompare(b.id));
+      refresh();
+    }catch {tell('저장소를 읽지 못했습니다. 확장을 업데이트했다면 이 탭을 새로고침해 주세요.',true);}
+  }
+  function enqueue(key,fn) {
+    const promise=(queues.get(key)||Promise.resolve()).catch(()=>{}).then(fn);
+    queues.set(key,promise);promise.finally(()=>{if(queues.get(key)===promise)queues.delete(key);}).catch(()=>{});return promise;
+  }
+  function rememberColor(color) {lastColor=color;chrome.storage.local.set({[PREF]:{lastColor:color}}).catch(()=>tell('기본 색상을 저장하지 못했습니다.',true));}
+  function activeSessions(){return [...sessions.values()].filter(s=>sameConversation(s.note.scope));}
+  function startSelection(candidate) {
+    if(!readingMode||!candidate)return;
+    hideSelectionOffer();
+    hideOffer();
+    // Only empty NEW drafts are disposable. Existing edits and typed drafts own their source.
+    for(const s of activeSessions()) if(!s.existing && !s.question.trim() && !s.saving) finish(s.id,false);
+    const id='draft-'+crypto.randomUUID();
+    const {range,...source}=candidate;
+    sessions.set(id,{id,note:{...source,id,color:lastColor},question:'',color:lastColor,existing:false,surface:'inline',saving:false});
+    activeId=id;ranges.set(id,range);getSelection()?.removeAllRanges();$('preview').hidden=true;refresh();
+    const b=bubbles.get(id);if(b)b.root.querySelector('textarea').focus({preventScroll:true});
+  }
+  function finish(id,refreshNow=true) {sessions.delete(id);ranges.delete(id);getSelection()?.removeAllRanges();if(refreshNow)refresh();}
+  function cancel(id) {const s=sessions.get(id);if(!s||s.saving)return;finish(id);}
+  function edit(note,surface) {
+    activeId=note.id;
+    if(!sessions.has(note.id))sessions.set(note.id,{id:note.id,note:{...note},question:note.question,color:colorOf(note),existing:true,surface,saving:false});
+    else sessions.get(note.id).surface=surface;
+    refresh();
+    const rec=surface==='inline'?bubbles.get(note.id):panelCards.get(note.id);
+    rec?.root.querySelector('textarea')?.focus({preventScroll:true});
+  }
+  async function save(id) {
+    const s=sessions.get(id);if(!s||s.saving)return;
+    if(!s.question.trim()){tell('질문을 입력한 뒤 저장해 주세요.',true);return;}
+    if(s.question.length>20000){tell('질문은 20,000자 이내로 입력해 주세요.',true);return;}
+    const note={...s.note,id:s.existing?s.note.id:crypto.randomUUID(),question:s.question,color:s.color,created:s.note.created||Date.now(),updated:Date.now(),schemaVersion:3};
+    s.saving=true;refresh();
+    try {
+      await enqueue(storageKey(note),()=>chrome.storage.local.set({[storageKey(note)]:note}));
+      finish(id,false);activeId=note.id;await load();tell('저장했습니다. 계속 읽고 다음 부분을 드래그하세요.');
+    }catch{s.saving=false;refresh();tell('저장하지 못했습니다. 입력 내용은 말풍선에 남겨 두었습니다.',true);}
+  }
+  async function remove(note) {
+    if(sessions.get(note.id)?.saving)return;
+    try{await enqueue(storageKey(note),()=>chrome.storage.local.remove(storageKey(note)));finish(note.id,false);await load();tell('해당 질문과 표시를 삭제했습니다.');}
+    catch{tell('삭제하지 못했습니다. 다시 시도해 주세요.',true);}
+  }
+  function setColor(id,color) {
+    if(!COLORS[color])return;activeId=id;const s=sessions.get(id);if(s?.saving)return;rememberColor(color);
+    if(s){s.color=color;refresh();return;}
+    const n=notes.find(n=>n.id===id);if(!n)return;
+    n.color=color;refresh();
+    const value={...n,updated:Date.now()};
+    enqueue(storageKey(n),()=>chrome.storage.local.set({[storageKey(value)]:value})).catch(()=>{tell('색상을 저장하지 못했습니다.',true);load();});
+  }
+  function makeCard(id,inline=false) {
+    const outer=document.createElement(inline?'div':'article');let root=outer;
+    if(inline){
+      outer.dataset.qbInline=id;outer.style.cssText='display:block!important;position:relative!important;box-sizing:border-box!important;width:100%!important;max-width:680px!important;min-width:0!important;flex:0 0 auto!important;grid-column:1 / -1!important;align-self:stretch!important;margin:12px 0 16px!important;padding:0!important;border:0!important;clear:both!important;overflow:visible!important;';
+      root=outer.attachShadow({mode:'open'});
+      root.innerHTML=`<style>${baseCSS}.card{margin:0;position:relative;box-shadow:0 3px 9px #1635290b}.card:before{content:'';position:absolute;left:19px;top:-7px;width:11px;height:11px;background:var(--paper);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}blockquote{max-height:58px}</style>`;
+    }
+    const card=document.createElement('section');card.className='card surface';
+    card.innerHTML=`<div class="row"><span class="tag"></span><button class="cancel quiet" aria-label="작성 취소" hidden>닫기</button></div><blockquote></blockquote><p class="location" hidden>원문 위치를 확인할 수 없습니다. 기록은 보존됩니다.</p><p class="question"></p>${inline?'':'<div class="palette" role="group" aria-label="질문 색상"></div>'}<div class="editor" hidden><label>궁금한 점<textarea aria-label="궁금한 점" placeholder="이 부분에서 궁금한 점을 적어 주세요."></textarea></label><div class="tools"><button class="save primary">질문 저장</button><button class="cancel">취소</button></div><p class="hint">Ctrl + Enter 저장 · Esc 취소 · 패널을 접어도 작성은 유지됩니다.</p></div><div class="actions tools"><button class="jump quiet">원문으로 이동</button><button class="edit quiet">수정</button><button class="delete quiet danger">삭제</button></div>`;
+    root.append(card);
+    const rec={host:outer,root,card,id,inline};
+    if(!inline)for(const color of COLOR_ORDER){
+      const [name,solid]=COLORS[color];
+      const b=document.createElement('button');b.className='swatch';b.dataset.color=color;b.style.background=solid;b.title=name;b.setAttribute('aria-label',name);b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',()=>setColor(id,color));card.querySelector('.palette').append(b);
+    }
+    if(!inline){const name=document.createElement('span');name.className='color-name';card.querySelector('.palette').append(name);}
+    card.addEventListener('pointerdown',()=>activate(id));card.addEventListener('focusin',()=>activate(id));
+    card.querySelectorAll('.cancel').forEach(b=>b.addEventListener('click',()=>cancel(id)));
+    card.querySelector('.save').addEventListener('click',()=>save(id));
+    card.querySelector('.delete').addEventListener('click',()=>{const n=notes.find(n=>n.id===id);if(n)remove(n);});
+    card.querySelector('.edit').addEventListener('click',()=>{const n=notes.find(n=>n.id===id);if(n)edit(n,inline?'inline':'panel');});
+    card.querySelector('.jump').addEventListener('click',()=>{const n=notes.find(n=>n.id===id)||sessions.get(id)?.note;if(n)jump(n);});
+    const input=card.querySelector('textarea');
+    input.addEventListener('input',()=>{const s=sessions.get(id);if(s){s.question=input.value;syncCardText(id);}});
+    input.addEventListener('keydown',e=>{if(e.isComposing)return;if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();save(id);}if(e.key==='Escape'){e.preventDefault();cancel(id);}});
+    return rec;
+  }
+  function syncCardText(id) {
+    const s=sessions.get(id);if(!s)return;
+    for(const rec of [bubbles.get(id),panelCards.get(id)].filter(Boolean)){
+      const area=rec.card.querySelector('textarea');if(area.value!==s.question)area.value=s.question;
+      rec.card.querySelector('.question').textContent=s.question||'질문 작성 중';
+    }
+  }
+  function updateCard(rec,n,index,located) {
+    const s=sessions.get(rec.id), editing=!!s && (s.surface===(rec.inline?'inline':'panel') || ((!located||!readingMode)&&!rec.inline));
+    const c=rec.card,color=s?.color||colorOf(n);theme(rec.host);
+    c.style.setProperty('--accent',COLORS[color][1]);
+    c.querySelector('.tag').textContent=(s&&!s.existing?'새 질문':'질문 '+index)+(s?' · 작성 중':'');
+    c.querySelector('blockquote').textContent=n.quote;
+    c.querySelector('.location').hidden=!!located;
+    c.querySelector('.question').textContent=s?s.question||'다른 입력란에서 작성 중입니다.':n.question;
+    c.querySelector('.question').hidden=editing;
+    c.querySelector('.editor').hidden=!editing;
+    c.querySelector('.actions').hidden=!!s&&!s.existing || editing;
+    c.querySelector('.cancel.quiet').hidden=!editing;
+    c.querySelectorAll('.swatch').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.color===color));b.disabled=!!s?.saving;});
+    if(!rec.inline)c.querySelector('.color-name').textContent=COLORS[color][0];
+    const input=c.querySelector('textarea');if(s&&input.value!==s.question)input.value=s.question;
+    c.querySelector('.save').textContent=s?.saving?'저장 중…':s?.existing?'수정 저장':'질문 저장';
+    c.querySelectorAll('.save,.cancel,textarea').forEach(el=>el.disabled=!!s?.saving);
+  }
+  function refresh() {
+    // Some renderers clone light DOM while replacing a message. Shadow UI does not clone;
+    // discard only empty cloned hosts belonging to an annotation we already own.
+    for(const el of document.querySelectorAll('[data-qb-inline]'))if(!el.shadowRoot&&bubbles.has(el.dataset.qbInline)&&bubbles.get(el.dataset.qbInline).host!==el)el.remove();
+    theme(host);
+    for(const id of ['reading-mode','mode-compact']){$(id).textContent='읽기 모드 '+(readingMode?'ON':'OFF');$(id).setAttribute('aria-pressed',String(readingMode));}
+    $('mode-hint').textContent=readingMode?'원문을 드래그한 뒤 질문 추가를 눌러 작성합니다.':'본문 표시만 숨겨져 있습니다. 기록과 초안은 유지됩니다.';
+    $('use-selection').disabled=!readingMode;
+    $('empty').textContent=readingMode?'원문을 드래그하고 작은 질문 추가 버튼을 누르세요. 글 아래에서 질문을 작성할 수 있습니다.':'읽기 모드를 켜고 궁금한 원문을 드래그하세요. 저장한 기록은 모드와 관계없이 보관됩니다.';
+    const list=[...notes,...activeSessions().filter(s=>!s.existing).map(s=>s.note)];
+    const present=new Set(),wanted=new Set(),cursors=new Map(),highlights=Object.fromEntries(Object.keys(COLORS).map(c=>[c,[]]));
+    notes.forEach((n,i)=>{
+      present.add(n.id);let card=panelCards.get(n.id);if(!card){card=makeCard(n.id);panelCards.set(n.id,card);$('list').append(card.host);}
+      // appending an already placed editor would lose focus, so only reorder when necessary.
+      const previous=i?panelCards.get(notes[i-1].id)?.host:null;
+      if(previous && card.host.previousElementSibling!==previous)previous.after(card.host);
+    });
+    for(const n of list){
+      const s=sessions.get(n.id),r=locate(n),block=r&&anchorBlock(r),index=notes.findIndex(x=>x.id===n.id)+1;
+      if(r){ranges.set(n.id,r);if(readingMode)highlights[s?.color||colorOf(n)].push(r);}else ranges.delete(n.id);
+      if(block && readingMode){
+        wanted.add(n.id);let rec=bubbles.get(n.id);if(!rec){rec=makeCard(n.id,true);bubbles.set(n.id,rec);}
+        updateCard(rec,n,index,true);
+        const previous=cursors.get(block.element);
+        if(previous){if(rec.host.previousElementSibling!==previous)previous.after(rec.host);}
+        else if(block.inside){block.element.setAttribute('data-qb-flow-block','');if(rec.host.parentElement!==block.element)block.element.append(rec.host);}
+        else if(rec.host.previousElementSibling!==block.element)block.element.after(rec.host);
+        cursors.set(block.element,rec.host);
+      }
+      if(!index){present.add(n.id);if(!panelCards.has(n.id)){const rec=makeCard(n.id);panelCards.set(n.id,rec);$('draft-list').append(rec.host);}if(!block&&readingMode)open();}
+      const panel=panelCards.get(n.id);if(panel)updateCard(panel,n,index,!!block);
+    }
+    for(const[id,b]of bubbles)if(!wanted.has(id)){b.host.remove();bubbles.delete(id);}
+    for(const el of document.querySelectorAll('[data-qb-flow-block]'))if(![...el.children].some(n=>n.hasAttribute('data-qb-inline')))el.removeAttribute('data-qb-flow-block');
+    for(const[id,c]of panelCards)if(!present.has(id)){c.host.remove();panelCards.delete(id);}
+    if(globalThis.CSS?.highlights&&globalThis.Highlight)for(const [c,rs]of Object.entries(highlights))CSS.highlights.set('qb-'+c,new Highlight(...rs));
+    if(!list.some(n=>n.id===activeId))activeId=null;showActiveColor();
+    $('auto-insert').checked=autoInsert;$('quick-insert').disabled=!notes.length||!chatGPT||legacyReview;$('quick-copy').disabled=!notes.length;
+    $('count').textContent=String(notes.length);$('small-count').textContent=String(notes.length);$('empty').hidden=!!notes.length||!!activeSessions().length;$('generate').disabled=!notes.length;$('generate').title=notes.length?'저장한 질문을 하나의 프롬프트로 만듭니다':'먼저 질문을 하나 이상 저장해 주세요';$('clear').disabled=!notes.length;
+    $('legacy').hidden=!hasLegacy&&!legacyReview;$('legacy').textContent=legacyReview?'현재 대화로 돌아가기':'이전 주소 기록 보기';
+    if(legacyReview)$('status').textContent='이전 버전의 주소별 기록입니다. 현재 대화에 자동으로 연결하지 않습니다.';
+    queueSelectionPosition();
+  }
+  function jump(note) {
+    activate(note.id);
+    const r=locate(note);if(!r){tell('원문 위치를 확인할 수 없습니다. 인용 원문과 질문은 목록에 남아 있습니다.',true);return;}
+    elOf(r.startContainer)?.scrollIntoView({block:'center',behavior:'smooth'});
+    // Do not make a native selection: keyboard/mouse listeners must not create a new draft.
+    bubbles.get(note.id)?.card.animate([{outline:'3px solid #68a790'},{outline:'3px solid transparent'}],{duration:1200});
+  }
+  function buildPrompt(entries=notes) {return ['아래 인용 원문과 내 질문을 번호별로 연결해 답해 주세요.','',...entries.filter(n=>n.question.trim()).flatMap((n,i)=>['질문 '+(notes.findIndex(x=>x.id===n.id)+1||i+1),'','- 인용 원문: '+n.quote,'- 내 질문: '+n.question,''])].join('\n');}
+  function preview() {checkRoute();if(!notes.length)return;hideSelectionOffer();hideOffer();$('prompt').value=buildPrompt();$('preview').hidden=false;$('insert').hidden=!chatGPT;}
+  const normalized=t=>t.replace(/\r\n/g,'\n').replace(/\s+/g,' ').trim();
+  function usableComposer(el){return el instanceof Element&&el.isConnected&&!own(el)&&el.matches(COMPOSER_SELECTOR)&&el.getClientRects().length&&!el.disabled&&el.getAttribute('aria-disabled')!=='true'&&(el instanceof HTMLTextAreaElement||el.isContentEditable);}
+  function findComposer(root=document) {
+    const candidates=[...root.querySelectorAll(COMPOSER_SELECTOR)].filter(usableComposer);
+    return candidates.length===1?candidates[0]:null;
+  }
+  function appendPrompt(text,target=findComposer()) {
+    if(pageKey()!==scope){checkRoute();tell('대화가 바뀌었습니다. 현재 대화에서 프롬프트를 다시 열어 주세요.');return;}
+    if(!text.trim()){tell('프롬프트가 비어 있습니다.',true);return false;}
+    if(!usableComposer(target)){tell('ChatGPT 입력창을 찾지 못했습니다. 복사를 이용해 주세요.',true);return;}
+    const previous=target instanceof HTMLTextAreaElement?target.value:target.innerText;
+    if(normalized(previous).includes(normalized(text))){tell('같은 프롬프트가 이미 입력창에 있습니다.');return;}
+    const addition=(previous.trim()?'\n\n':'')+text;target.focus();
+    if(target instanceof HTMLTextAreaElement){Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(target,previous+addition);target.dispatchEvent(new Event('input',{bubbles:true}));}
+    else if(target.isContentEditable){const r=document.createRange();r.selectNodeContents(target);r.collapse(false);getSelection().removeAllRanges();getSelection().addRange(r);if(!document.execCommand('insertText',false,addition)){tell('입력을 지원하지 않는 편집기입니다. 복사를 이용해 주세요.',true);return;}}
+    else{tell('지원하지 않는 입력창입니다. 복사를 이용해 주세요.',true);return;}
+    const after=target instanceof HTMLTextAreaElement?target.value:target.innerText;
+    if(!normalized(after).includes(normalized(previous+addition))){tell('입력 결과를 확인해 주세요. 필요하면 복사를 이용해 주세요.',true);return;}
+    $('preview').hidden=true;tell('기존 내용 뒤에 추가했습니다. 확인 후 직접 전송해 주세요.');return true;
+  }
+  function pendingEntries(target) {
+    const text=normalized(target instanceof HTMLTextAreaElement?target.value:target.innerText);
+    return notes.filter(n=>n.question.trim()&&!text.includes(normalized('- 인용 원문: '+n.quote+'\n- 내 질문: '+n.question)));
+  }
+  const unfinished=()=>activeSessions().some(s=>s.saving||s.existing||s.question.trim())||[...queues.keys()].some(k=>k.startsWith(PREFIX));
+  function insertSaved(confirmed=false,target=findComposer()) {
+    checkRoute();if(!notes.length||legacyReview||!chatGPT)return;
+    if(confirmed&&unfinished()){tell('작성 중인 질문을 저장하거나 취소한 뒤 입력창을 클릭해 주세요.');return;}
+    if(!target)return appendPrompt(buildPrompt(),target);
+    const entries=pendingEntries(target);
+    if(!entries.length){tell('현재 질문들이 이미 추가되어 있습니다.');return;}
+    return appendPrompt(buildPrompt(entries),target);
+  }
+  function insert() {appendPrompt($('prompt').value);}
+  async function copy(text=$('prompt').value) {if(!text.trim())return;try{await navigator.clipboard.writeText(text);tell('프롬프트를 복사했습니다.');}catch{$('prompt').value=text;$('preview').hidden=false;$('prompt').focus();$('prompt').select();try{if(!document.execCommand('copy'))throw Error();tell('프롬프트를 복사했습니다.');}catch{tell('Ctrl+C로 선택한 프롬프트를 복사해 주세요.',true);}}}
+  // Clicking the composer offers insertion beside the pointer. Only the offer's
+  // explicit button inserts text; focus, typing and IME never append anything.
+  let composing=false,composerDown=null,offerContext=null;
+  function composerAt(e) {
+    const path=e.composedPath(),direct=path.find(n=>n instanceof Element&&n.matches(COMPOSER_SELECTOR));
+    if(direct)return usableComposer(direct)?direct:null;
+    if(path.some(n=>n instanceof Element&&n.matches('button,a,input,select')))return null;
+    const shell=path.find(n=>n instanceof Element&&n.hasAttribute('data-composer-input'));
+    return shell?findComposer(shell):null;
+  }
+  function hideOffer() {offerContext=null;$('insert-offer').hidden=true;}
+  function showOffer(target,x,y) {
+    checkRoute();
+    if(!chatGPT||legacyReview||!notes.length||!usableComposer(target))return;
+    const entries=pendingEntries(target);if(!entries.length)return;
+    offerContext={target,scope};
+    $('offer-title').textContent='저장한 질문 '+entries.length+'개를 모아서 입력할까요?';
+    const busy=unfinished();
+    $('offer-hint').textContent=busy?'작성 중인 질문을 먼저 저장하거나 취소해 주세요.':'인용 원문과 내 질문을 기존 입력 뒤에 추가합니다.';
+    $('offer-accept').disabled=busy;
+    const offer=$('insert-offer');offer.style.visibility='hidden';offer.hidden=false;
+    const box=offer.getBoundingClientRect(),gap=12;
+    offer.style.left=Math.max(gap,Math.min(x+gap,innerWidth-box.width-gap))+'px';
+    offer.style.top=Math.max(gap,Math.min(y-box.height-gap>=gap?y-box.height-gap:y+gap,innerHeight-box.height-gap))+'px';
+    offer.style.visibility='';
+  }
+  $('offer-dismiss').onclick=hideOffer;
+  $('offer-accept').onclick=()=>{
+    const context=offerContext;hideOffer();
+    if(!context||!autoInsert||context.scope!==pageKey()){checkRoute();return;}
+    const target=usableComposer(context.target)?context.target:findComposer();
+    insertSaved(true,target);
+  };
+  window.addEventListener('compositionstart',e=>{if(composerAt(e)){composing=true;hideOffer();}},true);
+  window.addEventListener('compositionend',()=>{composing=false;},true);
+  window.addEventListener('pointerdown',e=>{
+    if(!e.composedPath().includes($('insert-offer')))hideOffer();
+    const target=composerAt(e);composerDown=target&&e.button===0?{target,x:e.clientX,y:e.clientY}:null;
+  },true);
+  window.addEventListener('click',e=>{
+    const down=composerDown;composerDown=null;const target=composerAt(e);
+    if(!e.isTrusted||!autoInsert||!target||!down||down.target!==target||composing||e.detail!==1||e.shiftKey||e.ctrlKey||e.metaKey||e.altKey||!$('preview').hidden)return;
+    if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5)return;
+    showOffer(target,e.clientX,e.clientY);
+  },true);
+  window.addEventListener('input',e=>{if(composerAt(e))hideOffer();},true);
+  window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('insert-offer').hidden){e.preventDefault();hideOffer();}},true);
+  window.addEventListener('scroll',()=>{
+    if(!offerContext)return;
+    const rect=offerContext.target.getBoundingClientRect();
+    // Focus and editor resizing can queue scroll events after a valid click.
+    // Keep that offer beside the pointer while the composer remains visible.
+    if(rect.bottom<=0||rect.top>=innerHeight)hideOffer();
+  },{capture:true,passive:true});
+  window.addEventListener('wheel',hideOffer,{capture:true,passive:true});
+  window.addEventListener('touchmove',hideOffer,{capture:true,passive:true});
+  window.addEventListener('resize',hideOffer);
+  window.addEventListener('blur',()=>{composerDown=null;hideOffer();});
+  async function exportData() {try{const all=await chrome.storage.local.get(null),data=Object.fromEntries(Object.entries(all).filter(([k])=>k.startsWith(PREFIX)||k===PREF||k===LASER_PREF||k===AUTO_PREF));const blob=new Blob([JSON.stringify({format:'question-basket-backup',version:3,data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='question-basket-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{tell('기록을 백업하지 못했습니다.',true);}}
+  async function importData(file) {if(!file)return;try{if(file.size>20*1024*1024)throw Error();const backup=JSON.parse(await file.text());if(backup.format!=='question-basket-backup'||!backup.data)throw Error();const existing=await chrome.storage.local.get(null),incoming={};for(const[k,n]of Object.entries(backup.data))if(k.startsWith(PREFIX)&&validNote(n)&&k===storageKey(n)&&!existing[k])incoming[k]=n;await chrome.storage.local.set(incoming);await load();tell(Object.keys(incoming).length+'개 기록을 가져왔습니다. 기존 기록은 유지됩니다.');}catch{tell('올바른 질문 바구니 백업 파일인지 확인해 주세요.',true);}finally{$('import-file').value='';}}
+  let manualSelection=null;
+  $('reading-mode').onclick=$('mode-compact').onclick=()=>setReadingMode(!readingMode);
+  $('use-selection').addEventListener('pointerdown',e=>{if(!readingMode)return;e.preventDefault();manualSelection=readSelection(true);});
+  $('use-selection').onclick=()=>{if(!readingMode)return;const candidate=manualSelection||readSelection(true);manualSelection=null;if(candidate)startSelection(candidate);else tell('먼저 답변의 원문을 드래그해 주세요. 질문은 원문 아래 말풍선에서 작성합니다.',true);};
+  $('selection-diagnostic').onclick=async()=>{const text=JSON.stringify(selectionDiagnostic||{version:chrome.runtime.getManifest().version,reason:'no-failed-selection',readingMode},null,2);try{await navigator.clipboard.writeText(text);tell('본문 내용 없이 선택 인식 진단을 복사했습니다.');}catch{$('diagnostic-output').hidden=false;$('diagnostic-output').value=text;$('diagnostic-output').focus();$('diagnostic-output').select();tell('진단 내용을 Ctrl+C로 복사해 주세요.');}};
+  $('auto-insert').onchange=()=>{autoPreferenceChosen=true;autoInsert=$('auto-insert').checked;if(!autoInsert)hideOffer();chrome.storage.local.set({[AUTO_PREF]:autoInsert}).catch(()=>tell('입력 안내 설정을 저장하지 못했습니다.',true));};
+  $('quick-insert').onclick=()=>insertSaved(false);$('quick-copy').onclick=()=>{checkRoute();if(notes.length)copy(buildPrompt());};
+  $('launcher').onclick=open;$('close').onclick=collapse;$('generate').onclick=preview;$('preview-close').onclick=()=>{$('preview').hidden=true;};$('insert').onclick=insert;$('copy').onclick=()=>copy();$('export').onclick=exportData;$('import').onclick=()=>$('import-file').click();$('import-file').onchange=e=>importData(e.target.files[0]);
+  $('legacy').onclick=()=>{legacyReview=!legacyReview;notes=[];$('preview').hidden=true;$('status').textContent=legacyReview?'이전 버전의 주소별 기록입니다.':'현재 대화의 질문을 표시합니다.';refresh();load();};
+  $('clear').onclick=async()=>{
+    if(activeSessions().some(s=>s.saving)){tell('저장이 끝난 뒤 다시 시도해 주세요.');return;}
+    const deleting=[...notes];if(!deleting.length||!confirm('목록에 표시된 질문을 모두 삭제할까요?'))return;
+    try{await Promise.all(deleting.map(n=>enqueue(storageKey(n),()=>chrome.storage.local.remove(storageKey(n)))));for(const n of deleting)finish(n.id,false);await load();tell('표시된 질문을 모두 삭제했습니다.');}catch{tell('일부 질문을 삭제하지 못했습니다.',true);await load();}
+  };
+  // A repeated backwards drag can leave Blink moving a collapsed caret instead
+  // of extending the selection. Recover only this empty-selection case, within
+  // the same answer, from the actual mouse-down text position. Never intercept
+  // clicks, editable controls, existing text selections, or native link dragging.
+  function recoverDrag(start,x,y) {
+    const sel=getSelection();
+    if(!start?.caret||!readingMode||!sel?.isCollapsed||Math.hypot(x-start.x,y-start.y)<5)return;
+    const end=document.caretRangeFromPoint?.(x,y),a=start.caret,answer=answerRoot(elOf(a.node));
+    if(!end||!a.node.isConnected||!answer||answer!==answerRoot(elOf(end.startContainer)))return;
+    if(a.node===end.startContainer&&a.offset===end.startOffset)return;
+    sel.setBaseAndExtent(a.node,a.offset,end.startContainer,end.startOffset);
+  }
+  window.addEventListener('pointerdown',e=>{
+    if(!ownEvent(e))hideSelectionOffer();
+    pointerStart=readingMode&&!ownEvent(e)&&!editable(e.target)&&e.button===0?{x:e.clientX,y:e.clientY}:null;
+    if(pointerStart&&e.pointerType==='mouse'&&getSelection()?.isCollapsed&&!e.shiftKey&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!elOf(e.target)?.closest('a,button,[draggable="true"]')&&answerRoot(elOf(e.target))){
+      const caret=document.caretRangeFromPoint?.(e.clientX,e.clientY);if(caret)pointerStart.caret={node:caret.startContainer,offset:caret.startOffset};
+    }
+  },true);
+  window.addEventListener('pointermove',e=>{const started=pointerStart;if(started?.caret&&(e.buttons&1))requestAnimationFrame(()=>{if(pointerStart===started)recoverDrag(started,e.clientX,e.clientY);});},{capture:true,passive:true});
+  // Capture the Range synchronously before focus/selection changes.
+  window.addEventListener('pointerup',e=>{const started=pointerStart;pointerStart=null;if(!readingMode||!started||ownEvent(e)||!$('preview').hidden)return;recoverDrag(started,e.clientX,e.clientY);offerSelection(readSelection(false));},true);
+  document.addEventListener('keyup',e=>{if(readingMode&&e.key==='Shift'&&!ownEvent(e)&&!editable(e.target)&&$('preview').hidden)offerSelection(readSelection(false));},true);
+  chrome.storage.onChanged.addListener((changes,area)=>{if(area!=='local')return;if(typeof changes[AUTO_PREF]?.newValue==='boolean'){autoInsert=changes[AUTO_PREF].newValue;$('auto-insert').checked=autoInsert;if(!autoInsert)hideOffer();}if(COLORS[changes[PREF]?.newValue?.lastColor]){lastColor=changes[PREF].newValue.lastColor;showActiveColor();}if(Object.keys(changes).some(k=>k.startsWith(PREFIX)))load();});
+  function checkRoute(){const next=pageKey();if(next===scope)return;hideSelectionOffer();hideOffer();scope=next;legacyReview=false;notes=[];ranges.clear();pointerStart=null;$('preview').hidden=true;refresh();load();}
+  // ChatGPT navigates without reload. Drafts retain their original scope until you return.
+  routeTimer=setInterval(checkRoute,350);window.addEventListener('popstate',checkRoute);
+  const observer=new MutationObserver(records=>{
+    const relevant=records.some(r=>{
+      if(own(r.target)||editable(r.target))return false;
+      if(r.type!=='childList')return true;
+      const nodes=[...r.addedNodes,...r.removedNodes];
+      if(nodes.some(n=>!own(n)))return true;
+      return [...r.removedNodes].some(n=>!n.isConnected&&[...bubbles.values()].some(b=>b.host===n));
+    });
+    if(!relevant)return;clearTimeout(refreshTimer);refreshTimer=setTimeout(refresh,120);
+  });
+  observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:[...MESSAGE_ATTRS,'data-message-author-role','data-conversation-role','data-markdown-text-style','data-turn']});
+  const themeObserver=new MutationObserver(()=>{theme(host);for(const b of bubbles.values())theme(b.host);});themeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['class','data-theme']});
+  load();
+})();

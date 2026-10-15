@@ -1,0 +1,290 @@
+{
+  "environment": "Unpacked MV3 extension; synthetic layout fixtures, not live ChatGPT",
+  "results": [
+    {
+      "version": "0.5.2",
+      "name": "block",
+      "baseline": true,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "block",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 212.328125,
+        "textLeft": 124.796875,
+        "textRight": 806.15625,
+        "bubble": {
+          "top": 242.71875,
+          "left": 124.796875,
+          "right": 804.796875,
+          "bottom": 505.078125
+        }
+      },
+      "result": "UNCHANGED"
+    },
+    {
+      "version": "0.5.2",
+      "name": "column",
+      "baseline": true,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "block",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 231.078125,
+        "textLeft": 134.109375,
+        "textRight": 815.46875,
+        "bubble": {
+          "top": 273.46875,
+          "left": 308.65625,
+          "right": 640.921875,
+          "bottom": 535.828125
+        }
+      },
+      "result": "UNCHANGED"
+    },
+    {
+      "version": "0.5.2",
+      "name": "row",
+      "baseline": true,
+      "below": false,
+      "aligned": false,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "block",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 413.421875,
+        "textLeft": 124.796875,
+        "textRight": 232.046875,
+        "bubble": {
+          "top": 193.078125,
+          "left": 247.375,
+          "right": 579.640625,
+          "bottom": 458.203125
+        }
+      },
+      "result": "REPRODUCED_SIDE_PLACEMENT"
+    },
+    {
+      "version": "0.5.2",
+      "name": "grid",
+      "baseline": true,
+      "below": false,
+      "aligned": false,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "block",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 261.46875,
+        "textLeft": 124.796875,
+        "textRight": 466.046875,
+        "bubble": {
+          "top": 193.078125,
+          "left": 480.796875,
+          "right": 824.796875,
+          "bottom": 455.4375
+        }
+      },
+      "result": "REPRODUCED_SIDE_PLACEMENT"
+    },
+    {
+      "version": "0.5.2",
+      "name": "contents",
+      "baseline": true,
+      "below": false,
+      "aligned": false,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "contents",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 297.25,
+        "textLeft": 124.796875,
+        "textRight": 300.53125,
+        "bubble": {
+          "top": 193.078125,
+          "left": 316.65625,
+          "right": 410.21875,
+          "bottom": 655.546875
+        }
+      },
+      "result": "REPRODUCED_SIDE_PLACEMENT"
+    },
+    {
+      "version": "0.5.2",
+      "name": "inline",
+      "baseline": true,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "flex",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 231.078125,
+        "textLeft": 124.796875,
+        "textRight": 806.15625,
+        "bubble": {
+          "top": 273.46875,
+          "left": 124.796875,
+          "right": 804.796875,
+          "bottom": 535.828125
+        }
+      },
+      "result": "UNCHANGED"
+    },
+    {
+      "version": "0.6.0",
+      "name": "block",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "block",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 212.328125,
+        "textLeft": 124.796875,
+        "textRight": 806.15625,
+        "bubble": {
+          "top": 242.71875,
+          "left": 124.796875,
+          "right": 804.796875,
+          "bottom": 505.078125
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.6.0",
+      "name": "column",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "block",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 231.078125,
+        "textLeft": 134.109375,
+        "textRight": 815.46875,
+        "bubble": {
+          "top": 273.46875,
+          "left": 124.796875,
+          "right": 804.796875,
+          "bottom": 535.828125
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.6.0",
+      "name": "row",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "first",
+        "anchorDisplay": "block",
+        "marked": true,
+        "quote": "A",
+        "textBottom": 322.25,
+        "textLeft": 124.796875,
+        "textRight": 342.796875,
+        "bubble": {
+          "top": 339.640625,
+          "left": 124.796875,
+          "right": 350.125,
+          "bottom": 619.59375
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.6.0",
+      "name": "grid",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "first",
+        "anchorDisplay": "block",
+        "marked": true,
+        "quote": "A",
+        "textBottom": 261.46875,
+        "textLeft": 124.796875,
+        "textRight": 466.046875,
+        "bubble": {
+          "top": 278.859375,
+          "left": 124.796875,
+          "right": 468.796875,
+          "bottom": 541.21875
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.6.0",
+      "name": "contents",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "first",
+        "anchorDisplay": "block",
+        "marked": true,
+        "quote": "A",
+        "textBottom": 322.25,
+        "textLeft": 124.796875,
+        "textRight": 342.796875,
+        "bubble": {
+          "top": 339.640625,
+          "left": 124.796875,
+          "right": 346.265625,
+          "bottom": 619.59375
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.6.0",
+      "name": "inline",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "flex",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 231.078125,
+        "textLeft": 124.796875,
+        "textRight": 806.15625,
+        "bubble": {
+          "top": 273.46875,
+          "left": 124.796875,
+          "right": 804.796875,
+          "bottom": 535.828125
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.6.0",
+      "name": "multi-paragraph-grid",
+      "result": "PASS",
+      "rangeSetup": "synthetic",
+      "resize": true,
+      "internalScroll": true,
+      "reload": true
+    }
+  ]
+}
