@@ -1,15 +1,14 @@
-/* Askmark 0.6.3 — local-only annotations. No network/API calls. */
+/* Askmark 0.6.4 — local-only annotations. No network/API calls. */
 (() => {
   'use strict';
   const FLAG = '__questionBasketV1';
   if (globalThis[FLAG]) { globalThis[FLAG].open(); return; }
-  const PREFIX = 'qb:note:', PREF = 'qb:preferences:v3', LASER_PREF = 'qb:laser-color:v1', AUTO_PREF='qb:auto-insert:v1';
+  const PREFIX = 'qb:note:', PREF = 'qb:preferences:v3', LASER_PREF = 'qb:laser-color:v1', AUTO_PREF='qb:auto-insert:v1', CHOICE_PREFIX='qb:prompt-choice:';
   let activeId=null, autoInsert=true, autoPreferenceChosen=false;
   const COMPOSER_SELECTOR='#prompt-textarea,[data-composer-markdown][contenteditable="true"],[data-composer-input] [contenteditable="true"][role="textbox"]';
   const MESSAGE_ATTRS=['data-message-id','data-dil-message-id','data-dil-source-message-id','data-chatgpt-selection-message-id'];
   const ANSWER_SELECTORS=['[data-message-author-role="assistant"]','[data-markdown-text-style="assistant-message"]','[data-conversation-role="assistant"]:not(h4)','[data-turn="assistant"]'];
   const NON_ANSWER='[data-user-message-bubble],[data-message-author-role="user"],[data-conversation-role="user"],[data-turn="user"],nav,aside,[role="navigation"],#prompt-textarea';
-  let selectionDiagnostic=null;
   const firstMessageId=()=>{const el=document.querySelector('[data-message-id],[data-chatgpt-selection-message-id],[data-dil-message-id],[data-dil-source-message-id]');return el && (el.getAttribute('data-message-id')||el.getAttribute('data-chatgpt-selection-message-id')||el.getAttribute('data-dil-message-id')||el.getAttribute('data-dil-source-message-id'));};
   const conversationId=url=>{try{const u=new URL(url);return u.origin===location.origin?u.pathname.match(/\/c\/([^/]+)/)?.[1]:null;}catch{return null;}};
   const COLORS = {red:['빨강','#ff414b','rgba(255,65,75,.30)'],orange:['주황','#ff9528','rgba(255,149,40,.30)'],yellow:['노랑','#e6b92d','rgba(250,204,21,.32)'],indigo:['남색','#696ef0','rgba(105,110,240,.30)'],purple:['보라','#a78bfa','rgba(167,139,250,.32)'],blue:['파랑','#60a5fa','rgba(96,165,250,.32)'],green:['초록','#4ade80','rgba(74,222,128,.28)'],pink:['핑크','#f472b6','rgba(244,114,182,.30)']};
@@ -27,6 +26,13 @@
     return first ? base+'#qb-message='+encodeURIComponent(first) : base;
   };
   const storageKey = n => PREFIX + encodeURIComponent(n.scope) + ':' + n.id;
+  const choiceKey = n => CHOICE_PREFIX + encodeURIComponent(n.scope) + ':' + n.id;
+  // Prompt membership is independent of the active color/editor and saved notes.
+  const promptChoices=new Map(),pendingChoices=new Map(),choiceVersions=new Map();
+  let choiceRevision=0;
+  function rememberChoice(key,value) {if(typeof value==='boolean')promptChoices.set(key,value);else promptChoices.delete(key);choiceVersions.set(key,++choiceRevision);}
+  const included=n=>promptChoices.get(choiceKey(n))!==false;
+  const selectedEntries=()=>notes.filter(included);
   let scope = pageKey(), notes = [], lastColor = 'yellow', loadSerial = 0, refreshTimer, routeTimer;
   let readingMode = false, laserFrame = 0, laserPoint = null;
   let pointerStart = null, initialized = false, legacyReview = false, hasLegacy = false;
@@ -50,7 +56,7 @@
     :host{all:initial;font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",sans-serif;color:#23342f;color-scheme:light dark}
     *{box-sizing:border-box}[hidden]{display:none!important}button,textarea,input{font:inherit}
     button{cursor:pointer;border:1px solid var(--line,#d9e1dc);border-radius:8px;padding:7px 11px;background:var(--paper,#fff);color:inherit;line-height:1.4}
-    button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:default}.save:disabled{cursor:wait}button:focus-visible,textarea:focus-visible{outline:3px solid #528fdb;outline-offset:2px}
+    button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:default}.save:disabled{cursor:wait}button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid #528fdb;outline-offset:2px}
     .primary{background:#176657;color:#fff;border-color:#176657}.quiet{background:transparent;border:0;padding:4px 6px;font-size:12px}.danger{color:#b04343}
     textarea{display:block;width:100%;min-height:88px;resize:vertical;background:var(--paper,#fff);color:inherit;border:1px solid var(--line,#ccd8d2);border-radius:8px;padding:10px;line-height:1.65}
     blockquote{white-space:pre-wrap;overflow-wrap:anywhere;border-left:3px solid var(--accent,#e6b92d);margin:8px 0;padding:0 0 0 10px;font-size:12px;color:var(--muted,#596d63);max-height:100px;overflow:auto}
@@ -77,12 +83,13 @@
     #panel .card .swatch[aria-pressed="true"]{outline-width:1.5px;outline-offset:1.5px}
     #panel .card .swatch[aria-pressed="true"]:after{font-size:8px;line-height:1}
     #panel .card .color-name{font-size:10px;line-height:1.2;margin-left:2px;white-space:nowrap}
+    .prompt-choice{display:inline-flex;align-items:center;gap:7px;cursor:pointer;min-height:22px}.prompt-include{width:16px;height:16px;margin:0;accent-color:#176657;flex:0 0 16px;cursor:pointer}#selection-tools{margin-bottom:10px;gap:4px;flex-wrap:wrap}#selected-count{font-size:12px;color:var(--muted)}#selection-tools .quiet{padding:3px 4px;font-size:11px}
     #insert-offer{position:fixed;width:min(320px,calc(100vw - 24px));pointer-events:auto;border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 6px 24px #0003;z-index:2}#insert-offer p{margin:0 0 8px}#insert-offer .hint{margin-bottom:10px}
     #selection-add{position:fixed;pointer-events:auto;padding:6px 11px;font-size:12px;line-height:1.4;border:1px solid var(--line);border-radius:7px;box-shadow:0 3px 12px #0002;z-index:3;white-space:nowrap}
   </style><div id="laser" aria-hidden="true" hidden></div><button id="selection-add" class="surface" title="선택한 원문에 질문을 남깁니다" hidden>질문 추가</button><button id="mode-compact" aria-pressed="false">읽기 모드 OFF</button><button id="launcher">Askmark · <span id="small-count">0</span></button>
-  <aside id="panel" class="surface" aria-label="질문 바구니" hidden><header><div class="row"><h1>Askmark <span id="count">0</span> <span id="version">v0.6.3</span></h1><button id="close">접기</button></div><button id="reading-mode" aria-pressed="false" style="margin-top:10px;width:100%">읽기 모드 OFF</button><div id="color-target" class="hint" style="margin-top:10px">다음 질문 · 박스와 포인터 색상</div><div id="color-palette" class="palette" role="group" aria-label="박스와 포인터 색상"></div><p id="mode-hint" class="hint">켜면 원문에 질문을 달 수 있습니다. 기록은 항상 보관됩니다.</p></header>
-  <div id="body"><div id="list"></div><div id="draft-list"></div><div id="empty">답변에서 궁금한 부분을 드래그하세요.<br>작은 질문 추가 버튼을 누르면 글 아래에서 작성합니다.</div></div>
-  <footer><p id="status" role="status" aria-live="polite">아직 저장한 질문이 없습니다. 원문을 드래그하고 질문을 저장해 주세요.</p><button id="use-selection" style="width:100%;margin-bottom:8px" title="선택한 원문에 질문 입력창을 엽니다">선택한 부분에 질문 쓰기</button><label class="hint" style="display:flex;gap:7px;align-items:center;margin:7px 0"><input id="auto-insert" type="checkbox" checked>입력창 클릭 시 모아 입력할지 묻기</label><div class="tools" style="margin:8px 0"><button id="quick-insert" class="primary" style="flex:1" disabled>입력창에 바로 추가</button><button id="quick-copy" style="flex:1" disabled>바로 복사</button></div><button id="generate" title="먼저 질문을 하나 이상 저장해 주세요" disabled>프롬프트 미리보기·수정</button><div class="tools" style="margin-top:8px"><button id="export" class="quiet">전체 기록 백업</button><button id="import" class="quiet">백업 가져오기</button><button id="clear" class="quiet danger" disabled>이 대화 질문 비우기</button><button id="legacy" class="quiet" hidden>이전 주소 기록 보기</button></div><button id="selection-diagnostic" class="quiet" title="선택한 본문·질문·대화 주소는 포함하지 않습니다">선택 인식 진단 복사</button><textarea id="diagnostic-output" aria-label="선택 인식 진단" readonly hidden></textarea><input id="import-file" type="file" accept="application/json,.json" hidden><p class="hint">작성 중인 초안은 프롬프트에 포함하지 않습니다.</p></footer></aside>
+  <aside id="panel" class="surface" aria-label="질문 바구니" hidden><header><div class="row"><h1>Askmark <span id="count">0</span> <span id="version">v0.6.4</span></h1><button id="close">접기</button></div><button id="reading-mode" aria-pressed="false" style="margin-top:10px;width:100%">읽기 모드 OFF</button><div id="color-target" class="hint" style="margin-top:10px">다음 질문 · 박스와 포인터 색상</div><div id="color-palette" class="palette" role="group" aria-label="박스와 포인터 색상"></div><p id="mode-hint" class="hint">켜면 원문에 질문을 달 수 있습니다. 기록은 항상 보관됩니다.</p></header>
+  <div id="body"><div id="selection-tools" class="row" hidden><span id="selected-count" role="status" aria-live="polite"></span><div class="tools"><button id="select-all" class="quiet">전체 선택</button><button id="deselect-all" class="quiet">선택 해제</button></div></div><div id="list"></div><div id="draft-list"></div><div id="empty">답변에서 궁금한 부분을 드래그하세요.<br>작은 질문 추가 버튼을 누르면 글 아래에서 작성합니다.</div></div>
+  <footer><p id="status" role="status" aria-live="polite">아직 저장한 질문이 없습니다. 원문을 드래그하고 질문을 저장해 주세요.</p><button id="use-selection" style="width:100%;margin-bottom:8px" title="선택한 원문에 질문 입력창을 엽니다">선택한 부분에 질문 쓰기</button><label class="hint" style="display:flex;gap:7px;align-items:center;margin:7px 0"><input id="auto-insert" type="checkbox" checked>입력창 클릭 시 모아 입력할지 묻기</label><div class="tools" style="margin:8px 0"><button id="quick-insert" class="primary" style="flex:1" disabled>입력창에 바로 추가</button><button id="quick-copy" style="flex:1" disabled>바로 복사</button></div><button id="generate" title="먼저 질문을 하나 이상 저장해 주세요" disabled>프롬프트 미리보기·수정</button><div class="tools" style="margin-top:8px"><button id="export" class="quiet">전체 기록 백업</button><button id="import" class="quiet">백업 가져오기</button><button id="clear" class="quiet danger" disabled>이 대화 질문 비우기</button><button id="legacy" class="quiet" hidden>이전 주소 기록 보기</button></div><input id="import-file" type="file" accept="application/json,.json" hidden><p class="hint">체크한 질문만 프롬프트에 포함합니다.<br>선택을 해제해도 기록은 남습니다. 초안은 제외합니다.</p></footer></aside>
   <section id="preview" class="surface" aria-label="프롬프트 미리보기" hidden><header><div class="row"><h2>모은 질문 미리보기</h2><button id="preview-close">닫기</button></div><p class="hint">인용 원문과 질문을 확인하고, 필요하면 수정하세요.</p></header><textarea id="prompt" aria-label="완성된 프롬프트"></textarea><footer><button id="insert" class="primary">ChatGPT 입력창에 추가</button><button id="copy">프롬프트 복사</button><p class="hint">전송은 사용자가 직접 합니다.</p></footer></section><section id="insert-offer" class="surface" role="dialog" aria-label="모은 질문 입력" hidden><p id="offer-title"></p><p id="offer-hint" class="hint"></p><div class="tools"><button id="offer-accept" class="primary">모아서 입력</button><button id="offer-dismiss">나중에</button></div></section><div id="toast" role="status" hidden></div>`;
   document.documentElement.append(host);
   const $ = id => shadow.getElementById(id);
@@ -195,11 +202,6 @@
     }
     return null;
   }
-  function diagnoseSelection(reason,range) {
-    // No selected text, URLs, message IDs, class names, or question records.
-    const chain=node=>{const rows=[];for(let el=elOf(node);el&&rows.length<10;el=el.parentElement)rows.push({tag:el.tagName,attributes:el.getAttributeNames().filter(n=>n.startsWith('data-')||n==='role'||n==='contenteditable'),role:el.getAttribute('data-message-author-role')||el.getAttribute('data-conversation-role')||null,answerStyle:el.getAttribute('data-markdown-text-style')==='assistant-message'});return rows;};
-    selectionDiagnostic={version:chrome.runtime.getManifest().version,reason,readingMode,startType:range.startContainer.nodeType,endType:range.endContainer.nodeType,start:chain(range.startContainer),end:chain(range.endContainer)};
-  }
   function selectedTextRange(range) {
     // Browser selection endpoints may be parent elements (triple-click, paragraph
     // boundaries, keyboard selection). Resolve the text actually covered by Range.
@@ -242,8 +244,7 @@
     if(own(original.startContainer)||own(original.endContainer)||editable(original.startContainer)||editable(original.endContainer))return null;
     const selected=selectedTextRange(original);
     if(!selected) {
-      diagnoseSelection('unsupported-or-mixed-answer',original);
-      if(report)tell('답변 영역을 확인하지 못했습니다. 한 답변 안에서 선택해 주세요. 계속 실패하면 오른쪽의 선택 인식 진단 복사를 눌러 알려 주세요.',true);
+      if(report)tell('답변 영역을 확인하지 못했습니다. 한 답변 안에서 원문을 다시 선택해 주세요.',true);
       return null;
     }
     const r=selected.range,a=elOf(r.startContainer),b=elOf(r.endContainer),answerA=selected.answer;
@@ -349,10 +350,16 @@
   }
   function validNote(n) {return n && typeof n.id==='string'&&typeof n.scope==='string'&&typeof n.quote==='string'&&n.quote.trim()&&typeof n.question==='string'&&n.question.trim();}
   async function load() {
-    const serial=++loadSerial,key=viewKey();
+    const serial=++loadSerial,key=viewKey(),readRevision=choiceRevision;
     try {
       const data=await chrome.storage.local.get(null);
       if(serial!==loadSerial||key!==viewKey())return;
+      const loadedChoices=new Map(Object.entries(data).filter(([k,value])=>k.startsWith(CHOICE_PREFIX)&&typeof value==='boolean'));
+      // A snapshot can return after a newer write has already completed. Keep
+      // those newer choices (including removals), not just still-pending writes.
+      for(const[k,revision]of choiceVersions)if(revision>readRevision){if(promptChoices.has(k))loadedChoices.set(k,promptChoices.get(k));else loadedChoices.delete(k);}
+      promptChoices.clear();for(const[k,value]of loadedChoices)promptChoices.set(k,value);
+      for(const[k,change]of pendingChoices)promptChoices.set(k,change.value);
       if(!initialized){lastColor=COLORS[data[PREF]?.lastColor]?data[PREF].lastColor:COLORS[data[LASER_PREF]]?data[LASER_PREF]:'yellow';if(!autoPreferenceChosen)autoInsert=data[AUTO_PREF]!==false;initialized=true;}
       hasLegacy=scope!==basePageKey()&&Object.entries(data).some(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&n.scope===basePageKey());
       notes=Object.entries(data).filter(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&sameConversation(n.scope,key)).map(([,n])=>n).sort((a,b)=>(a.created||0)-(b.created||0)||a.id.localeCompare(b.id));
@@ -362,6 +369,26 @@
   function enqueue(key,fn) {
     const promise=(queues.get(key)||Promise.resolve()).catch(()=>{}).then(fn);
     queues.set(key,promise);promise.finally(()=>{if(queues.get(key)===promise)queues.delete(key);}).catch(()=>{});return promise;
+  }
+  function refreshPromptSelection() {
+    const count=selectedEntries().length;
+    for(const n of notes){const input=panelCards.get(n.id)?.card.querySelector('.prompt-include');if(input)input.checked=included(n);}
+    $('selection-tools').hidden=!notes.length;
+    $('selected-count').textContent='프롬프트 '+count+' / '+notes.length+'개 선택';
+    $('select-all').disabled=!notes.length||count===notes.length;$('deselect-all').disabled=!count;
+    $('quick-insert').disabled=!count||!chatGPT||legacyReview;$('quick-copy').disabled=!count;$('generate').disabled=!count;
+    $('generate').title=count?'체크한 질문 '+count+'개를 프롬프트로 만듭니다':'제목 앞 체크박스에서 질문을 선택해 주세요';
+  }
+  function choosePrompt(entries,value) {
+    hideOffer();$('preview').hidden=true;
+    for(const n of entries){
+      const key=choiceKey(n),change={value};rememberChoice(key,value);pendingChoices.set(key,change);
+      enqueue(key,()=>chrome.storage.local.set({[key]:value})).catch(()=>{
+        if(pendingChoices.get(key)!==change)return;
+        pendingChoices.delete(key);tell('질문 선택을 저장하지 못했습니다. 다시 선택해 주세요.',true);load();
+      }).finally(()=>{if(pendingChoices.get(key)===change)pendingChoices.delete(key);});
+    }
+    refreshPromptSelection();
   }
   function rememberColor(color) {lastColor=color;chrome.storage.local.set({[PREF]:{lastColor:color}}).catch(()=>tell('기본 색상을 저장하지 못했습니다.',true));}
   function activeSessions(){return [...sessions.values()].filter(s=>sameConversation(s.note.scope));}
@@ -419,7 +446,7 @@
       root.innerHTML=`<style>${baseCSS}.card{margin:0;position:relative;box-shadow:0 3px 9px #1635290b}.card:before{content:'';position:absolute;left:19px;top:-7px;width:11px;height:11px;background:var(--paper);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}blockquote{max-height:58px}</style>`;
     }
     const card=document.createElement('section');card.className='card surface';
-    card.innerHTML=`<div class="row"><span class="tag"></span><button class="cancel quiet" aria-label="작성 취소" hidden>닫기</button></div><blockquote></blockquote><p class="location" hidden>원문 위치를 확인할 수 없습니다. 기록은 보존됩니다.</p><p class="question"></p>${inline?'':'<div class="palette" role="group" aria-label="질문 색상"></div>'}<div class="editor" hidden><label>궁금한 점<textarea aria-label="궁금한 점" placeholder="이 부분에서 궁금한 점을 적어 주세요."></textarea></label><div class="tools"><button class="save primary">질문 저장</button><button class="cancel">취소</button></div><p class="hint">Ctrl + Enter 저장 · Esc 취소 · 패널을 접어도 작성은 유지됩니다.</p></div><div class="actions tools"><button class="jump quiet">원문으로 이동</button><button class="edit quiet">수정</button><button class="delete quiet danger">삭제</button></div>`;
+    card.innerHTML=`<div class="row">${inline?'<span class="tag"></span>':'<label class="prompt-choice" title="체크한 질문만 프롬프트에 포함합니다. 해제해도 기록은 남습니다."><input class="prompt-include" type="checkbox"><span class="tag"></span></label>'}<button class="cancel quiet" aria-label="작성 취소" hidden>닫기</button></div><blockquote></blockquote><p class="location" hidden>원문 위치를 확인할 수 없습니다. 기록은 보존됩니다.</p><p class="question"></p>${inline?'':'<div class="palette" role="group" aria-label="질문 색상"></div>'}<div class="editor" hidden><label>궁금한 점<textarea aria-label="궁금한 점" placeholder="이 부분에서 궁금한 점을 적어 주세요."></textarea></label><div class="tools"><button class="save primary">질문 저장</button><button class="cancel">취소</button></div><p class="hint">Ctrl + Enter 저장 · Esc 취소 · 패널을 접어도 작성은 유지됩니다.</p></div><div class="actions tools"><button class="jump quiet">원문으로 이동</button><button class="edit quiet">수정</button><button class="delete quiet danger">삭제</button></div>`;
     root.append(card);
     const rec={host:outer,root,card,id,inline};
     if(!inline)for(const color of COLOR_ORDER){
@@ -428,7 +455,8 @@
       b.addEventListener('click',()=>setColor(id,color));card.querySelector('.palette').append(b);
     }
     if(!inline){const name=document.createElement('span');name.className='color-name';card.querySelector('.palette').append(name);}
-    card.addEventListener('pointerdown',()=>activate(id));card.addEventListener('focusin',()=>activate(id));
+    if(!inline)card.querySelector('.prompt-include').addEventListener('change',e=>{const n=notes.find(n=>n.id===id);if(n)choosePrompt([n],e.target.checked);});
+    for(const type of ['pointerdown','focusin'])card.addEventListener(type,e=>{if(!elOf(e.target)?.closest('.prompt-choice'))activate(id);});
     card.querySelectorAll('.cancel').forEach(b=>b.addEventListener('click',()=>cancel(id)));
     card.querySelector('.save').addEventListener('click',()=>save(id));
     card.querySelector('.delete').addEventListener('click',()=>{const n=notes.find(n=>n.id===id);if(n)remove(n);});
@@ -451,6 +479,7 @@
     const c=rec.card,color=s?.color||colorOf(n);theme(rec.host);
     c.style.setProperty('--accent',COLORS[color][1]);
     c.querySelector('.tag').textContent=(s&&!s.existing?'새 질문':'질문 '+index)+(s?' · 작성 중':'');
+    if(!rec.inline){const input=c.querySelector('.prompt-include');input.hidden=!index;input.checked=!!index&&included(n);input.setAttribute('aria-label','질문 '+index+' 프롬프트에 포함');}
     c.querySelector('blockquote').textContent=n.quote;
     c.querySelector('.location').hidden=!!located;
     c.querySelector('.question').textContent=s?s.question||'다른 입력란에서 작성 중입니다.':n.question;
@@ -501,8 +530,8 @@
     for(const[id,c]of panelCards)if(!present.has(id)){c.host.remove();panelCards.delete(id);}
     if(globalThis.CSS?.highlights&&globalThis.Highlight)for(const [c,rs]of Object.entries(highlights))CSS.highlights.set('qb-'+c,new Highlight(...rs));
     if(!list.some(n=>n.id===activeId))activeId=null;showActiveColor();
-    $('auto-insert').checked=autoInsert;$('quick-insert').disabled=!notes.length||!chatGPT||legacyReview;$('quick-copy').disabled=!notes.length;
-    $('count').textContent=String(notes.length);$('small-count').textContent=String(notes.length);$('empty').hidden=!!notes.length||!!activeSessions().length;$('generate').disabled=!notes.length;$('generate').title=notes.length?'저장한 질문을 하나의 프롬프트로 만듭니다':'먼저 질문을 하나 이상 저장해 주세요';$('clear').disabled=!notes.length;
+    $('auto-insert').checked=autoInsert;refreshPromptSelection();
+    $('count').textContent=String(notes.length);$('small-count').textContent=String(notes.length);$('empty').hidden=!!notes.length||!!activeSessions().length;$('clear').disabled=!notes.length;
     $('legacy').hidden=!hasLegacy&&!legacyReview;$('legacy').textContent=legacyReview?'현재 대화로 돌아가기':'이전 주소 기록 보기';
     if(legacyReview)$('status').textContent='이전 버전의 주소별 기록입니다. 현재 대화에 자동으로 연결하지 않습니다.';
     queueSelectionPosition();
@@ -514,8 +543,8 @@
     // Do not make a native selection: keyboard/mouse listeners must not create a new draft.
     bubbles.get(note.id)?.card.animate([{outline:'3px solid #68a790'},{outline:'3px solid transparent'}],{duration:1200});
   }
-  function buildPrompt(entries=notes) {return ['아래 인용 원문과 내 질문을 번호별로 연결해 답해 주세요.','',...entries.filter(n=>n.question.trim()).flatMap((n,i)=>['질문 '+(notes.findIndex(x=>x.id===n.id)+1||i+1),'','- 인용 원문: '+n.quote,'- 내 질문: '+n.question,''])].join('\n');}
-  function preview() {checkRoute();if(!notes.length)return;hideSelectionOffer();hideOffer();$('prompt').value=buildPrompt();$('preview').hidden=false;$('insert').hidden=!chatGPT;}
+  function buildPrompt(entries=selectedEntries()) {return ['아래 인용 원문과 내 질문을 번호별로 연결해 답해 주세요.','',...entries.filter(n=>n.question.trim()).flatMap((n,i)=>['질문 '+(notes.findIndex(x=>x.id===n.id)+1||i+1),'','- 인용 원문: '+n.quote,'- 내 질문: '+n.question,''])].join('\n');}
+  function preview() {checkRoute();if(!selectedEntries().length)return;hideSelectionOffer();hideOffer();$('prompt').value=buildPrompt();$('preview').hidden=false;$('insert').hidden=!chatGPT;}
   const normalized=t=>t.replace(/\r\n/g,'\n').replace(/\s+/g,' ').trim();
   function usableComposer(el){return el instanceof Element&&el.isConnected&&!own(el)&&el.matches(COMPOSER_SELECTOR)&&el.getClientRects().length&&!el.disabled&&el.getAttribute('aria-disabled')!=='true'&&(el instanceof HTMLTextAreaElement||el.isContentEditable);}
   function findComposer(root=document) {
@@ -538,11 +567,11 @@
   }
   function pendingEntries(target) {
     const text=normalized(target instanceof HTMLTextAreaElement?target.value:target.innerText);
-    return notes.filter(n=>n.question.trim()&&!text.includes(normalized('- 인용 원문: '+n.quote+'\n- 내 질문: '+n.question)));
+    return selectedEntries().filter(n=>n.question.trim()&&!text.includes(normalized('- 인용 원문: '+n.quote+'\n- 내 질문: '+n.question)));
   }
   const unfinished=()=>activeSessions().some(s=>s.saving||s.existing||s.question.trim())||[...queues.keys()].some(k=>k.startsWith(PREFIX));
   function insertSaved(confirmed=false,target=findComposer()) {
-    checkRoute();if(!notes.length||legacyReview||!chatGPT)return;
+    checkRoute();if(!selectedEntries().length||legacyReview||!chatGPT)return;
     if(confirmed&&unfinished()){tell('작성 중인 질문을 저장하거나 취소한 뒤 입력창을 클릭해 주세요.');return;}
     if(!target)return appendPrompt(buildPrompt(),target);
     const entries=pendingEntries(target);
@@ -567,7 +596,7 @@
     if(!chatGPT||legacyReview||!notes.length||!usableComposer(target))return;
     const entries=pendingEntries(target);if(!entries.length)return;
     offerContext={target,scope};
-    $('offer-title').textContent='저장한 질문 '+entries.length+'개를 모아서 입력할까요?';
+    $('offer-title').textContent='선택한 질문 '+entries.length+'개를 모아서 입력할까요?';
     const busy=unfinished();
     $('offer-hint').textContent=busy?'작성 중인 질문을 먼저 저장하거나 취소해 주세요.':'인용 원문과 내 질문을 기존 입력 뒤에 추가합니다.';
     $('offer-accept').disabled=busy;
@@ -609,15 +638,15 @@
   window.addEventListener('touchmove',hideOffer,{capture:true,passive:true});
   window.addEventListener('resize',hideOffer);
   window.addEventListener('blur',()=>{composerDown=null;hideOffer();});
-  async function exportData() {try{const all=await chrome.storage.local.get(null),data=Object.fromEntries(Object.entries(all).filter(([k])=>k.startsWith(PREFIX)||k===PREF||k===LASER_PREF||k===AUTO_PREF));const blob=new Blob([JSON.stringify({format:'question-basket-backup',version:3,data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='question-basket-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{tell('기록을 백업하지 못했습니다.',true);}}
-  async function importData(file) {if(!file)return;try{if(file.size>20*1024*1024)throw Error();const backup=JSON.parse(await file.text());if(backup.format!=='question-basket-backup'||!backup.data)throw Error();const existing=await chrome.storage.local.get(null),incoming={};for(const[k,n]of Object.entries(backup.data))if(k.startsWith(PREFIX)&&validNote(n)&&k===storageKey(n)&&!existing[k])incoming[k]=n;await chrome.storage.local.set(incoming);await load();tell(Object.keys(incoming).length+'개 기록을 가져왔습니다. 기존 기록은 유지됩니다.');}catch{tell('올바른 질문 바구니 백업 파일인지 확인해 주세요.',true);}finally{$('import-file').value='';}}
+  async function exportData() {try{const all=await chrome.storage.local.get(null),data=Object.fromEntries(Object.entries(all).filter(([k])=>k.startsWith(PREFIX)||k.startsWith(CHOICE_PREFIX)||k===PREF||k===LASER_PREF||k===AUTO_PREF));const blob=new Blob([JSON.stringify({format:'question-basket-backup',version:3,data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='question-basket-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{tell('기록을 백업하지 못했습니다.',true);}}
+  async function importData(file) {if(!file)return;try{if(file.size>20*1024*1024)throw Error();const backup=JSON.parse(await file.text());if(backup.format!=='question-basket-backup'||!backup.data)throw Error();const existing=await chrome.storage.local.get(null),incoming={};for(const[k,n]of Object.entries(backup.data))if(k.startsWith(PREFIX)&&validNote(n)&&k===storageKey(n)&&!existing[k])incoming[k]=n;for(const n of Object.values({...incoming}))if(validNote(n)&&typeof backup.data[choiceKey(n)]==='boolean'&&existing[choiceKey(n)]===undefined)incoming[choiceKey(n)]=backup.data[choiceKey(n)];const count=Object.keys(incoming).filter(k=>k.startsWith(PREFIX)).length;await chrome.storage.local.set(incoming);await load();tell(count+'개 기록을 가져왔습니다. 기존 기록은 유지됩니다.');}catch{tell('올바른 질문 바구니 백업 파일인지 확인해 주세요.',true);}finally{$('import-file').value='';}}
   let manualSelection=null;
   $('reading-mode').onclick=$('mode-compact').onclick=()=>setReadingMode(!readingMode);
   $('use-selection').addEventListener('pointerdown',e=>{if(!readingMode)return;e.preventDefault();manualSelection=readSelection(true);});
   $('use-selection').onclick=()=>{if(!readingMode)return;const candidate=manualSelection||readSelection(true);manualSelection=null;if(candidate)startSelection(candidate);else tell('먼저 답변의 원문을 드래그해 주세요. 질문은 원문 아래 말풍선에서 작성합니다.',true);};
-  $('selection-diagnostic').onclick=async()=>{const text=JSON.stringify(selectionDiagnostic||{version:chrome.runtime.getManifest().version,reason:'no-failed-selection',readingMode},null,2);try{await navigator.clipboard.writeText(text);tell('본문 내용 없이 선택 인식 진단을 복사했습니다.');}catch{$('diagnostic-output').hidden=false;$('diagnostic-output').value=text;$('diagnostic-output').focus();$('diagnostic-output').select();tell('진단 내용을 Ctrl+C로 복사해 주세요.');}};
   $('auto-insert').onchange=()=>{autoPreferenceChosen=true;autoInsert=$('auto-insert').checked;if(!autoInsert)hideOffer();chrome.storage.local.set({[AUTO_PREF]:autoInsert}).catch(()=>tell('입력 안내 설정을 저장하지 못했습니다.',true));};
-  $('quick-insert').onclick=()=>insertSaved(false);$('quick-copy').onclick=()=>{checkRoute();if(notes.length)copy(buildPrompt());};
+  $('select-all').onclick=()=>choosePrompt(notes,true);$('deselect-all').onclick=()=>choosePrompt(notes,false);
+  $('quick-insert').onclick=()=>insertSaved(false);$('quick-copy').onclick=()=>{checkRoute();if(selectedEntries().length)copy(buildPrompt());};
   $('launcher').onclick=open;$('close').onclick=collapse;$('generate').onclick=preview;$('preview-close').onclick=()=>{$('preview').hidden=true;};$('insert').onclick=insert;$('copy').onclick=()=>copy();$('export').onclick=exportData;$('import').onclick=()=>$('import-file').click();$('import-file').onchange=e=>importData(e.target.files[0]);
   $('legacy').onclick=()=>{legacyReview=!legacyReview;notes=[];$('preview').hidden=true;$('status').textContent=legacyReview?'이전 버전의 주소별 기록입니다.':'현재 대화의 질문을 표시합니다.';refresh();load();};
   $('clear').onclick=async()=>{
@@ -648,7 +677,7 @@
   // Capture the Range synchronously before focus/selection changes.
   window.addEventListener('pointerup',e=>{const started=pointerStart;pointerStart=null;if(!readingMode||!started||ownEvent(e)||!$('preview').hidden)return;recoverDrag(started,e.clientX,e.clientY);offerSelection(readSelection(false));},true);
   document.addEventListener('keyup',e=>{if(readingMode&&e.key==='Shift'&&!ownEvent(e)&&!editable(e.target)&&$('preview').hidden)offerSelection(readSelection(false));},true);
-  chrome.storage.onChanged.addListener((changes,area)=>{if(area!=='local')return;if(typeof changes[AUTO_PREF]?.newValue==='boolean'){autoInsert=changes[AUTO_PREF].newValue;$('auto-insert').checked=autoInsert;if(!autoInsert)hideOffer();}if(COLORS[changes[PREF]?.newValue?.lastColor]){lastColor=changes[PREF].newValue.lastColor;showActiveColor();}if(Object.keys(changes).some(k=>k.startsWith(PREFIX)))load();});
+  chrome.storage.onChanged.addListener((changes,area)=>{if(area!=='local')return;if(typeof changes[AUTO_PREF]?.newValue==='boolean'){autoInsert=changes[AUTO_PREF].newValue;$('auto-insert').checked=autoInsert;if(!autoInsert)hideOffer();}if(COLORS[changes[PREF]?.newValue?.lastColor]){lastColor=changes[PREF].newValue.lastColor;showActiveColor();}let membershipChanged=false;for(const[k,change]of Object.entries(changes))if(k.startsWith(CHOICE_PREFIX)&&!pendingChoices.has(k)){const before=promptChoices.get(k)!==false;rememberChoice(k,change.newValue);if(before!==(promptChoices.get(k)!==false)&&notes.some(n=>choiceKey(n)===k))membershipChanged=true;}if(membershipChanged){hideOffer();$('preview').hidden=true;refreshPromptSelection();}if(Object.keys(changes).some(k=>k.startsWith(PREFIX)))load();});
   function checkRoute(){const next=pageKey();if(next===scope)return;hideSelectionOffer();hideOffer();scope=next;legacyReview=false;notes=[];ranges.clear();pointerStart=null;$('preview').hidden=true;refresh();load();}
   // ChatGPT navigates without reload. Drafts retain their original scope until you return.
   routeTimer=setInterval(checkRoute,350);window.addEventListener('popstate',checkRoute);

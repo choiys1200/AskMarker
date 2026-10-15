@@ -45,9 +45,9 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
      await p.locator('#structure-change').evaluate(el=>el.remove());await p.locator('[data-qb-inline]').waitFor();
     }
     await drag('user');assert.equal(await draft().count(),0);
-    await ext.locator('#launcher').click();await ext.locator('#selection-diagnostic').click();const diagnostic=await p.evaluate(()=>navigator.clipboard.readText());assert.ok(!diagnostic.includes('사용자가 쓴'));assert.ok(!diagnostic.includes('https://'));assert.equal(JSON.parse(diagnostic).version,'0.6.3');
+    await ext.locator('#launcher').click();assert.equal(await ext.locator('#selection-diagnostic').count(),0);assert.equal(await ext.locator('#diagnostic-output').count(),0);
     await p.locator('#first').evaluate(el=>el.firstChild.textContent='원문 변경: '+el.firstChild.textContent);await p.waitForFunction(()=>document.querySelectorAll('[data-qb-inline]').length===0);assert.equal(await ext.locator('#count').textContent(),'1');
-    results.push({version,name,result:'PASS',realMouseCancelCycles:10,syntheticElementBoundary:true,saveReload:true,userRejected:true,changedSourceRetained:true,diagnosticContainsNoText:true});console.log('PASS',name);
+    results.push({version,name,result:'PASS',realMouseCancelCycles:10,syntheticElementBoundary:true,saveReload:true,userRejected:true,changedSourceRetained:true,diagnosticUiRemoved:true});console.log('PASS',name);
    }
    if(!baseline){
     // Selection crosses a user message, two answers, or sidebar content: never use main as a fallback.
@@ -64,5 +64,5 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   }finally{await ctx.close();}
  }
  if(process.env.QA_BASELINE)await run(path.resolve(process.env.QA_BASELINE),true);await run(root);
- fs.writeFileSync(path.join(out,'selection-results.json'),JSON.stringify({environment:'Real MV3 extension + synthetic DOM compatibility fixtures. Company PC and live installed 0.6.3 NOT tested.',results},null,2));
+ fs.writeFileSync(path.join(out,'selection-results.json'),JSON.stringify({environment:'Real MV3 extension + synthetic DOM compatibility fixtures. Company PC and live installed 0.6.4 NOT tested.',results},null,2));
 })().catch(e=>{console.error(e);process.exitCode=1;});

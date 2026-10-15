@@ -1,0 +1,82 @@
+{
+  "version": "0.6.4",
+  "completedAtUtc": "2026-10-15T09:00:53.767199+00:00",
+  "sourceSha256": "7730c1e50491796b749d684c53160ff445c2b4b92a7cb728c6684d912f702b63",
+  "environment": "Isolated Chromium with real unpacked MV3 extension on synthetic HTML; two suites use mocked chrome.storage. NOT live ChatGPT or company PC.",
+  "suiteCount": 12,
+  "passed": true,
+  "suites": [
+    {
+      "name": "automation-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "automation-test.json"
+    },
+    {
+      "name": "bubble-flow-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "bubble-flow-test.json"
+    },
+    {
+      "name": "edge-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "edge-test.json"
+    },
+    {
+      "name": "extension-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "extension-test.json"
+    },
+    {
+      "name": "interaction-test",
+      "status": "PASS",
+      "kind": "mocked storage with browser DOM",
+      "evidence": "interaction-test.json"
+    },
+    {
+      "name": "mock-test",
+      "status": "PASS",
+      "kind": "mocked storage with browser DOM",
+      "evidence": "mock-test.json"
+    },
+    {
+      "name": "modern-chatgpt-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "modern-chatgpt-test.json"
+    },
+    {
+      "name": "prompt-selection-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "prompt-selection-test.json"
+    },
+    {
+      "name": "reading-mode-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "reading-mode-test.json"
+    },
+    {
+      "name": "root-host-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "root-host-test.json"
+    },
+    {
+      "name": "selection-action-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "selection-action-test.json"
+    },
+    {
+      "name": "selection-compatibility-test",
+      "status": "PASS",
+      "kind": "real unpacked MV3 with controlled HTML",
+      "evidence": "selection-compatibility-test.json"
+    }
+  ]
+}

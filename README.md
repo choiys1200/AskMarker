@@ -18,8 +18,9 @@ Read a long ChatGPT answer, select a passage, and click **질문 추가** (Add q
 - Compact 12px color dots in each question card, with a selection ring, checkmark and color-name tooltip.
 - Eight colors selected from the right panel; the pointer follows the active question color.
 - Exact quote/question pairing, editing, deletion, and local backup/import.
-- An editable follow-up prompt; copy it or append it to ChatGPT's existing input.
-- Optional confirmation beside your pointer when clicking ChatGPT's input. Confirm to append saved pairs with duplicate protection. Askmark never submits the message.
+- A checkbox before each question title chooses whether to include it in the next prompt. Select or deselect all in one click. Unchecking keeps the record and annotations.
+- An editable follow-up prompt containing only checked questions; copy it or append it to ChatGPT's existing input.
+- Optional confirmation beside your pointer when clicking ChatGPT's input. Confirm to append checked pairs with duplicate protection. Askmark never submits the message.
 - No AI API key, server, or separate account.
 
 ## Supported sites
@@ -34,20 +35,22 @@ The current composer integration specifically targets ChatGPT. Other providers n
 
 ## Install
 
-1. Download and extract [Askmark v0.6.3](releases/askmark-v0.6.3.zip), or download this repository.
+[Install ZIP](releases/askmark-v0.6.4.zip) · [Complete source ZIP](releases/askmark-v0.6.4-source.zip)
+
+1. Download and extract [Askmark v0.6.4](releases/askmark-v0.6.4.zip), or download this repository.
 2. Open `chrome://extensions` and enable Developer mode.
 3. Choose **Load unpacked** and select the directory containing `manifest.json`.
 4. Refresh the ChatGPT tab. Open Askmark and enable reading mode.
 
 ### Update from Question Basket
 
-Keep the existing installation directory and extension installed. Back up your notes, then replace `manifest.json`, `content.js`, and `background.js` in that same directory. Reload the extension **and** refresh the ChatGPT tab. Confirm v0.6.3 in the panel. Existing `qb:note:` records and backup format are preserved.
+Keep the existing installation directory and extension installed. Back up your notes, then replace `manifest.json`, `content.js`, and `background.js` in that same directory. Reload the extension **and** refresh the ChatGPT tab. Confirm v0.6.4 in the panel. Existing `qb:note:` records and backup format are preserved.
 
 ## Use
 
 1. Enable reading mode and drag over an answer passage. Continue reading freely, or click the small **질문 추가** button.
 2. After clicking Add question, type in the bubble beneath the passage and save. Repeat while reading.
-3. Save or cancel unfinished drafts, then click the ChatGPT input. Choose **모아서 입력** in the confirmation beside your pointer, or use the right-hand append/copy buttons.
+3. Check only the questions you want in the next prompt. Save or cancel unfinished drafts, then click the ChatGPT input. Choose **모아서 입력** in the confirmation beside your pointer, or use the right-hand append/copy buttons.
 4. Review the prompt and send it yourself.
 
 Turning reading mode off hides source annotations, not saved records. Unsaved drafts survive mode changes in the current tab but not a reload or tab close. If exact source identity cannot be confirmed, the note stays in the right-hand list without being attached to another sentence.
@@ -56,11 +59,11 @@ The selection button follows the passage during scrolling. Clicking elsewhere, p
 
 ![Small Add question button after a reading selection](docs/images/selection-button.png)
 
-If selection is rejected, **선택 인식 진단 복사** copies structural diagnostics without selected text, questions, message-ID values, or conversation URLs.
+Question checkboxes control prompt membership, independently of the active color/editor. New and older questions start checked; choices persist locally across refreshes and are included in backups. Uncheck old questions before the next prompt, or use **선택 해제** (Deselect all). Recheck a question to reuse it. The selection diagnostic copy button has been removed from the interface.
 
-The right-hand **입력창 클릭 시 모아 입력할지 묻기** checkbox controls the click confirmation independently of reading mode. Clearing the input allows you to add the saved pairs again after confirmation. Pairs already present in the current input are skipped. Both the legacy `#prompt-textarea` and current ID-less `data-composer-markdown` editor are recognized. A paragraph in a horizontal/grid layout keeps its question bubble below its text, rather than in another layout column.
+The right-hand **입력창 클릭 시 모아 입력할지 묻기** checkbox controls the click confirmation independently of reading mode. Clearing the input allows you to add the checked pairs again after confirmation. Pairs already present in the current input are skipped. Both the legacy `#prompt-textarea` and current ID-less `data-composer-markdown` editor are recognized. A paragraph in a horizontal/grid layout keeps its question bubble below its text, rather than in another layout column.
 
-![Input confirmation on a synthetic test page, captured in v0.6.3](docs/images/composer-offer.png)
+![Input confirmation on a synthetic test page, captured in v0.6.4](docs/images/composer-offer.png)
 
 The generated prompt contains numbered quotes and your questions. The old instruction to ignore instructions inside quotes has been removed; the source quote and your question remain verbatim.
 
@@ -90,9 +93,9 @@ To produce the install ZIP with Python 3:
 python scripts/package.py
 ```
 
-## Release 0.6.3
+## Release 0.6.4
 
-Renamed to **Askmark**. The small Add question button, compact per-question color dots, click-to-confirm composer insertion, stored-note format and permissions are preserved.
+Added **[ ] 질문 N** checkboxes for prompt inclusion, with select/deselect all and locally persisted choices. Preview, copy, manual append, and input-click confirmation all use only checked questions. Unchecking never deletes notes or annotations. Removed the selection diagnostic copy UI; stored-note format and permissions remain unchanged.
 
 ## Project status
 
