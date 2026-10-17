@@ -1,0 +1,13 @@
+{
+  "version": "0.7.5",
+  "environment": "Actual MV3 extension in isolated Chromium with synthetic HTML; not live ChatGPT",
+  "checks": [
+    "Expanded/collapsed controls share styles and labels; reading mode remains independent and available",
+    "Four fonts and opacity affect only presentation; draft, source anchors, notes, highlights, choices and code font survive",
+    "Appearance persists on reload and synchronizes across tabs independently of note data",
+    "Copy/failure retain choices; verified append clears all consumed choices, persists on reload and never removes notes",
+    "Next round includes only new questions; explicit reselection and edited preview both clear on successful insertion",
+    "Light/dark and compact screenshots; short-window controls remain reachable; no runtime errors"
+  ],
+  "errors": []
+}
