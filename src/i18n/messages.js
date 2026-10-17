@@ -2,6 +2,12 @@
 // Korean source messages are stable keys. Only product-owned labels belong here;
 // quote/question text and edited prompt values never pass through this catalog.
 const EN={
+  '이 대화 백업':'Back up this chat',
+  'AI 서비스·대화 제목·날짜가 담긴 파일로 현재 대화를 백업합니다':'Back up this chat with its AI service, title and date in the filename',
+  '모든 대화의 질문을 서비스·제목 목록과 함께 한 파일로 백업합니다':'Back up all questions in one file with a list of AI services and conversation titles',
+  '전체 기록 · {count}개 대화':'All records · {count} conversations',
+  '전체 백업':'Full backup',
+  '제목 미확인':'Title unavailable',
   '언어':'Language',
   '선택한 원문에 질문을 남깁니다':'Ask a question about the selected text',
   '질문 추가':'Add question',

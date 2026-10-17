@@ -63,6 +63,6 @@ const {createLanguage}=require('../src/ui/language');
   check('English toolbar title, 160% narrow-panel layout, dark/light UI and restored saved annotations');
   draft=await drag('third');await draft.getByRole('button',{name:'Save question',exact:true}).click();assert.equal(await ext.locator('#status').textContent(),'Enter a question before saving.');await lang.selectOption('ko');assert.equal(await ext.locator('#status').textContent(),'질문을 입력한 뒤 저장해 주세요.');await draft.getByRole('button',{name:'취소',exact:true}).click();
   check('Validation status and toast translate, including the last displayed message after a locale change');
-  assert.deepEqual(errors,[]);fs.writeFileSync(path.join(out,'language-results.json'),JSON.stringify({version:'0.9.0',environment:'Node language contracts + actual MV3 in isolated Chromium with synthetic ChatGPT HTML, real mouse gestures and real extension storage; test-only ChatGPT host grant for script reinjection. Not actual toolbar click, live AI service or user Chrome.',checks,errors},null,2));
+  assert.deepEqual(errors,[]);fs.writeFileSync(path.join(out,'language-results.json'),JSON.stringify({version:'0.9.1',environment:'Node language contracts + actual MV3 in isolated Chromium with synthetic ChatGPT HTML, real mouse gestures and real extension storage; test-only ChatGPT host grant for script reinjection. Not actual toolbar click, live AI service or user Chrome.',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

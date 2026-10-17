@@ -2,6 +2,7 @@
 const {COLORS,COLOR_ORDER,DEFAULT_COLOR,rgbOf,colorOf}=require('./domain/colors');
 const {PREFIX,PREF,LASER_PREF,AUTO_PREF,CHOICE_PREFIX,storageKey,choiceKey,validNote}=require('./domain/notes');
 const {formatPrompt,normalized,containsPair}=require('./domain/prompt');
+const {createBackup,conversationKey}=require('./domain/backup');
 const {LANGUAGE_KEY}=require('./i18n/index');
 const {createLanguage}=require('./ui/language');
 const {COMPOSER_SELECTOR,MESSAGE_ATTRS}=require('./platform/selectors');
@@ -315,6 +316,7 @@ function start(){
     if(!list.some(n=>n.id===activeId))activeId=null;showActiveColor();
     $('auto-insert').checked=autoInsert;refreshPromptSelection();
     $('count').textContent=String(notes.length);$('small-count').textContent=String(notes.length);$('empty').hidden=!!notes.length||!!activeSessions().length;$('clear').disabled=!notes.length;
+    $('export-current').disabled=!notes.length;
     $('legacy').hidden=!hasLegacy&&!legacyReview;$('legacy').textContent=t(legacyReview?'현재 대화로 돌아가기':'이전 주소 기록 보기');
     if(legacyReview)$('status').textContent=t('이전 버전의 주소별 기록입니다. 현재 대화에 자동으로 연결하지 않습니다.');
     queueSelectionPosition();
@@ -427,7 +429,20 @@ function start(){
   window.addEventListener('touchmove',hideOffer,{capture:true,passive:true});
   window.addEventListener('resize',hideOffer);
   window.addEventListener('blur',()=>{composerDown=null;hideOffer();});
-  async function exportData() {try{const all=await chrome.storage.local.get(null),data=Object.fromEntries(Object.entries(all).filter(([k])=>k.startsWith(PREFIX)||k.startsWith(CHOICE_PREFIX)||k===PREF||k===LASER_PREF||k===AUTO_PREF||k===FONT_KEY||k===OPACITY_KEY||k===LANGUAGE_KEY));const blob=new Blob([JSON.stringify({format:'question-basket-backup',version:3,data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='askmarker-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{tell('기록을 백업하지 못했습니다.',true);}}
+  async function exportData(kind='all') {
+    checkRoute();
+    if(kind==='conversation'&&!notes.length)return;
+    // Snapshot page identity before the asynchronous storage read. A later SPA
+    // navigation must never give old questions the next conversation's title.
+    const key=viewKey(),scopes=new Set(notes.map(n=>n.scope));
+    const current={scope:key,title:legacyReview?'':document.title,url:legacyReview?'':location.href,includes:s=>scopes.has(s)||conversationKey(s)===conversationKey(key)};
+    try{
+      const all=await chrome.storage.local.get(null);
+      const {filename,backup}=createBackup(all,{kind,current,language:language.current(),extensionVersion:VERSION});
+      const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }catch{tell('기록을 백업하지 못했습니다.',true);}
+  }
   async function importData(file) {if(!file)return;try{if(file.size>20*1024*1024)throw Error();const backup=JSON.parse(await file.text());if(backup.format!=='question-basket-backup'||!backup.data)throw Error();const existing=await chrome.storage.local.get(null),incoming={};for(const[k,n]of Object.entries(backup.data))if(k.startsWith(PREFIX)&&validNote(n)&&k===storageKey(n)&&!existing[k])incoming[k]=n;for(const n of Object.values({...incoming}))if(validNote(n)&&typeof backup.data[choiceKey(n)]==='boolean'&&existing[choiceKey(n)]===undefined)incoming[choiceKey(n)]=backup.data[choiceKey(n)];const count=Object.keys(incoming).filter(k=>k.startsWith(PREFIX)).length;await chrome.storage.local.set(incoming);await load();tell('{count}개 기록을 가져왔습니다. 기존 기록은 유지됩니다.',false,{count});}catch{tell('올바른 AskMarker 백업 파일인지 확인해 주세요.',true);}finally{$('import-file').value='';}}
   let manualSelection=null;
   $('reading-mode').onclick=$('mode-compact').onclick=()=>setReadingMode(!readingMode);
@@ -437,7 +452,7 @@ function start(){
   $('select-all').onclick=()=>choosePrompt(notes,true);$('deselect-all').onclick=()=>choosePrompt(notes,false);
   $('quick-insert').onclick=()=>insertSaved(false);$('quick-copy').onclick=()=>{checkRoute();if(selectedEntries().length)copy(buildPrompt(),selectedEntries());};
   $('hide-menu').onclick=()=>{hideSelectionOffer();hideOffer();$('preview').hidden=true;$('toast').hidden=true;panel.hide();};
-  $('launcher').onclick=open;$('close').onclick=collapse;$('generate').onclick=preview;$('preview-close').onclick=()=>{$('preview').hidden=true;};$('insert').onclick=insert;$('copy').onclick=()=>copy();$('export').onclick=exportData;$('import').onclick=()=>$('import-file').click();$('import-file').onchange=e=>importData(e.target.files[0]);
+  $('launcher').onclick=open;$('close').onclick=collapse;$('generate').onclick=preview;$('preview-close').onclick=()=>{$('preview').hidden=true;};$('insert').onclick=insert;$('copy').onclick=()=>copy();$('export').onclick=()=>exportData('all');$('export-current').onclick=()=>exportData('conversation');$('import').onclick=()=>$('import-file').click();$('import-file').onchange=e=>importData(e.target.files[0]);
   $('legacy').onclick=()=>{legacyReview=!legacyReview;notes=[];$('preview').hidden=true;$('status').textContent=t(legacyReview?'이전 버전의 주소별 기록입니다.':'현재 대화의 질문을 표시합니다.');refresh();load();};
   $('clear').onclick=async()=>{
     if(activeSessions().some(s=>s.saving)){tell('저장이 끝난 뒤 다시 시도해 주세요.');return;}

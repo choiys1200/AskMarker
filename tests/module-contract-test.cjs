@@ -27,6 +27,10 @@ const {choiceKey}=require('../src/domain/notes');
   assert.ok(!/qb:note:|qb:prompt-choice:/.test(code),name);
  }
  checks.push('Appearance/panel dependency contract forbids core note, choice, source and composer access');
+ const backupCode=fs.readFileSync(path.join(root,'domain/backup.js'),'utf8');
+ assert.ok(!/\b(?:document|window|chrome|localStorage|fetch)\b/.test(backupCode));
+ assert.ok(!/require\([^)]*\/(?:ui\/|(?:app|source|composer)(?:\.js)?['"])/.test(backupCode));
+ checks.push('Backup naming and grouping are pure projections without DOM, network or storage mutation');
  if(out){fs.mkdirSync(out,{recursive:true});fs.writeFileSync(path.join(out,'module-contract-results.json'),JSON.stringify({environment:'Node unit/architecture tests; no browser',checks},null,2));}
  console.log(checks);
 })().catch(e=>{console.error(e);process.exitCode=1;});
