@@ -3,7 +3,7 @@ const {FONTS,FONT_KEY,OPACITY_KEY,SIZE_KEY,fontOf,opacityOf,sizeOf}=require('../
 const {ANSWER_SELECTORS,WRITING_BOX}=require('../platform/selectors');
 // Presentation-only dependency boundary: no notes, choices, drafts or anchor APIs.
 // Settings mutate CSS and their own keys, never call the annotation renderer.
-function createAppearance({host,$,storage,enqueue,tell}){
+function createAppearance({host,$,storage,enqueue,tell,t}){
   let font='system',opacity=60,size=sizeOf(),revision=0,reading=false;
   const changed=new Map(),pending=new Set();
   const style=document.createElement('style');style.dataset.qbAppearance='';
@@ -26,7 +26,7 @@ function createAppearance({host,$,storage,enqueue,tell}){
     host.style.setProperty('--askmark-font',FONTS[font].family);
     $('font-family').value=font;$('laser-opacity').value=String(opacity);
     $('laser-opacity-value').textContent=opacity+'%';
-    $('laser-opacity').setAttribute('aria-valuetext',opacity+'% 진하기');
+    $('laser-opacity').setAttribute('aria-valuetext',t('{value}% 진하기',{value:opacity}));
     $('laser').style.opacity=String(opacity/100);
     const scale=size.mode==='custom'?size.scale/100:size.mode==='system'?parseFloat(getComputedStyle(probe).fontSize)/14:1;
     document.documentElement.style.setProperty('--askmark-ui-scale',String(scale));
@@ -67,6 +67,6 @@ function createAppearance({host,$,storage,enqueue,tell}){
     apply();
   }
   apply();
-  return {revision:()=>revision,hydrate,applyChanges,setReadingMode:value=>{reading=value;apply();}};
+  return {render:apply,revision:()=>revision,hydrate,applyChanges,setReadingMode:value=>{reading=value;apply();}};
 }
 module.exports={createAppearance};

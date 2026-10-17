@@ -4,7 +4,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  const root=path.resolve(__dirname,'..'),out=path.resolve(process.env.QA_OUTPUT||'work/selection-action');fs.mkdirSync(out,{recursive:true});
  const ctx=await chromium.launchPersistentContext(fs.mkdtempSync(path.join(out,'profile-')),{headless:true,executablePath:process.env.QA_BROWSER,viewport:{width:1560,height:1100},args:[`--disable-extensions-except=${root}`,`--load-extension=${root}`]});const checks=[],errors=[],check=s=>{checks.push(s);console.log('PASS',s);};
  try{
-  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.8.1');
+  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.9.0');
   let html=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8').replace('<article data-message-id="answer-one" data-message-author-role="assistant">','<article data-dil-source-message-id="answer-one"><div data-markdown-text-style="assistant-message">').replace('</article>','</div></article>');
   await ctx.route('https://chatgpt.com/**',r=>r.fulfill({contentType:'text/html',body:html}));const p=ctx.pages()[0];p.on('pageerror',e=>errors.push(e.message));const cdp=await ctx.newCDPSession(p);cdp.on('Runtime.exceptionThrown',e=>errors.push(e.exceptionDetails.exception?.description||e.exceptionDetails.text));await cdp.send('Runtime.enable');await p.goto('https://chatgpt.com/c/selection-action');
   const ext=p.locator('#question-basket-extension'),button=ext.locator('#selection-add'),drafts=()=>p.locator('[data-qb-inline^="draft-"]');
@@ -45,6 +45,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   check('Scroll/resize position follows selection; clipped or changed source never leaves a detached action button');
   await p.reload();await count(2);await ext.locator('#mode-compact').click();await drag('third');await button.focus();await button.press('Enter');await drafts().waitFor();await drafts().getByRole('textbox').fill('버튼을 눌러 연 입력창');await p.evaluate(()=>scrollTo(0,0));await p.screenshot({path:path.join(out,'after-question-add.png'),fullPage:true});await drafts().getByRole('button',{name:'취소',exact:true}).click();
   await drag('third');await p.evaluate(()=>history.pushState({},'', '/c/other-selection-action'));await count(0);assert.equal(await button.isVisible(),false);assert.equal(await drafts().count(),0);assert.deepEqual(errors,[]);check('Keyboard activation works; navigation clears only pending intent; no runtime errors');
-  fs.writeFileSync(path.join(out,'selection-action-results.json'),JSON.stringify({version:'0.8.1',environment:'Real unpacked MV3 in Chromium; controlled HTML; NOT live ChatGPT',checks,errors},null,2));
+  fs.writeFileSync(path.join(out,'selection-action-results.json'),JSON.stringify({version:'0.9.0',environment:'Real unpacked MV3 in Chromium; controlled HTML; NOT live ChatGPT',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

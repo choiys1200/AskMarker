@@ -1,6 +1,6 @@
 'use strict';
 // Panel visibility and reading mode are independent controls with shared styling.
-function createPanel($){
+function createPanel($,t){
   let hiddenByUser=false;
   function open(){
     if(hiddenByUser)return;
@@ -22,7 +22,7 @@ function createPanel($){
   }
   function showReadingMode(enabled){
     for(const id of ['reading-mode','mode-compact']){
-      $(id).textContent='읽기 모드 '+(enabled?'ON':'OFF');
+      $(id).textContent=t('읽기 모드 {state}',{state:enabled?'ON':'OFF'});
       $(id).setAttribute('aria-pressed',String(enabled));
     }
   }

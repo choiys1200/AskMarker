@@ -1,7 +1,9 @@
 'use strict';
 const {COLORS,COLOR_ORDER,DEFAULT_COLOR,rgbOf,colorOf}=require('./domain/colors');
 const {PREFIX,PREF,LASER_PREF,AUTO_PREF,CHOICE_PREFIX,storageKey,choiceKey,validNote}=require('./domain/notes');
-const {formatPrompt,normalized}=require('./domain/prompt');
+const {formatPrompt,normalized,containsPair}=require('./domain/prompt');
+const {LANGUAGE_KEY}=require('./i18n/index');
+const {createLanguage}=require('./ui/language');
 const {COMPOSER_SELECTOR,MESSAGE_ATTRS}=require('./platform/selectors');
 const {createSourceAdapter}=require('./platform/source');
 const {createComposerAdapter}=require('./platform/composer');
@@ -52,13 +54,15 @@ function start(){
   }
   const sessions = new Map(), bubbles = new Map(), panelCards = new Map(), ranges = new Map();
   const {host,shadow,$}=mountShell(VERSION);
+  const language=createLanguage({host,$,storage:chrome.storage.local,enqueue,tell,onChange:renderLanguage}),t=language.t;
   function activeColor() {return sessions.get(activeId)?.color||colorOf(notes.find(n=>n.id===activeId)||{color:lastColor});}
   function showActiveColor() {
     const color=activeColor(),n=notes.find(n=>n.id===activeId),draft=sessions.get(activeId);
     $('laser').style.setProperty('--laser-rgb',rgbOf(color));
     $('color-palette').querySelectorAll('button').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.color===color));b.disabled=!!draft?.saving;});
-    $('color-target').textContent=(n?'질문 '+(notes.indexOf(n)+1):draft?'작성 중인 질문':'다음 질문')+' · 박스와 포인터 색상';
-    $('active-color-name').textContent=COLORS[color][0];
+    $('color-target').textContent=t('{target} · 박스와 포인터 색상',{target:n?t('질문 {number}',{number:notes.indexOf(n)+1}):t(draft?'작성 중인 질문':'다음 질문')});
+    $('active-color-name').textContent=t(COLORS[color][0]);
+    $('color-palette').querySelectorAll('[data-color]').forEach(b=>{b.title=t(COLORS[b.dataset.color][0]);b.setAttribute('aria-label',b.title);});
     for(const [id,rec]of panelCards)rec.card.dataset.active=String(id===activeId);
   }
   function activate(id) {activeId=id;showActiveColor();}
@@ -72,11 +76,12 @@ function start(){
   const highlightStyle = document.createElement('style');
   highlightStyle.textContent = Object.entries(COLORS).map(([key,v]) => `::highlight(qb-${key}){background-color:${v[2]};}`).join('')+'[data-qb-flow-block]:has(> [data-qb-inline]){display:block!important}[data-qb-flow-block]:is(li):has(> [data-qb-inline]){display:list-item!important}';
   document.documentElement.append(highlightStyle);
-  let toastTimer;
-  function tell(text, error=false) { $('status').textContent=text; $('status').classList.toggle('error',error); $('toast').textContent=text; $('toast').hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>{$('toast').hidden=true;},4500); }
-  const panel=createPanel($),{open,collapse}=panel;
-  const appearance=createAppearance({host,$,storage:chrome.storage.local,enqueue,tell});
+  let toastTimer,statusMessage={key:'아직 저장한 질문이 없습니다. 원문을 드래그하고 질문을 저장해 주세요.',params:{}};
+  function tell(key, error=false, params={}) { statusMessage={key,params}; const text=t(key,params); $('status').textContent=text; $('status').classList.toggle('error',error); $('toast').textContent=text; $('toast').hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>{$('toast').hidden=true;},4500); }
+  const panel=createPanel($,t),{open,collapse}=panel;
+  const appearance=createAppearance({host,$,storage:chrome.storage.local,enqueue,tell,t});
   const dock=createDock({$,storage:chrome.storage.local,enqueue,tell});
+  language.bind(shadow);
   globalThis[FLAG]={open:panel.fromToolbar};
   // Mode changes presentation only. Sessions own their text/source independently.
   function setReadingMode(enabled) {
@@ -169,13 +174,14 @@ function start(){
   window.addEventListener('resize',queueSelectionPosition);
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&selectionOffer){e.preventDefault();hideSelectionOffer();}},true);
   async function load() {
-    const serial=++loadSerial,key=viewKey(),readRevision=choices.revision(),appearanceRevision=appearance.revision(),dockRevision=dock.revision();
+    const serial=++loadSerial,key=viewKey(),readRevision=choices.revision(),appearanceRevision=appearance.revision(),dockRevision=dock.revision(),languageRevision=language.revision();
     try {
       const data=await chrome.storage.local.get(null);
       if(serial!==loadSerial||key!==viewKey())return;
       choices.hydrate(data,readRevision);
       appearance.hydrate(data,appearanceRevision);
       dock.hydrate(data,dockRevision);
+      language.hydrate(data,languageRevision);
       if(!initialized){lastColor=COLORS[data[PREF]?.lastColor]?data[PREF].lastColor:COLORS[data[LASER_PREF]]?data[LASER_PREF]:DEFAULT_COLOR;if(!autoPreferenceChosen)autoInsert=data[AUTO_PREF]!==false;initialized=true;}
       hasLegacy=scope!==basePageKey()&&Object.entries(data).some(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&n.scope===basePageKey());
       notes=Object.entries(data).filter(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&sameConversation(n.scope,key)).map(([,n])=>n).sort((a,b)=>(a.created||0)-(b.created||0)||a.id.localeCompare(b.id));
@@ -186,10 +192,11 @@ function start(){
     const count=selectedEntries().length;
     for(const n of notes){const input=panelCards.get(n.id)?.card.querySelector('.prompt-include');if(input)input.checked=included(n);}
     $('selection-tools').hidden=!notes.length;
-    $('selected-count').textContent='프롬프트 '+count+' / '+notes.length+'개 선택';
+    $('selected-count').textContent=t('프롬프트 {count} / {total}개 선택',{count,total:notes.length});
     $('select-all').disabled=!notes.length||count===notes.length;$('deselect-all').disabled=!count;
     $('quick-insert').disabled=!count||legacyReview;$('quick-copy').disabled=!count;$('generate').disabled=!count;
-    $('generate').title=count?'체크한 질문 '+count+'개를 프롬프트로 만듭니다':'제목 앞 체크박스에서 질문을 선택해 주세요';
+    $('generate').title=count?t('체크한 질문 {count}개를 프롬프트로 만듭니다',{count}):t('제목 앞 체크박스에서 질문을 선택해 주세요');
+    $('generate').textContent=t('프롬프트 미리보기·수정');
   }
   const choosePrompt=(entries,value)=>choices.set(entries,value);
   function rememberColor(color) {lastColor=color;chrome.storage.local.set({[PREF]:{lastColor:color}}).catch(()=>tell('기본 색상을 저장하지 못했습니다.',true));}
@@ -241,31 +248,32 @@ function start(){
     enqueue(storageKey(n),()=>chrome.storage.local.set({[storageKey(value)]:value})).catch(()=>{tell('색상을 저장하지 못했습니다.',true);load();});
   }
   const {makeCard}=createCards({getNotes:()=>notes,getSession:id=>sessions.get(id),choosePrompt,
-    activate,cancel,save,remove,edit,jump,setColor,syncCardText});
+    activate,cancel,save,remove,edit,jump,setColor,syncCardText,language});
   function syncCardText(id) {
     const s=sessions.get(id);if(!s)return;
     for(const rec of [bubbles.get(id),panelCards.get(id)].filter(Boolean)){
       const area=rec.card.querySelector('textarea');if(area.value!==s.question)area.value=s.question;
-      rec.card.querySelector('.question').textContent=s.question||'질문 작성 중';
+      rec.card.querySelector('.question').textContent=s.question||t('질문 작성 중');
     }
   }
   function updateCard(rec,n,index,located) {
     const s=sessions.get(rec.id), editing=!!s && (s.surface===(rec.inline?'inline':'panel') || ((!located||!readingMode)&&!rec.inline));
     const c=rec.card,color=s?.color||colorOf(n);theme(rec.host);
+    language.apply(c);rec.host.lang=language.current();
     c.style.setProperty('--accent',COLORS[color][1]);
-    c.querySelector('.tag').textContent=(s&&!s.existing?'새 질문':'질문 '+index)+(s?' · 작성 중':'');
-    if(!rec.inline){const input=c.querySelector('.prompt-include');input.hidden=!index;input.checked=!!index&&included(n);input.setAttribute('aria-label','질문 '+index+' 프롬프트에 포함');}
+    c.querySelector('.tag').textContent=s?t('{title} · 작성 중',{title:s.existing?t('질문 {number}',{number:index}):t('새 질문')}):t('질문 {number}',{number:index});
+    if(!rec.inline){const input=c.querySelector('.prompt-include');input.hidden=!index;input.checked=!!index&&included(n);input.setAttribute('aria-label',t('질문 {number} 프롬프트에 포함',{number:index}));}
     c.querySelector('blockquote').textContent=n.quote;
     c.querySelector('.location').hidden=!!located;
-    c.querySelector('.question').textContent=s?s.question||'다른 입력란에서 작성 중입니다.':n.question;
+    c.querySelector('.question').textContent=s?s.question||t('다른 입력란에서 작성 중입니다.'):n.question;
     c.querySelector('.question').hidden=editing;
     c.querySelector('.editor').hidden=!editing;
     c.querySelector('.actions').hidden=!!s&&!s.existing || editing;
     c.querySelector('.cancel.quiet').hidden=!editing;
     c.querySelectorAll('.swatch').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.color===color));b.disabled=!!s?.saving;});
-    if(!rec.inline)c.querySelector('.color-name').textContent=COLORS[color][0];
+    if(!rec.inline){c.querySelector('.color-name').textContent=t(COLORS[color][0]);c.querySelectorAll('[data-color]').forEach(b=>{b.title=t(COLORS[b.dataset.color][0]);b.setAttribute('aria-label',b.title);});}
     const input=c.querySelector('textarea');if(s&&input.value!==s.question)input.value=s.question;
-    c.querySelector('.save').textContent=s?.saving?'저장 중…':s?.existing?'수정 저장':'질문 저장';
+    c.querySelector('.save').textContent=t(s?.saving?'저장 중…':s?.existing?'수정 저장':'질문 저장');
     c.querySelectorAll('.save,.cancel,textarea').forEach(el=>el.disabled=!!s?.saving);
   }
   function refresh() {
@@ -274,9 +282,9 @@ function start(){
     for(const el of document.querySelectorAll('[data-qb-inline]'))if(!el.shadowRoot&&bubbles.has(el.dataset.qbInline)&&bubbles.get(el.dataset.qbInline).host!==el)el.remove();
     theme(host);
     panel.showReadingMode(readingMode);
-    $('mode-hint').textContent=readingMode?'원문을 드래그한 뒤 질문 추가를 눌러 작성합니다.':'본문 표시만 숨겨져 있습니다. 기록과 초안은 유지됩니다.';
+    $('mode-hint').textContent=t(readingMode?'원문을 드래그한 뒤 질문 추가를 눌러 작성합니다.':'본문 표시만 숨겨져 있습니다. 기록과 초안은 유지됩니다.');
     $('use-selection').disabled=!readingMode;
-    $('empty').textContent=readingMode?'원문을 드래그하고 작은 질문 추가 버튼을 누르세요. 글 아래에서 질문을 작성할 수 있습니다.':'읽기 모드를 켜고 궁금한 원문을 드래그하세요. 저장한 기록은 모드와 관계없이 보관됩니다.';
+    $('empty').textContent=t(readingMode?'원문을 드래그하고 작은 질문 추가 버튼을 누르세요. 글 아래에서 질문을 작성할 수 있습니다.':'읽기 모드를 켜고 궁금한 원문을 드래그하세요. 저장한 기록은 모드와 관계없이 보관됩니다.');
     const list=[...notes,...activeSessions().filter(s=>!s.existing).map(s=>s.note)];
     const present=new Set(),wanted=new Set(),cursors=new Map(),highlights=Object.fromEntries(Object.keys(COLORS).map(c=>[c,[]]));
     notes.forEach((n,i)=>{
@@ -307,8 +315,8 @@ function start(){
     if(!list.some(n=>n.id===activeId))activeId=null;showActiveColor();
     $('auto-insert').checked=autoInsert;refreshPromptSelection();
     $('count').textContent=String(notes.length);$('small-count').textContent=String(notes.length);$('empty').hidden=!!notes.length||!!activeSessions().length;$('clear').disabled=!notes.length;
-    $('legacy').hidden=!hasLegacy&&!legacyReview;$('legacy').textContent=legacyReview?'현재 대화로 돌아가기':'이전 주소 기록 보기';
-    if(legacyReview)$('status').textContent='이전 버전의 주소별 기록입니다. 현재 대화에 자동으로 연결하지 않습니다.';
+    $('legacy').hidden=!hasLegacy&&!legacyReview;$('legacy').textContent=t(legacyReview?'현재 대화로 돌아가기':'이전 주소 기록 보기');
+    if(legacyReview)$('status').textContent=t('이전 버전의 주소별 기록입니다. 현재 대화에 자동으로 연결하지 않습니다.');
     queueSelectionPosition();
   }
   function jump(note) {
@@ -318,12 +326,12 @@ function start(){
     // Do not make a native selection: keyboard/mouse listeners must not create a new draft.
     bubbles.get(note.id)?.card.animate([{outline:'3px solid #68a790'},{outline:'3px solid transparent'}],{duration:1200});
   }
-  const buildPrompt=(entries=selectedEntries())=>formatPrompt(entries,notes);
+  const buildPrompt=(entries=selectedEntries())=>formatPrompt(entries,notes,language.current());
   let previewEntries=[],inserting=false;
   function preview() {checkRoute();if(!selectedEntries().length)return;hideSelectionOffer();hideOffer();previewEntries=selectedEntries().map(n=>({...n}));$('prompt').value=buildPrompt(previewEntries);$('preview').hidden=false;}
   const composer=createComposerAdapter({own,tell});
   const {usableComposer,findComposer}=composer;
-  $('insert').textContent=composer.name+' 입력창에 추가';
+  $('insert').textContent=t('{name} 입력창에 추가',{name:composer.name});
   async function appendPrompt(text,target=findComposer(),entries=selectedEntries()) {
     if(inserting)return false;
     if(pageKey()!==scope){checkRoute();tell('대화가 바뀌었습니다. 현재 대화에서 프롬프트를 다시 열어 주세요.');return false;}
@@ -343,7 +351,7 @@ function start(){
   }
   function pendingEntries(target) {
     const text=normalized(target instanceof HTMLTextAreaElement?target.value:target.innerText);
-    return selectedEntries().filter(n=>n.question.trim()&&!text.includes(normalized('- 인용 원문: '+n.quote+'\n- 내 질문: '+n.question)));
+    return selectedEntries().filter(n=>n.question.trim()&&!containsPair(text,n));
   }
   const unfinished=()=>activeSessions().some(s=>s.saving||s.existing||s.question.trim())||writes.hasPending(PREFIX);
   function insertSaved(confirmed=false,target=findComposer()) {
@@ -367,9 +375,9 @@ function start(){
     if(!autoInsert||legacyReview||!notes.length||!usableComposer(target))return;
     const entries=pendingEntries(target);if(!entries.length)return;
     composer.choose(target);offerContext={target,scope};
-    $('offer-title').textContent='선택한 질문 '+entries.length+'개를 모아서 입력할까요?';
+    $('offer-title').textContent=t('선택한 질문 {count}개를 모아서 입력할까요?',{count:entries.length});
     const busy=unfinished();
-    $('offer-hint').textContent=busy?'작성 중인 질문을 먼저 저장하거나 취소해 주세요.':'인용 원문과 내 질문을 기존 입력 뒤에 추가합니다.';
+    $('offer-hint').textContent=t(busy?'작성 중인 질문을 먼저 저장하거나 취소해 주세요.':'인용 원문과 내 질문을 기존 입력 뒤에 추가합니다.');
     $('offer-accept').disabled=busy;
     const offer=$('insert-offer');offer.style.visibility='hidden';offer.hidden=false;
     const box=offer.getBoundingClientRect(),gap=12;
@@ -419,8 +427,8 @@ function start(){
   window.addEventListener('touchmove',hideOffer,{capture:true,passive:true});
   window.addEventListener('resize',hideOffer);
   window.addEventListener('blur',()=>{composerDown=null;hideOffer();});
-  async function exportData() {try{const all=await chrome.storage.local.get(null),data=Object.fromEntries(Object.entries(all).filter(([k])=>k.startsWith(PREFIX)||k.startsWith(CHOICE_PREFIX)||k===PREF||k===LASER_PREF||k===AUTO_PREF||k===FONT_KEY||k===OPACITY_KEY));const blob=new Blob([JSON.stringify({format:'question-basket-backup',version:3,data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='askmarker-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{tell('기록을 백업하지 못했습니다.',true);}}
-  async function importData(file) {if(!file)return;try{if(file.size>20*1024*1024)throw Error();const backup=JSON.parse(await file.text());if(backup.format!=='question-basket-backup'||!backup.data)throw Error();const existing=await chrome.storage.local.get(null),incoming={};for(const[k,n]of Object.entries(backup.data))if(k.startsWith(PREFIX)&&validNote(n)&&k===storageKey(n)&&!existing[k])incoming[k]=n;for(const n of Object.values({...incoming}))if(validNote(n)&&typeof backup.data[choiceKey(n)]==='boolean'&&existing[choiceKey(n)]===undefined)incoming[choiceKey(n)]=backup.data[choiceKey(n)];const count=Object.keys(incoming).filter(k=>k.startsWith(PREFIX)).length;await chrome.storage.local.set(incoming);await load();tell(count+'개 기록을 가져왔습니다. 기존 기록은 유지됩니다.');}catch{tell('올바른 AskMarker 백업 파일인지 확인해 주세요.',true);}finally{$('import-file').value='';}}
+  async function exportData() {try{const all=await chrome.storage.local.get(null),data=Object.fromEntries(Object.entries(all).filter(([k])=>k.startsWith(PREFIX)||k.startsWith(CHOICE_PREFIX)||k===PREF||k===LASER_PREF||k===AUTO_PREF||k===FONT_KEY||k===OPACITY_KEY||k===LANGUAGE_KEY));const blob=new Blob([JSON.stringify({format:'question-basket-backup',version:3,data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='askmarker-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{tell('기록을 백업하지 못했습니다.',true);}}
+  async function importData(file) {if(!file)return;try{if(file.size>20*1024*1024)throw Error();const backup=JSON.parse(await file.text());if(backup.format!=='question-basket-backup'||!backup.data)throw Error();const existing=await chrome.storage.local.get(null),incoming={};for(const[k,n]of Object.entries(backup.data))if(k.startsWith(PREFIX)&&validNote(n)&&k===storageKey(n)&&!existing[k])incoming[k]=n;for(const n of Object.values({...incoming}))if(validNote(n)&&typeof backup.data[choiceKey(n)]==='boolean'&&existing[choiceKey(n)]===undefined)incoming[choiceKey(n)]=backup.data[choiceKey(n)];const count=Object.keys(incoming).filter(k=>k.startsWith(PREFIX)).length;await chrome.storage.local.set(incoming);await load();tell('{count}개 기록을 가져왔습니다. 기존 기록은 유지됩니다.',false,{count});}catch{tell('올바른 AskMarker 백업 파일인지 확인해 주세요.',true);}finally{$('import-file').value='';}}
   let manualSelection=null;
   $('reading-mode').onclick=$('mode-compact').onclick=()=>setReadingMode(!readingMode);
   $('use-selection').addEventListener('pointerdown',e=>{if(!readingMode)return;e.preventDefault();manualSelection=readSelection(true);});
@@ -430,10 +438,10 @@ function start(){
   $('quick-insert').onclick=()=>insertSaved(false);$('quick-copy').onclick=()=>{checkRoute();if(selectedEntries().length)copy(buildPrompt(),selectedEntries());};
   $('hide-menu').onclick=()=>{hideSelectionOffer();hideOffer();$('preview').hidden=true;$('toast').hidden=true;panel.hide();};
   $('launcher').onclick=open;$('close').onclick=collapse;$('generate').onclick=preview;$('preview-close').onclick=()=>{$('preview').hidden=true;};$('insert').onclick=insert;$('copy').onclick=()=>copy();$('export').onclick=exportData;$('import').onclick=()=>$('import-file').click();$('import-file').onchange=e=>importData(e.target.files[0]);
-  $('legacy').onclick=()=>{legacyReview=!legacyReview;notes=[];$('preview').hidden=true;$('status').textContent=legacyReview?'이전 버전의 주소별 기록입니다.':'현재 대화의 질문을 표시합니다.';refresh();load();};
+  $('legacy').onclick=()=>{legacyReview=!legacyReview;notes=[];$('preview').hidden=true;$('status').textContent=t(legacyReview?'이전 버전의 주소별 기록입니다.':'현재 대화의 질문을 표시합니다.');refresh();load();};
   $('clear').onclick=async()=>{
     if(activeSessions().some(s=>s.saving)){tell('저장이 끝난 뒤 다시 시도해 주세요.');return;}
-    const deleting=[...notes];if(!deleting.length||!confirm('목록에 표시된 질문을 모두 삭제할까요?'))return;
+    const deleting=[...notes];if(!deleting.length||!confirm(t('목록에 표시된 질문을 모두 삭제할까요?')))return;
     try{await Promise.all(deleting.map(n=>enqueue(storageKey(n),()=>chrome.storage.local.remove(storageKey(n)))));for(const n of deleting)finish(n.id,false);await load();tell('표시된 질문을 모두 삭제했습니다.');}catch{tell('일부 질문을 삭제하지 못했습니다.',true);await load();}
   };
   // A repeated backwards drag can leave Blink moving a collapsed caret instead
@@ -459,7 +467,14 @@ function start(){
   // Capture the Range synchronously before focus/selection changes.
   window.addEventListener('pointerup',e=>{const started=pointerStart;pointerStart=null;if(!readingMode||!started||ownEvent(e)||!$('preview').hidden)return;recoverDrag(started,e.clientX,e.clientY);offerSelection(readSelection(false));},true);
   document.addEventListener('keyup',e=>{if(readingMode&&e.key==='Shift'&&!ownEvent(e)&&!editable(e.target)&&$('preview').hidden)offerSelection(readSelection(false));},true);
-  chrome.storage.onChanged.addListener((changes,area)=>{if(area!=='local')return;appearance.applyChanges(changes);dock.applyChanges(changes);if(typeof changes[AUTO_PREF]?.newValue==='boolean'){autoInsert=changes[AUTO_PREF].newValue;$('auto-insert').checked=autoInsert;if(!autoInsert)hideOffer();}if(COLORS[changes[PREF]?.newValue?.lastColor]){lastColor=changes[PREF].newValue.lastColor;showActiveColor();}choices.applyChanges(changes,notes);if(Object.keys(changes).some(k=>k.startsWith(PREFIX)))load();});
+  chrome.storage.onChanged.addListener((changes,area)=>{if(area!=='local')return;appearance.applyChanges(changes);dock.applyChanges(changes);language.applyChanges(changes);if(typeof changes[AUTO_PREF]?.newValue==='boolean'){autoInsert=changes[AUTO_PREF].newValue;$('auto-insert').checked=autoInsert;if(!autoInsert)hideOffer();}if(COLORS[changes[PREF]?.newValue?.lastColor]){lastColor=changes[PREF].newValue.lastColor;showActiveColor();}choices.applyChanges(changes,notes);if(Object.keys(changes).some(k=>k.startsWith(PREFIX)))load();});
+  function renderLanguage(){
+    language.apply(shadow);appearance.render();refresh();
+    $('insert').textContent=t('{name} 입력창에 추가',{name:composer.name});
+    if(!legacyReview)$('status').textContent=t(statusMessage.key,statusMessage.params);
+    $('toast').textContent=t(statusMessage.key,statusMessage.params);
+    if(offerContext){const r=$('insert-offer').getBoundingClientRect();showOffer(offerContext.target,r.left,r.bottom);}
+  }
   function checkRoute(){const next=pageKey();if(next===scope)return;hideSelectionOffer();hideOffer();scope=next;legacyReview=false;notes=[];ranges.clear();pointerStart=null;$('preview').hidden=true;refresh();load();}
   // ChatGPT navigates without reload. Drafts retain their original scope until you return.
   routeTimer=setInterval(checkRoute,350);window.addEventListener('popstate',checkRoute);

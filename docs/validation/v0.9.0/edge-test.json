@@ -1,0 +1,16 @@
+{
+  "environment": "Real MV3 extension in Chromium, local fixture (not live ChatGPT)",
+  "checks": [
+    "Repeated exact text: original offset restored, not first occurrence",
+    "List and table bubble placement preserves valid flow",
+    "Typing survives DOM replacement; changed source draft rescued in panel",
+    "Unlocated note remains editable",
+    "Backup/export/import round trip; existing records not duplicated or overwritten",
+    "Textarea composer preserves previous value",
+    "Separate tabs share persisted changes",
+    "Clear current conversation preserves other conversation",
+    "URL-less conversations remain isolated by stable message ID",
+    "Legacy root-URL records accessible separately, never attached to another conversation",
+    "Temporary message scope remains accessible after permanent conversation URL and reload"
+  ]
+}

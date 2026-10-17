@@ -22,18 +22,18 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   const background=path.join(extension,'background.js');fs.writeFileSync(background,`const testSetIcon=chrome.action.setIcon.bind(chrome.action);chrome.action.setIcon=async details=>{await testSetIcon(details);globalThis.testAppliedIcon=details;};\n`+fs.readFileSync(background,'utf8'));
   ctx=await launch();worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');
   await worker.evaluate(async key=>{for(let i=0;i<100;i++){if(!(key in await chrome.storage.local.get(key))&&globalThis.testAppliedIcon)return;await new Promise(r=>setTimeout(r,20));}throw Error('Upgrade migration timed out: '+JSON.stringify({version:chrome.runtime.getManifest().version,background:chrome.runtime.getManifest().background,iconKey:(await chrome.storage.local.get(key))[key],applied:globalThis.testAppliedIcon}));},oldKey);
-  assert.equal(await worker.evaluate(()=>chrome.runtime.id),id);const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.8.1');assert.equal(manifest.options_ui,undefined);assert.equal(manifest.options_page,undefined);assert.equal(manifest.action.default_popup,undefined);
+  assert.equal(await worker.evaluate(()=>chrome.runtime.id),id);const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.9.0');assert.equal(manifest.options_ui,undefined);assert.equal(manifest.options_page,undefined);assert.equal(manifest.action.default_popup,undefined);
   assert.deepEqual(await worker.evaluate(()=>chrome.storage.local.get(null)),before);
   assert.deepEqual(await worker.evaluate(()=>globalThis.testAppliedIcon.path),manifest.action.default_icon);
   assert.ok(Object.values(manifest.action.default_icon).every(p=>p.startsWith('assets/icons/markchat-')));
   assert.ok(fs.readdirSync(path.join(root,'assets/icons')).every(f=>f.startsWith('markchat')));
-  check('0.7.3 → 0.8.1 update keeps extension ID and every non-icon storage value; Chrome accepts fixed MarkChat; options registration removed');
+  check('0.7.3 → 0.9.0 update keeps extension ID and every non-icon storage value; Chrome accepts fixed MarkChat; options registration removed');
   await ctx.route('https://chatgpt.com/**',r=>r.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8')}));
   const p=await ctx.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(scope);const ext=p.locator('#question-basket-extension');await ext.locator('#launcher').click();await ext.locator('#list').getByText(note.question,{exact:true}).waitFor();assert.equal(await ext.locator('#icon-settings').count(),0);assert.equal(await ext.getByRole('button',{name:'아이콘 선택',exact:true}).count(),0);assert.equal(await ext.locator('#list .prompt-include').isChecked(),false);
   assert.equal(await ext.locator('#reading-mode').isVisible(),true);assert.equal(await ext.locator('#font-family').isVisible(),true);await p.screenshot({path:path.join(out,'fixed-icon-panel.png'),fullPage:true});assert.deepEqual(errors,[]);
   check('Updated panel retains saved question, prompt membership and reading controls with no icon-choice button');
   const after=await worker.evaluate(()=>chrome.storage.local.get(null));await ctx.close();ctx=await launch();worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.deepEqual(await worker.evaluate(()=>chrome.storage.local.get(null)),after);assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().options_ui),undefined);
   check('Restart keeps the single manifest icon and preserved records; obsolete option files left by overwrite cannot restore the chooser');
-  fs.writeFileSync(path.join(out,'icon-upgrade-results.json'),JSON.stringify({version:'0.8.1',environment:'Actual packaged 0.7.3 update in isolated Chromium, successful real action API instrumented; AI page is synthetic',checks},null,2));
+  fs.writeFileSync(path.join(out,'icon-upgrade-results.json'),JSON.stringify({version:'0.9.0',environment:'Actual packaged 0.7.3 update in isolated Chromium, successful real action API instrumented; AI page is synthetic',checks},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

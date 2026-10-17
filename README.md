@@ -4,7 +4,13 @@
 
 Highlight AI answers, ask beneath the source, and collect exact quote/question pairs into your next prompt. Use AskMarker with ChatGPT, Gemini, Grok and other AI pages containing selectable text. No AI API key, server or separate account.
 
-[한국어 안내](README.ko.md) · [Install ZIP](releases/askmarker-v0.8.1.zip) · [Complete source](releases/askmarker-v0.8.1-source.zip) · [Validation](docs/VALIDATION.md) · [Architecture](docs/ARCHITECTURE.md)
+[한국어 안내](README.ko.md) · [Install ZIP](releases/askmarker-v0.9.0.zip) · [Complete source](releases/askmarker-v0.9.0-source.zip) · [Validation](docs/VALIDATION.md) · [Architecture](docs/ARCHITECTURE.md)
+
+## New in 0.9.0: Korean and English
+
+The interface starts in **Korean**, independently of browser locale. Expand AskMarker and choose **언어 → English** at the top of the sidebar settings. The saved language applies to menus, question bubbles, color names, tooltips, status messages and insertion offers, including other tabs and reloads.
+
+Original quotes, questions, colors, selections and drafts stay unchanged. New prompt headings use the selected language; edited previews are never rewritten. Existing quote/question pairs are detected in both languages to prevent duplicate insertion after switching.
 
 ## New in 0.8.1
 
@@ -37,11 +43,11 @@ This does not promise every renderer on every AI site. Frames, closed shadow roo
 
 Extract the prebuilt install ZIP and load its `askmarker` folder with Chrome Developer mode. Node.js is not required.
 
-Existing users: back up records, overwrite **all ZIP files/subdirectories in the existing registered folder**, reload the extension and refresh the page. On Gemini/Grok and other manually activated pages, click the extension icon again. Confirm **v0.8.1**. Keep the original extension/path to preserve its ID and local storage. Note keys, prompt choices and backup format remain compatible. Retired Current size mode reads as System; explicit Custom values remain. Legacy colorless notes retain their yellow fallback.
+Existing users: back up records, overwrite **all ZIP files/subdirectories in the existing registered folder**, reload the extension and refresh the page. On Gemini/Grok and other manually activated pages, click the extension icon again. Confirm **v0.9.0**. Keep the original extension/path to preserve its ID and local storage. Note keys, prompt choices and backup format remain compatible. Retired Current size mode reads as System; explicit Custom values remain. Legacy colorless notes retain their yellow fallback.
 
 ## Validation
 
-Version 0.8.1 passed five relevant suites against the install-ZIP runtime. The toolbar test invokes the actual registered callback and real script reinjection through a test copy with extra host grants; it does not click the real toolbar UI. The full 19-suite 0.8.0 report remains historical. Actual Gemini/Grok editor attributes were inspected read-only in connected Chrome; synthetic fixtures exercised those structures. **New-version insertion on live providers, their real editor frameworks and the company PC remain unverified.** See the environment-specific [report](docs/VALIDATION.md).
+Version 0.9.0 passed all 21 suites against the install-ZIP runtime. Language checks cover ten cancel/reselect cycles per language, draft/caret/source/selection preservation, saved settings and cross-tab updates, exact bilingual prompt formatting, cross-language duplicate detection, and enlarged layouts. These use isolated Chromium and synthetic HTML. Toolbar callback/reinjection tests use test-only host grants and do not click the real toolbar UI. **New-version insertion on live providers, their real editor frameworks and the company PC remain unverified.** See the environment-specific [report](docs/VALIDATION.md).
 
 ## Development / privacy
 
