@@ -21,7 +21,7 @@ const {choiceKey}=require('../src/domain/notes');
  // Enforce the boundary that prompted this refactor. Future appearance features
  // may depend only on their schema and documented site selectors, never notes.
  const root=path.resolve(__dirname,'../src');
- for(const name of ['ui/appearance.js','domain/appearance.js','ui/panel.js']){
+ for(const name of ['ui/appearance.js','domain/appearance.js','ui/panel.js','ui/dock.js']){
   const code=fs.readFileSync(path.join(root,name),'utf8');
   assert.ok(!/require\([^)]*\/(?:notes|prompt-choices|composer|source|app|cards)(?:\.js)?['"]\)/.test(code),name);
   assert.ok(!/qb:note:|qb:prompt-choice:/.test(code),name);

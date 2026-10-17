@@ -1,5 +1,5 @@
 'use strict';
-const FONT_KEY='qb:appearance:font:v1',OPACITY_KEY='qb:appearance:laser-opacity:v1';
+const FONT_KEY='qb:appearance:font:v1',OPACITY_KEY='qb:appearance:laser-opacity:v1',SIZE_KEY='qb:appearance:text-size:v1';
 // Local/system fonts only. No font CDN or network request.
 const FONTS={
   system:{label:'시스템 기본',family:'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'},
@@ -9,4 +9,8 @@ const FONTS={
 };
 const fontOf=value=>Object.hasOwn(FONTS,value)?value:'system';
 const opacityOf=value=>typeof value==='number'&&Number.isFinite(value)?Math.max(0,Math.min(100,Math.round(value))):60;
-module.exports={FONTS,FONT_KEY,OPACITY_KEY,fontOf,opacityOf};
+const sizeOf=value=>({
+  mode:['current','system','custom'].includes(value?.mode)?value.mode:'current',
+  scale:typeof value?.scale==='number'&&Number.isFinite(value.scale)?Math.max(80,Math.min(160,Math.round(value.scale/5)*5)):100
+});
+module.exports={FONTS,FONT_KEY,OPACITY_KEY,SIZE_KEY,fontOf,opacityOf,sizeOf};
