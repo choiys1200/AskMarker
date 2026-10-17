@@ -36,6 +36,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
    await p.emulateMedia({colorScheme:'dark'});await dock.screenshot({path:path.join(out,host+'-dock-dark.png'),animations:'disabled'});await p.emulateMedia({colorScheme:'light'});await dock.screenshot({path:path.join(out,host+'-dock-light.png'),animations:'disabled'});assert.deepEqual(await worker.evaluate(()=>chrome.storage.local.get(null)),before);checks.push('Compact hide button rendered in light/dark; no saved data changes');
    cases.push({host,result:'PASS',checks});console.log('PASS',host,'hide/reopen and state preservation');
   }
-  assert.deepEqual(errors,[]);fs.writeFileSync(path.join(out,'menu-visibility-results.json'),JSON.stringify({version:'0.9.0',environment:'Actual MV3 + synthetic ChatGPT/Gemini HTML; captured toolbar listener invoked programmatically, real scripting reinjection; test-only host grants instead of actual toolbar activeTab authorization. Not real toolbar UI/live site.',cases,errors},null,2));
+  assert.deepEqual(errors,[]);fs.writeFileSync(path.join(out,'menu-visibility-results.json'),JSON.stringify({version:'0.9.1',environment:'Actual MV3 + synthetic ChatGPT/Gemini HTML; captured toolbar listener invoked programmatically, real scripting reinjection; test-only host grants instead of actual toolbar activeTab authorization. Not real toolbar UI/live site.',cases,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

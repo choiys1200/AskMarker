@@ -1,0 +1,70 @@
+{
+  "version": "0.9.1",
+  "completedUTC": "2026-10-17T15:58:27.243488+00:00",
+  "runtimeProvenance": "Exact install ZIP executable bytes tested in isolated Chromium. Backup/language test copies add host grants for synthetic pages and explicit reinjection. No actual toolbar UI click or live provider is tested. Mock-storage and pure Node suites are listed separately.",
+  "runtimeSha256": {
+    "manifest.json": "d5785e951e1a42f6598aa781af6f9c33d0b1cdc8aa44b03571ac539e2bc52c06",
+    "background.js": "9dc60cc4fd4e19806f5eb9de2a204b5923b4e4c86cdc9a98a2355956b82afd13",
+    "content.js": "f01ae87a18aee591f0afe29d60ca23b15558ba06ec6f6db9bb682cfbdf9c6f60",
+    "assets/icons/markchat-128.png": "b83b5943e0a477a7f2f85ab5c066be0339bd6fc64c7faa83f1d76294785f9929",
+    "assets/icons/markchat-16.png": "af734c156bfd5af1c0ede3998dbcb36bc4f51e05cce60b24ac89f426a1868dd8",
+    "assets/icons/markchat-24.png": "78852694e1ef4d9426cc69bdf507aaf48e52ab2a3010dce1f5385aeb75844064",
+    "assets/icons/markchat-256.png": "6f294988aa8df11a34d1abb1360384a9a00f93e3eb1d620b875c19a862fa2bf6",
+    "assets/icons/markchat-32.png": "618b7a75d844477098c506b525b2bd244f2166d5e9156d19635b9890ea2d5a0c",
+    "assets/icons/markchat-48.png": "0a253e42c8d2bb87a55696fc553d067172cccc8c62dd1b0971706df4999e8781"
+  },
+  "suites": [
+    {
+      "suite": "appearance-delivery-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "appearance-delivery-test.json"
+    },
+    {
+      "suite": "backup-test",
+      "environment": "mv3-fixture-test-hosts",
+      "result": "PASS",
+      "evidence": "backup-test.json"
+    },
+    {
+      "suite": "dock-text-size-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "dock-text-size-test.json"
+    },
+    {
+      "suite": "edge-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "edge-test.json"
+    },
+    {
+      "suite": "language-test",
+      "environment": "mv3-fixture-test-hosts",
+      "result": "PASS",
+      "evidence": "language-test.json"
+    },
+    {
+      "suite": "module-contract-test",
+      "environment": "node-contract",
+      "result": "PASS",
+      "evidence": "module-contract-test.json"
+    },
+    {
+      "suite": "prompt-selection-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "prompt-selection-test.json"
+    },
+    {
+      "suite": "reading-mode-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "reading-mode-test.json"
+    }
+  ],
+  "liveAI": "NOT VERIFIED: synthetic AI HTML, no live-provider insertion in this version",
+  "actualToolbarUI": "NOT VERIFIED: programmatic registered callback and reinjection instead of actual toolbar UI click",
+  "companyPC": "NOT VERIFIED",
+  "screenshots": "Local work only; no screenshots in repo or ZIP"
+}

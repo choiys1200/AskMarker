@@ -4,7 +4,14 @@
 
 Highlight AI answers, ask beneath the source, and collect exact quote/question pairs into your next prompt. Use AskMarker with ChatGPT, Gemini, Grok and other AI pages containing selectable text. No AI API key, server or separate account.
 
-[한국어 안내](README.ko.md) · [Install ZIP](releases/askmarker-v0.9.0.zip) · [Complete source](releases/askmarker-v0.9.0-source.zip) · [Validation](docs/VALIDATION.md) · [Architecture](docs/ARCHITECTURE.md)
+[한국어 안내](README.ko.md) · [Install ZIP](releases/askmarker-v0.9.1.zip) · [Complete source](releases/askmarker-v0.9.1-source.zip) · [Validation](docs/VALIDATION.md) · [Architecture](docs/ARCHITECTURE.md)
+
+## New in 0.9.1: identifiable backups
+
+- **Back up this chat** exports all saved questions in the current list, including unchecked questions. Names such as `ChatGPT_Conversation title_2026-10-18_14-30-12.json` identify the AI service, title and backup time.
+- **Back up all questions** still exports all conversations. A single-chat backup includes its title; multi-chat filenames show services, conversation count and timestamp. A `conversations` index contains each service, title, URL, exact quote/question pairs and question timestamps.
+- Backups record local time, UTC and timezone. The current page title is used for the open chat; other chats use titles retained in saved questions. No server is queried to refresh titles. Missing titles are explicitly labeled, with an available conversation ID instead of an invented title.
+- Filename punctuation/length is sanitized while complete titles remain inside JSON. Old backups still import. Saved notes, exclusions and unsaved drafts are untouched by export; unsaved drafts are not exported.
 
 ## New in 0.9.0: Korean and English
 
@@ -43,11 +50,11 @@ This does not promise every renderer on every AI site. Frames, closed shadow roo
 
 Extract the prebuilt install ZIP and load its `askmarker` folder with Chrome Developer mode. Node.js is not required.
 
-Existing users: back up records, overwrite **all ZIP files/subdirectories in the existing registered folder**, reload the extension and refresh the page. On Gemini/Grok and other manually activated pages, click the extension icon again. Confirm **v0.9.0**. Keep the original extension/path to preserve its ID and local storage. Note keys, prompt choices and backup format remain compatible. Retired Current size mode reads as System; explicit Custom values remain. Legacy colorless notes retain their yellow fallback.
+Existing users: back up records, overwrite **all ZIP files/subdirectories in the existing registered folder**, reload the extension and refresh the page. On Gemini/Grok and other manually activated pages, click the extension icon again. Confirm **v0.9.1**. Keep the original extension/path to preserve its ID and local storage. Note keys, prompt choices and backup format remain compatible. Retired Current size mode reads as System; explicit Custom values remain. Legacy colorless notes retain their yellow fallback.
 
 ## Validation
 
-Version 0.9.0 passed all 21 suites against the install-ZIP runtime. Language checks cover ten cancel/reselect cycles per language, draft/caret/source/selection preservation, saved settings and cross-tab updates, exact bilingual prompt formatting, cross-language duplicate detection, and enlarged layouts. These use isolated Chromium and synthetic HTML. Toolbar callback/reinjection tests use test-only host grants and do not click the real toolbar UI. **New-version insertion on live providers, their real editor frameworks and the company PC remain unverified.** See the environment-specific [report](docs/VALIDATION.md).
+Version 0.9.1 passed eight relevant suites against the install-ZIP runtime, covering backup names/metadata, old/new import, immutable records, question choices, appearance and language regression. The full 21-suite 0.9.0 run is historical. Tests use isolated Chromium and synthetic HTML; actual live-service title DOM and the user environment remain separate. **New-version insertion on live providers, their real editor frameworks and the company PC remain unverified.** See the environment-specific [report](docs/VALIDATION.md).
 
 ## Development / privacy
 
