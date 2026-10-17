@@ -15,8 +15,7 @@ def pack(name,files):
  print(archive.name)
 files=['manifest.json','content.js','background.js','README.md','README.ko.md','docs/VALIDATION.md','docs/ARCHITECTURE.md']
 files += [p.relative_to(root).as_posix() for folder in ['extension','assets'] for p in sorted((root/folder).rglob('*')) if p.is_file() and p.suffix != '.svg']
-files += [p.relative_to(root).as_posix() for p in sorted((root/'docs/images').glob('*.png'))]
 pack(f'askmarker-v{version}.zip',files)
-sources=[p.relative_to(root).as_posix() for p in sorted(root.rglob('*')) if p.is_file() and p.relative_to(root).parts[0] in {'src','tests','scripts','docs','extension','assets'}]
+sources=[p.relative_to(root).as_posix() for p in sorted(root.rglob('*')) if p.is_file() and not p.relative_to(root).as_posix().startswith('docs/images/') and p.relative_to(root).parts[0] in {'src','tests','scripts','docs','extension','assets'}]
 sources += ['manifest.json','content.js','background.js','README.md','README.ko.md','package.json','.gitignore','.gitattributes']
 pack(f'askmarker-v{version}-source.zip',sorted(sources))

@@ -13,7 +13,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  });
  try{
   let worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');await instrument(worker);
-  const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.7.2');assert.equal(manifest.action.default_popup,undefined);
+  const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.7.3');assert.equal(manifest.action.default_popup,undefined);
   assert.deepEqual(manifest.permissions,['activeTab','scripting','storage','clipboardWrite']);
   for(const [size,file]of Object.entries(manifest.icons)){const png=fs.readFileSync(path.join(root,file));assert.equal(png.readUInt32BE(16),+size);assert.equal(png.readUInt32BE(20),+size);}
   const scope='https://chatgpt.com/c/icon-settings',note={id:'preserved-note',scope,messageId:'answer-one',quote:'AI 답변을 읽다가 궁금한 문장을 드래그합니다.',question:'이 질문은 아이콘 변경과 무관하게 보존합니다.',color:'pink',created:1};

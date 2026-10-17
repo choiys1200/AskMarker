@@ -1,0 +1,12 @@
+{
+  "version": "0.7.3",
+  "environment": "Real MV3 options page and action.setIcon in isolated Chromium; synthetic AI HTML; no live user toolbar inspection",
+  "checks": [
+    "Default MarkChat PNG sizes load; panel opens actual options page; Chrome accepts real setIcon; permissions and toolbar action unchanged",
+    "All five choices update the actual action API and storage; existing notes, reading settings and unsaved draft are unchanged",
+    "Keyboard selection, settings-tab synchronization, reload persistence and invalid path rejection work",
+    "Storage-write failure rolls back the real toolbar API and reports failure without changing questions",
+    "Light/dark/narrow renders; browser restart restores preference; unknown saved values safely fall back to MarkChat"
+  ],
+  "errors": []
+}

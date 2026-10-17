@@ -9,3 +9,6 @@ __pycache__/
 question-basket-backup*.json
 askmark-backup*.json
 askmarker-backup*.json
+
+# Keep UI screenshots in local QA output, not the public repository.
+docs/images/

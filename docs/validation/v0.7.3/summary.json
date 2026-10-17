@@ -1,0 +1,11 @@
+{
+  "version": "0.7.3",
+  "completedUTC": "2026-10-17T05:58:38.291822+00:00",
+  "contentSha256": "4fb6a28d78bda3b35709ae6b3574194c4e772e5535d03efe513b5f2ec1d241a8",
+  "suite": "icon-settings",
+  "result": "PASS",
+  "environment": "Actual MV3 options/action API in isolated Chromium; synthetic AI HTML",
+  "pixels": "16px PNG alpha>=128 bounds grew from 12x12 to 16x14; source SVG scale +18.5 percent",
+  "liveUserToolbar": "NOT VERIFIED",
+  "screenshots": "Local QA only; not republished"
+}
