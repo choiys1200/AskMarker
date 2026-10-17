@@ -1,0 +1,40 @@
+{
+  "version": "0.7.2",
+  "completedUTC": "2026-10-17T05:47:23.252124+00:00",
+  "contentSha256": "c6621b180477103d3339766a43395fead4682f5668c5673bd58466b1db5ad9e1",
+  "suites": [
+    {
+      "suite": "icon-settings",
+      "result": "PASS",
+      "environment": "Real MV3 + controlled pages",
+      "evidence": "icon-settings.json"
+    },
+    {
+      "suite": "appearance-delivery",
+      "result": "PASS",
+      "environment": "Real MV3 + controlled pages",
+      "evidence": "appearance-delivery.json"
+    },
+    {
+      "suite": "extension",
+      "result": "PASS",
+      "environment": "Real MV3 + controlled pages",
+      "evidence": "extension.json"
+    },
+    {
+      "suite": "generic-sites",
+      "result": "PASS",
+      "environment": "Real MV3 + controlled pages",
+      "evidence": "generic-sites.json"
+    },
+    {
+      "suite": "module-contract",
+      "result": "PASS",
+      "environment": "Node contract",
+      "evidence": "module-contract.json"
+    }
+  ],
+  "liveUserChromeToolbar": "NOT VERIFIED",
+  "liveAISites": "NOT VERIFIED",
+  "companyPC": "NOT VERIFIED"
+}
