@@ -25,6 +25,12 @@ const {chromium}=require('playwright');const fs=require('node:fs');const path=re
  assert.equal(await choices.first().isChecked(),false);assert.equal(await ext.locator('#count').textContent(),'2');
  checks.push('Prompt-choice storage failure restores the persisted checkbox without deleting notes');
  // Inspect native selection behavior with an injected shadow bubble between paragraphs.
+ // Clipboard denial opens a fallback preview. Its delivery must remember the
+ // same selected batch, even when no regular preview was opened beforehand.
+ await p.evaluate(()=>{Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('clipboard denied');}}});const exec=document.execCommand.bind(document);document.execCommand=(cmd,...args)=>cmd==='copy'?false:exec(cmd,...args);});
+ await ext.locator('#quick-copy').click();await ext.locator('#preview').waitFor();assert.ok((await ext.locator('#prompt').inputValue()).includes('별도로 작성한 두 번째 질문'));assert.equal(await choices.nth(1).isChecked(),true);
+ await ext.locator('#insert').click();await p.waitForFunction(()=>!document.querySelector('#question-basket-extension').shadowRoot.querySelector('#list .prompt-include:checked'));
+ assert.equal(await ext.locator('#count').textContent(),'2');checks.push('Denied clipboard fallback preview retains batch ownership and clears only after successful insertion');
  const selected=await p.evaluate(()=>{const r=document.createRange();r.setStart(document.getElementById('first').firstChild,0);r.setEnd(document.getElementById('second').lastChild,document.getElementById('second').lastChild.length);getSelection().removeAllRanges();getSelection().addRange(r);return{selection:getSelection().toString(),range:r.toString()};});
  assert.ok(!selected.range.includes('느리게 저장'));checks.push('Raw source extraction excludes extension UI across paragraphs');
  fs.writeFileSync(path.join(out,'mock-results.json'),JSON.stringify({environment:'Browser DOM with mocked chrome.storage; not extension integration and not live ChatGPT',checks,selectionComparison:selected},null,2));console.log(checks);console.log(selected);

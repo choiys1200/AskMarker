@@ -1,0 +1,152 @@
+{
+  "environment": "Unpacked MV3 extension; synthetic layout fixtures, not live ChatGPT",
+  "results": [
+    {
+      "version": "0.7.0",
+      "name": "block",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "block",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 212.328125,
+        "textLeft": 124.796875,
+        "textRight": 806.15625,
+        "bubble": {
+          "top": 242.71875,
+          "left": 124.796875,
+          "right": 804.796875,
+          "bottom": 516.390625
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.7.0",
+      "name": "column",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "block",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 231.078125,
+        "textLeft": 134.109375,
+        "textRight": 815.46875,
+        "bubble": {
+          "top": 273.46875,
+          "left": 124.796875,
+          "right": 804.796875,
+          "bottom": 547.140625
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.7.0",
+      "name": "row",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "first",
+        "anchorDisplay": "block",
+        "marked": true,
+        "quote": "A",
+        "textBottom": 322.25,
+        "textLeft": 124.796875,
+        "textRight": 342.796875,
+        "bubble": {
+          "top": 339.640625,
+          "left": 124.796875,
+          "right": 350.125,
+          "bottom": 632
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.7.0",
+      "name": "grid",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "first",
+        "anchorDisplay": "block",
+        "marked": true,
+        "quote": "A",
+        "textBottom": 261.46875,
+        "textLeft": 124.796875,
+        "textRight": 466.046875,
+        "bubble": {
+          "top": 278.859375,
+          "left": 124.796875,
+          "right": 468.796875,
+          "bottom": 571.21875
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.7.0",
+      "name": "contents",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "first",
+        "anchorDisplay": "block",
+        "marked": true,
+        "quote": "A",
+        "textBottom": 322.25,
+        "textLeft": 124.796875,
+        "textRight": 342.796875,
+        "bubble": {
+          "top": 339.640625,
+          "left": 124.796875,
+          "right": 346.265625,
+          "bottom": 632
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.7.0",
+      "name": "inline",
+      "baseline": false,
+      "below": true,
+      "aligned": true,
+      "geometry": {
+        "parent": "",
+        "anchorDisplay": "flex",
+        "marked": false,
+        "quote": "A",
+        "textBottom": 231.078125,
+        "textLeft": 124.796875,
+        "textRight": 806.15625,
+        "bubble": {
+          "top": 273.46875,
+          "left": 124.796875,
+          "right": 804.796875,
+          "bottom": 547.140625
+        }
+      },
+      "result": "PASS"
+    },
+    {
+      "version": "0.7.0",
+      "name": "multi-paragraph-grid",
+      "result": "PASS",
+      "rangeSetup": "synthetic",
+      "resize": true,
+      "internalScroll": true,
+      "reload": true
+    }
+  ]
+}

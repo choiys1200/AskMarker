@@ -1,0 +1,19 @@
+{
+  "environment": "Actual unpacked MV3 extension + synthetic HTML reproducing DOM attributes inspected on live ChatGPT. Not a live-site success test.",
+  "results": [
+    {
+      "version": "0.7.0",
+      "status": "PASS",
+      "checks": [
+        "New ChatGPT structure: 10 actual drag/cancel cycles with nested spans, same/different text",
+        "Eight shared box and laser colors, filled translucent radial fade, no border, pointer-events none",
+        "New renderer IDs and exact offsets persisted with independent highlight colors",
+        "Reload restores laser setting, saved source positions and questions after enabling",
+        "Project slug changes preserve the same conversation; original storage keys unchanged",
+        "User bubble rejected without overwriting source; regenerated answer DOM restores",
+        "Wrong message ID never reattaches; records stay in panel"
+      ],
+      "errors": []
+    }
+  ]
+}

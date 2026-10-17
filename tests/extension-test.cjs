@@ -11,7 +11,7 @@ const fixture=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8');
  const check=(name,details)=>{results.push({name,result:'PASS',details});console.log('PASS',name);};
  try{
  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');
- const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.6.4');check('Real extension loaded',{version:manifest.version,browser:ctx.browser()?.version(),extensionId:await worker.evaluate(()=>chrome.runtime.id)});
+ const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.7.0');check('Real extension loaded',{version:manifest.version,browser:ctx.browser()?.version(),extensionId:await worker.evaluate(()=>chrome.runtime.id)});
  await ctx.route('https://chatgpt.com/**',r=>r.fulfill({status:200,contentType:'text/html',body:fixture}));
  const page=ctx.pages()[0]||await ctx.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto('https://chatgpt.com/c/local-fixture');
@@ -50,7 +50,7 @@ const fixture=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8');
  }
  await saveDraft(b,'첫 질문의 근거를 알려 주세요.');await countSaved(1);
  b=await drag('second');assert.equal(await ext.locator('#color-palette').getByRole('button',{name:'핑크',exact:true}).getAttribute('aria-pressed'),'true');await ext.locator('#color-palette').getByRole('button',{name:'보라',exact:true}).click();await saveDraft(b,'두 번째 원문을 더 쉽게 설명해 주세요.');await countSaved(2);
- await ext.getByRole('button',{name:'접기',exact:true}).click();
+ await ext.getByRole('button',{name:'Askmark 접기',exact:true}).click();
  b=await drag('third');await ext.locator('#launcher').click();await ext.locator('#color-palette').getByRole('button',{name:'파랑',exact:true}).click();await saveDraft(b,'세 번째 질문입니다.');await countSaved(3);assert.equal(await inline().count(),3);assert.equal(await hcount(),3);
  check('04,06,07: three successive notes, five colors, last-color default, collapsed panel');
  // A nonempty draft must keep its source and input while another selection is made.
@@ -97,7 +97,7 @@ const fixture=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8');
  await preview.fill(prompt+'\n검증용 추가 지시');
  await ext.locator('#copy').click();assert.equal((await page.evaluate(()=>navigator.clipboard.readText())).replace(/\r\n/g,'\n'),prompt+'\n검증용 추가 지시');
  await page.locator('#prompt-textarea').fill('기존 입력은 그대로 유지');await ext.locator('#insert').click();const inserted=await page.locator('#prompt-textarea').innerText();assert.ok(inserted.startsWith('기존 입력은 그대로 유지'));assert.ok(inserted.includes('검증용 추가 지시'));
- await ext.locator('#generate').click();await preview.fill(prompt+'\n검증용 추가 지시');await ext.locator('#insert').click();assert.equal(await page.locator('#prompt-textarea').innerText(),inserted);await ext.locator('#preview-close').click();check('11–12: exact pairs, editable preview, clipboard, preserve composer, prevent duplicate');
+ await ext.locator('#select-all').click();await ext.locator('#generate').click();await preview.fill(prompt+'\n검증용 추가 지시');await ext.locator('#insert').click();assert.equal(await page.locator('#prompt-textarea').innerText(),inserted);await ext.locator('#preview-close').click();check('11–12: exact pairs, editable preview, clipboard, preserve composer, prevent duplicate');
  // Strict source restoration: changed root, even unchanged quote, must not bind to another occurrence.
  await page.locator('#first').evaluate(el=>el.firstChild.textContent='수정된 답변입니다. '+el.firstChild.textContent);await page.waitForTimeout(400);assert.equal(await inline().count(),0);assert.equal(await hcount(),0);await countSaved(3);
  assert.equal(await ext.locator('.location:visible').count(),3);check('Changed source remains in list without guessing a match');
