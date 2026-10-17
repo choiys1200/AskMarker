@@ -10,6 +10,14 @@ Highlight AI answers, add questions beneath the source, and collect the exact qu
 
 *Actual unpacked extension on synthetic HTML, not a live ChatGPT conversation. UI language: Korean.*
 
+## What's new in 0.7.2
+
+**MarkChat, a speech bubble with a highlighted line, is the new default icon.** Transparent PNGs are included at 16, 24, 32, 48, 128 and 256 px, with original SVGs in the source archive.
+
+Open **아이콘 선택** (Choose icon) in the panel, or right-click the extension icon and choose **Options**. Pick MarkChat, AskTag, AskStroke, QuoteAsk or AM Mark. The toolbar image changes immediately and persists across browser restarts. Installation/extension-management screens use the default MarkChat image. Pin AskMarker from Chrome's puzzle menu if it is hidden.
+
+![Actual extension options page with MarkChat selected](docs/images/v0.7.2-icons-light.png)
+
 ## What's new in 0.7.1
 
 Renamed to **AskMarker** across the extension, panel controls, documentation and downloads. Existing note/settings keys and the backup format are unchanged. Update the files in your existing registered folder to retain the extension ID and history. The repository is now [choiys1200/AskMarker](https://github.com/choiys1200/AskMarker).
@@ -35,11 +43,11 @@ Editable preview, clipboard copy, select/deselect all, local backup/import, and 
 
 ## Install / update
 
-[Install ZIP](releases/askmarker-v0.7.1.zip) · [Complete source ZIP](releases/askmarker-v0.7.1-source.zip)
+[Install ZIP](releases/askmarker-v0.7.2.zip) · [Complete source ZIP](releases/askmarker-v0.7.2-source.zip)
 
 Extract the install ZIP, open `chrome://extensions`, enable Developer mode and load the `askmarker` directory containing `manifest.json`. The install ZIP is prebuilt; Node.js is not needed.
 
-**Existing users:** back up notes, then overwrite `manifest.json`, `content.js` and `background.js` **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.1** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
+**Existing users:** back up notes, then overwrite **all files and subdirectories from the new ZIP, including `extension/` and `assets/`** **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.2** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
 
 ## Site support and verification
 
@@ -52,9 +60,9 @@ Extract the install ZIP, open `chrome://extensions`, enable Developer mode and l
 
 Other services do not need a separate AI API integration for marking and copying. This is **not a promise of every renderer or feature on every AI site**: embedded frames, closed shadow roots, non-text surfaces and editable answer widgets may not be selectable by the general adapter. Other-site records are separated by full page URL; chats that reuse one URL share that bucket. Answer-body font overrides and editable writing-box handling are currently ChatGPT-specific. AskMarker's own UI font settings apply everywhere.
 
-The 0.7.1 rename was checked with three real MV3/browser fixture suites (appearance/delivery, code/writing boxes and the main extension flow) and the Node module-contract suite. They cover the new labels, small-window layout, existing notes, repeated selection/cancellation and prompt delivery. The previous 0.7.0 release passed all sixteen suites, including the synthetic Gemini/Grok general-mode tests.
+Version 0.7.2 passed five suites: actual MV3 icon options, appearance/delivery, the main extension flow, synthetic Gemini/Grok pages, and Node module contracts. The icon suite checks successful Chrome action API calls, all five choices, keyboard access, cross-tab sync, browser restart, write-failure recovery and unchanged note/draft data. Earlier results remain archived.
 
-These are isolated-browser fixtures, not live AI sessions. **Live 0.7.1 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
+These are isolated-browser fixtures, not live AI sessions. **Live 0.7.2 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
 
 ## Development
 
@@ -68,7 +76,7 @@ npm test
 python scripts/package.py
 ```
 
-Set `QA_BROWSER` to an extension-capable Chromium executable and optionally `QA_OUTPUT` to a test-artifact directory. The static CommonJS/CSS/HTML bundler uses only Node built-ins: no eval, network loader or framework. The checked-in prebuilt content script keeps deployment compatible with the existing three-file extension runtime.
+Set `QA_BROWSER` to an extension-capable Chromium executable and optionally `QA_OUTPUT` to a test-artifact directory. The static CommonJS/CSS/HTML bundler uses only Node built-ins: no eval, network loader or framework. The prebuilt content script and separate extension settings modules ship with local PNG assets; copy the complete runtime directory when updating.
 
 UI direction was informed by [21st.dev](https://21st.dev/); the implementation uses original local CSS rather than imported components.
 

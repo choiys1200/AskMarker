@@ -11,7 +11,7 @@ const fixture=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8');
  const check=(name,details)=>{results.push({name,result:'PASS',details});console.log('PASS',name);};
  try{
  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');
- const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.7.1');check('Real extension loaded',{version:manifest.version,browser:ctx.browser()?.version(),extensionId:await worker.evaluate(()=>chrome.runtime.id)});
+ const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.7.2');check('Real extension loaded',{version:manifest.version,browser:ctx.browser()?.version(),extensionId:await worker.evaluate(()=>chrome.runtime.id)});
  await ctx.route('https://chatgpt.com/**',r=>r.fulfill({status:200,contentType:'text/html',body:fixture}));
  const page=ctx.pages()[0]||await ctx.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto('https://chatgpt.com/c/local-fixture');

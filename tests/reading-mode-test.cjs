@@ -5,7 +5,7 @@ const {chromium}=require('playwright');const fs=require('node:fs');const path=re
  const ctx=await chromium.launchPersistentContext(fs.mkdtempSync(path.join(out,'profile-')),{headless:true,executablePath:process.env.QA_BROWSER,viewport:{width:1560,height:1100},args:[`--disable-extensions-except=${root}`,`--load-extension=${root}`]});
  const checks=[],errors=[];const check=n=>{checks.push(n);console.log('PASS',n);};
  try{
- const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.7.1');
+ const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.7.2');
  await ctx.route('https://chatgpt.com/**',r=>r.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8')}));
  const p=ctx.pages()[0];p.on('pageerror',e=>errors.push(e.message));const cdp=await ctx.newCDPSession(p);cdp.on('Runtime.exceptionThrown',e=>errors.push(e.exceptionDetails.exception?.description||e.exceptionDetails.text));await cdp.send('Runtime.enable');
  await p.goto('https://chatgpt.com/c/reading-mode');const ext=p.locator('#question-basket-extension');await ext.waitFor();
@@ -42,7 +42,7 @@ const {chromium}=require('playwright');const fs=require('node:fs');const path=re
  await mode(true);await drag('second');await drafts().getByRole('textbox').fill('원래 대화 초안');await mode(false);await p.evaluate(()=>history.pushState({},'', '/c/another-reading-mode'));await count(0);assert.equal(await ext.locator('#draft-list textarea').count(),0);await mode(true);assert.equal(await bubbles().count(),0);await p.evaluate(()=>history.pushState({},'', '/c/reading-mode'));await count(3);await drafts().waitFor();assert.equal(await drafts().getByRole('textbox').inputValue(),'원래 대화 초안');check('SPA conversation navigation isolates notes and retained drafts');
  await mode(false);await ext.locator('#draft-list').getByRole('button',{name:'질문 저장',exact:true}).click();await count(4);assert.equal(await bubbles().count(),0);await mode(true);assert.equal(await bubbles().count(),4);check('A retained draft can be saved while OFF and restored as a saved bubble');
  assert.deepEqual(errors,[]);check('No page or extension isolated-world runtime errors');
- fs.writeFileSync(path.join(out,'reading-mode-results.json'),JSON.stringify({version:'0.7.1',environment:'Real MV3 extension loaded in Chromium; local HTML fixture; NOT live ChatGPT',checks,errors},null,2));
+ fs.writeFileSync(path.join(out,'reading-mode-results.json'),JSON.stringify({version:'0.7.2',environment:'Real MV3 extension loaded in Chromium; local HTML fixture; NOT live ChatGPT',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
 

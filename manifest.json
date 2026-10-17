@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AskMarker",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "읽다가 선택한 문장에 질문을 달고, 모아서 하나의 후속 프롬프트로 만듭니다.",
   "minimum_chrome_version": "111",
   "permissions": [
@@ -11,10 +11,18 @@
     "clipboardWrite"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
-    "default_title": "AskMarker 켜기 / 열기"
+    "default_title": "AskMarker 켜기 / 열기",
+    "default_icon": {
+      "16": "assets/icons/markchat-16.png",
+      "24": "assets/icons/markchat-24.png",
+      "32": "assets/icons/markchat-32.png",
+      "48": "assets/icons/markchat-48.png",
+      "128": "assets/icons/markchat-128.png"
+    }
   },
   "content_scripts": [
     {
@@ -26,5 +34,15 @@
       ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "icons": {
+    "16": "assets/icons/markchat-16.png",
+    "32": "assets/icons/markchat-32.png",
+    "48": "assets/icons/markchat-48.png",
+    "128": "assets/icons/markchat-128.png"
+  },
+  "options_ui": {
+    "page": "extension/options.html",
+    "open_in_tab": true
+  }
 }

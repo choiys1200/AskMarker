@@ -1,3 +1,6 @@
+import {installIconPreferences} from './extension/icon-preferences.js';
+installIconPreferences(chrome);
+
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab.id) return;
   try {
