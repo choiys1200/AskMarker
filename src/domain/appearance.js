@@ -10,7 +10,7 @@ const FONTS={
 const fontOf=value=>Object.hasOwn(FONTS,value)?value:'system';
 const opacityOf=value=>typeof value==='number'&&Number.isFinite(value)?Math.max(0,Math.min(100,Math.round(value))):60;
 const sizeOf=value=>({
-  mode:['current','system','custom'].includes(value?.mode)?value.mode:'current',
+  mode:value?.mode==='custom'?'custom':'system',
   scale:typeof value?.scale==='number'&&Number.isFinite(value.scale)?Math.max(80,Math.min(160,Math.round(value.scale/5)*5)):100
 });
 module.exports={FONTS,FONT_KEY,OPACITY_KEY,SIZE_KEY,fontOf,opacityOf,sizeOf};

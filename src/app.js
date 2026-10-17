@@ -1,5 +1,5 @@
 'use strict';
-const {COLORS,COLOR_ORDER,rgbOf,colorOf}=require('./domain/colors');
+const {COLORS,COLOR_ORDER,DEFAULT_COLOR,rgbOf,colorOf}=require('./domain/colors');
 const {PREFIX,PREF,LASER_PREF,AUTO_PREF,CHOICE_PREFIX,storageKey,choiceKey,validNote}=require('./domain/notes');
 const {formatPrompt,normalized}=require('./domain/prompt');
 const {COMPOSER_SELECTOR,MESSAGE_ATTRS}=require('./platform/selectors');
@@ -35,7 +35,7 @@ function start(){
     onChange:()=>{hideOffer();$('preview').hidden=true;refreshPromptSelection();},
     onError:()=>{tell('질문 선택을 저장하지 못했습니다. 다시 선택해 주세요.',true);load();}});
   const included=choices.included,selectedEntries=()=>notes.filter(included);
-  let scope = pageKey(), notes = [], lastColor = 'yellow', loadSerial = 0, refreshTimer, routeTimer;
+  let scope = pageKey(), notes = [], lastColor = DEFAULT_COLOR, loadSerial = 0, refreshTimer, routeTimer;
   let readingMode = false, laserFrame = 0, laserPoint = null;
   let pointerStart = null, initialized = false, legacyReview = false, hasLegacy = false;
   let selectionOffer=null,selectionFrame=0;
@@ -176,7 +176,7 @@ function start(){
       choices.hydrate(data,readRevision);
       appearance.hydrate(data,appearanceRevision);
       dock.hydrate(data,dockRevision);
-      if(!initialized){lastColor=COLORS[data[PREF]?.lastColor]?data[PREF].lastColor:COLORS[data[LASER_PREF]]?data[LASER_PREF]:'yellow';if(!autoPreferenceChosen)autoInsert=data[AUTO_PREF]!==false;initialized=true;}
+      if(!initialized){lastColor=COLORS[data[PREF]?.lastColor]?data[PREF].lastColor:COLORS[data[LASER_PREF]]?data[LASER_PREF]:DEFAULT_COLOR;if(!autoPreferenceChosen)autoInsert=data[AUTO_PREF]!==false;initialized=true;}
       hasLegacy=scope!==basePageKey()&&Object.entries(data).some(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&n.scope===basePageKey());
       notes=Object.entries(data).filter(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&sameConversation(n.scope,key)).map(([,n])=>n).sort((a,b)=>(a.created||0)-(b.created||0)||a.id.localeCompare(b.id));
       refresh();
@@ -188,7 +188,7 @@ function start(){
     $('selection-tools').hidden=!notes.length;
     $('selected-count').textContent='프롬프트 '+count+' / '+notes.length+'개 선택';
     $('select-all').disabled=!notes.length||count===notes.length;$('deselect-all').disabled=!count;
-    $('quick-insert').disabled=!count||!chatGPT||legacyReview;$('quick-copy').disabled=!count;$('generate').disabled=!count;
+    $('quick-insert').disabled=!count||legacyReview;$('quick-copy').disabled=!count;$('generate').disabled=!count;
     $('generate').title=count?'체크한 질문 '+count+'개를 프롬프트로 만듭니다':'제목 앞 체크박스에서 질문을 선택해 주세요';
   }
   const choosePrompt=(entries,value)=>choices.set(entries,value);
@@ -320,9 +320,10 @@ function start(){
   }
   const buildPrompt=(entries=selectedEntries())=>formatPrompt(entries,notes);
   let previewEntries=[],inserting=false;
-  function preview() {checkRoute();if(!selectedEntries().length)return;hideSelectionOffer();hideOffer();previewEntries=selectedEntries().map(n=>({...n}));$('prompt').value=buildPrompt(previewEntries);$('preview').hidden=false;$('insert').hidden=!chatGPT;}
+  function preview() {checkRoute();if(!selectedEntries().length)return;hideSelectionOffer();hideOffer();previewEntries=selectedEntries().map(n=>({...n}));$('prompt').value=buildPrompt(previewEntries);$('preview').hidden=false;}
   const composer=createComposerAdapter({own,tell});
   const {usableComposer,findComposer}=composer;
+  $('insert').textContent=composer.name+' 입력창에 추가';
   async function appendPrompt(text,target=findComposer(),entries=selectedEntries()) {
     if(inserting)return false;
     if(pageKey()!==scope){checkRoute();tell('대화가 바뀌었습니다. 현재 대화에서 프롬프트를 다시 열어 주세요.');return false;}
@@ -346,7 +347,7 @@ function start(){
   }
   const unfinished=()=>activeSessions().some(s=>s.saving||s.existing||s.question.trim())||writes.hasPending(PREFIX);
   function insertSaved(confirmed=false,target=findComposer()) {
-    checkRoute();if(!selectedEntries().length||legacyReview||!chatGPT)return;
+    checkRoute();if(!selectedEntries().length||legacyReview)return;
     if(confirmed&&unfinished()){tell('작성 중인 질문을 저장하거나 취소한 뒤 입력창을 클릭해 주세요.');return;}
     if(!target)return appendPrompt(buildPrompt(),target);
     const entries=pendingEntries(target);
@@ -354,23 +355,18 @@ function start(){
     return appendPrompt(buildPrompt(entries),target);
   }
   function insert() {return appendPrompt($('prompt').value,findComposer(),previewEntries);}
-  async function copy(text=$('prompt').value,entries=previewEntries) {if(!text.trim())return;try{await navigator.clipboard.writeText(text);tell('프롬프트를 복사했습니다.');}catch{previewEntries=entries.map(n=>({...n}));$('prompt').value=text;$('preview').hidden=false;$('insert').hidden=!chatGPT;$('prompt').focus();$('prompt').select();try{if(!document.execCommand('copy'))throw Error();tell('프롬프트를 복사했습니다.');}catch{tell('Ctrl+C로 선택한 프롬프트를 복사해 주세요.',true);}}}
+  async function copy(text=$('prompt').value,entries=previewEntries) {if(!text.trim())return;try{await navigator.clipboard.writeText(text);tell('프롬프트를 복사했습니다.');}catch{previewEntries=entries.map(n=>({...n}));$('prompt').value=text;$('preview').hidden=false;$('prompt').focus();$('prompt').select();try{if(!document.execCommand('copy'))throw Error();tell('프롬프트를 복사했습니다.');}catch{tell('Ctrl+C로 선택한 프롬프트를 복사해 주세요.',true);}}}
   // Clicking the composer offers insertion beside the pointer. Only the offer's
   // explicit button inserts text; focus, typing and IME never append anything.
-  let composing=false,composerDown=null,offerContext=null;
-  function composerAt(e) {
-    const path=e.composedPath(),direct=path.find(n=>n instanceof Element&&n.matches(COMPOSER_SELECTOR));
-    if(direct)return usableComposer(direct)?direct:null;
-    if(path.some(n=>n instanceof Element&&n.matches('button,a,input,select')))return null;
-    const shell=path.find(n=>n instanceof Element&&n.hasAttribute('data-composer-input'));
-    return shell?findComposer(shell):null;
-  }
-  function hideOffer() {offerContext=null;$('insert-offer').hidden=true;}
+  let composing=false,composerDown=null,offerContext=null,hoverTarget=null,hoverTimer=0;
+  const composerAt=composer.fromEvent;
+  function clearHover(){clearTimeout(hoverTimer);hoverTimer=0;hoverTarget=null;}
+  function hideOffer() {clearHover();offerContext=null;$('insert-offer').hidden=true;}
   function showOffer(target,x,y) {
     checkRoute();
-    if(!chatGPT||legacyReview||!notes.length||!usableComposer(target))return;
+    if(!autoInsert||legacyReview||!notes.length||!usableComposer(target))return;
     const entries=pendingEntries(target);if(!entries.length)return;
-    offerContext={target,scope};
+    composer.choose(target);offerContext={target,scope};
     $('offer-title').textContent='선택한 질문 '+entries.length+'개를 모아서 입력할까요?';
     const busy=unfinished();
     $('offer-hint').textContent=busy?'작성 중인 질문을 먼저 저장하거나 취소해 주세요.':'인용 원문과 내 질문을 기존 입력 뒤에 추가합니다.';
@@ -382,6 +378,16 @@ function start(){
     offer.style.visibility='';
   }
   $('offer-dismiss').onclick=hideOffer;
+  // Hover offers never focus or type into the editor. Brief transit, text drag,
+  // IME composition and touches do not open an offer.
+  window.addEventListener('pointerover',e=>{
+    const target=composerAt(e);if(target===hoverTarget)return;
+    clearHover();
+    if(!target||!autoInsert||composing||e.buttons||e.pointerType==='touch'||!$('preview').hidden)return;
+    hoverTarget=target;const {clientX:x,clientY:y}=e;
+    hoverTimer=setTimeout(()=>{hoverTimer=0;if(hoverTarget===target)showOffer(target,x,y);},350);
+  },true);
+  window.addEventListener('pointerout',e=>{if(hoverTarget&&(!(e.relatedTarget instanceof Node)||!hoverTarget.contains(e.relatedTarget)))clearHover();},true);
   $('offer-accept').onclick=()=>{
     const context=offerContext;hideOffer();
     if(!context||!autoInsert||context.scope!==pageKey()){checkRoute();return;}
@@ -392,7 +398,7 @@ function start(){
   window.addEventListener('compositionend',()=>{composing=false;},true);
   window.addEventListener('pointerdown',e=>{
     if(!e.composedPath().includes($('insert-offer')))hideOffer();
-    const target=composerAt(e);composerDown=target&&e.button===0?{target,x:e.clientX,y:e.clientY}:null;
+    const target=composerAt(e);if(target&&e.isTrusted&&e.button===0)composer.choose(target);composerDown=target&&e.button===0?{target,x:e.clientX,y:e.clientY}:null;
   },true);
   window.addEventListener('click',e=>{
     const down=composerDown;composerDown=null;const target=composerAt(e);
@@ -400,7 +406,7 @@ function start(){
     if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5)return;
     showOffer(target,e.clientX,e.clientY);
   },true);
-  window.addEventListener('input',e=>{if(composerAt(e))hideOffer();},true);
+  window.addEventListener('input',e=>{const target=composerAt(e);if(target){hideOffer();hoverTarget=target;}},true);
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('insert-offer').hidden){e.preventDefault();hideOffer();}},true);
   window.addEventListener('scroll',()=>{
     if(!offerContext)return;

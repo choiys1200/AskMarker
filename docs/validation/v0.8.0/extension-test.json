@@ -1,0 +1,71 @@
+{
+  "environment": "Real unpacked MV3 extension + real Chromium; local fixture routed under chatgpt.com. NOT the live ChatGPT service.",
+  "results": [
+    {
+      "name": "Real extension loaded",
+      "result": "PASS",
+      "details": {
+        "version": "0.8.0",
+        "browser": "153.0.8010.12",
+        "extensionId": "bemmnndjimflpmjfnkehhognjjngepgd"
+      }
+    },
+    {
+      "name": "01–03: ten actual mouse drag/cancel cycles; same and different text",
+      "result": "PASS"
+    },
+    {
+      "name": "05: highlight remains with textarea focus and no native selection",
+      "result": "PASS"
+    },
+    {
+      "name": "04,06,07: three successive notes, five colors, last-color default, collapsed panel",
+      "result": "PASS"
+    },
+    {
+      "name": "Independent draft source ownership",
+      "result": "PASS"
+    },
+    {
+      "name": "08: edits and saved colors synchronize both directions",
+      "result": "PASS"
+    },
+    {
+      "name": "09: deleting one of shared-source notes retains other highlight and bubble",
+      "result": "PASS"
+    },
+    {
+      "name": "10: flow layout, internal scroll, resize, React-like replacement and reload",
+      "result": "PASS"
+    },
+    {
+      "name": "11–12: exact pairs, editable preview, clipboard, preserve composer, prevent duplicate",
+      "result": "PASS"
+    },
+    {
+      "name": "Changed source remains in list without guessing a match",
+      "result": "PASS"
+    },
+    {
+      "name": "Conversation isolation on SPA navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "Multi-paragraph selection and reload preserves exact quote",
+      "result": "PASS"
+    },
+    {
+      "name": "v0.2 storage retained byte-for-byte, yellow fallback, exact legacy locate",
+      "result": "PASS"
+    },
+    {
+      "name": "Panel collapse and draft cancellation are independent",
+      "result": "PASS"
+    },
+    {
+      "name": "No page errors",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

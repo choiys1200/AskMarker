@@ -33,6 +33,7 @@ function createAppearance({host,$,storage,enqueue,tell}){
     host.style.setProperty('--askmark-ui-scale',String(scale));
     $('font-size-mode').value=size.mode;$('font-size-custom').hidden=size.mode!=='custom';
     $('font-size-scale').value=String(size.scale);$('font-size-value').textContent=size.scale+'%';
+    $('font-size-number').value=String(size.scale);
     $('font-size-scale').setAttribute('aria-valuetext',size.scale+'%');
   }
   async function save(key,value){
@@ -50,6 +51,7 @@ function createAppearance({host,$,storage,enqueue,tell}){
   $('font-size-mode').onchange=()=>save(SIZE_KEY,sizeOf({...size,mode:$('font-size-mode').value}));
   $('font-size-scale').oninput=()=>{size=sizeOf({mode:'custom',scale:Number($('font-size-scale').value)});changed.set(SIZE_KEY,++revision);apply();};
   $('font-size-scale').onchange=()=>save(SIZE_KEY,size);
+  $('font-size-number').onchange=()=>save(SIZE_KEY,sizeOf({mode:'custom',scale:Number($('font-size-number').value)}));
   new ResizeObserver(()=>{if(size.mode==='system')apply();}).observe(probe);
   function hydrate(data,readRevision){
     if((changed.get(FONT_KEY)||0)<=readRevision&&!pending.has(FONT_KEY))font=fontOf(data[FONT_KEY]);

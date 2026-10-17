@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-17",
+  "method": "Read-only browser DOM inspection in connected user Chrome; only editor attributes retained, no conversation text",
+  "gemini": {
+    "host": "gemini.google.com",
+    "tag": "DIV",
+    "role": "textbox",
+    "contenteditable": "true",
+    "classContains": [
+      "ql-editor"
+    ],
+    "parentTag": "RICH-TEXTAREA",
+    "ariaLabel": "Gemini 프롬프트 입력"
+  },
+  "grok": {
+    "host": "grok.com",
+    "tag": "DIV",
+    "role": "combobox",
+    "contenteditable": "true",
+    "classContains": [
+      "tiptap",
+      "ProseMirror",
+      "query-bar-editor"
+    ],
+    "ariaLabel": "Grok에게 아무거나 물어보세요"
+  },
+  "newVersionLiveInteraction": "NOT VERIFIED: extension was not updated/reloaded through browser tools"
+}
