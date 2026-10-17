@@ -6,17 +6,15 @@ Highlight AI answers, add questions beneath the source, and collect the exact qu
 
 [한국어 안내](README.ko.md) · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md)
 
-![AskMarker 0.7.1 on a synthetic demonstration page](docs/images/v0.7.1-boxes-dark.png)
+## What's new in 0.7.3
 
-*Actual unpacked extension on synthetic HTML, not a live ChatGPT conversation. UI language: Korean.*
+MarkChat uses less internal padding so the speech bubble is easier to see in the Chrome toolbar. The options heading is now simply **아이콘 선택** (Choose icon). Promotional screenshots have been removed from the current documentation and new archives.
 
 ## What's new in 0.7.2
 
 **MarkChat, a speech bubble with a highlighted line, is the new default icon.** Transparent PNGs are included at 16, 24, 32, 48, 128 and 256 px, with original SVGs in the source archive.
 
 Open **아이콘 선택** (Choose icon) in the panel, or right-click the extension icon and choose **Options**. Pick MarkChat, AskTag, AskStroke, QuoteAsk or AM Mark. The toolbar image changes immediately and persists across browser restarts. Installation/extension-management screens use the default MarkChat image. Pin AskMarker from Chrome's puzzle menu if it is hidden.
-
-![Actual extension options page with MarkChat selected](docs/images/v0.7.2-icons-light.png)
 
 ## What's new in 0.7.1
 
@@ -43,13 +41,15 @@ Editable preview, clipboard copy, select/deselect all, local backup/import, and 
 
 ## Install / update
 
-[Install ZIP](releases/askmarker-v0.7.2.zip) · [Complete source ZIP](releases/askmarker-v0.7.2-source.zip)
+[Install ZIP](releases/askmarker-v0.7.3.zip) · [Complete source ZIP](releases/askmarker-v0.7.3-source.zip)
 
 Extract the install ZIP, open `chrome://extensions`, enable Developer mode and load the `askmarker` directory containing `manifest.json`. The install ZIP is prebuilt; Node.js is not needed.
 
-**Existing users:** back up notes, then overwrite **all files and subdirectories from the new ZIP, including `extension/` and `assets/`** **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.2** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
+**Existing users:** back up notes, then overwrite **all files and subdirectories from the new ZIP, including `extension/` and `assets/`** **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.3** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
 
 ## Site support and verification
+
+Version 0.7.3 rechecked the icon-options suite and PNG bounds. The main reading workflow was unchanged; the five-suite report below belongs to 0.7.2.
 
 | Capability | ChatGPT | Gemini, Grok and other ordinary AI web pages |
 | --- | --- | --- |
@@ -62,7 +62,7 @@ Other services do not need a separate AI API integration for marking and copying
 
 Version 0.7.2 passed five suites: actual MV3 icon options, appearance/delivery, the main extension flow, synthetic Gemini/Grok pages, and Node module contracts. The icon suite checks successful Chrome action API calls, all five choices, keyboard access, cross-tab sync, browser restart, write-failure recovery and unchanged note/draft data. Earlier results remain archived.
 
-These are isolated-browser fixtures, not live AI sessions. **Live 0.7.2 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
+These are isolated-browser fixtures, not live AI sessions. **Live 0.7.3 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
 
 ## Development
 
