@@ -15,10 +15,10 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   const selected=n=>p.waitForFunction(n=>document.querySelector('#question-basket-extension').shadowRoot.querySelectorAll('#list .prompt-include:checked').length===n,n);
   const noteData=()=>worker.evaluate(async()=>Object.fromEntries(Object.entries(await chrome.storage.local.get(null)).filter(([k])=>k.startsWith('qb:note:'))));
   await ext.locator('#mode-compact').click();await ext.locator('#launcher').click();await selected(2);
-  assert.equal(await ext.locator('#close').textContent(),'Askmark 접기');assert.equal(await ext.locator('#reading-mode').textContent(),'읽기 모드 ON');
+  assert.equal(await ext.locator('#close').textContent(),'AskMarker 접기');assert.equal(await ext.locator('#reading-mode').textContent(),'읽기 모드 ON');
   const computed=el=>{const s=getComputedStyle(el);return {border:s.borderRadius,font:s.fontFamily,size:s.fontSize,height:s.minHeight}};
   const modeStyle=await ext.locator('#reading-mode').evaluate(computed),controlStyle=await ext.locator('#close').evaluate(computed);
-  await ext.locator('#close').click();assert.deepEqual(await ext.locator('#mode-compact').evaluate(computed),modeStyle);assert.deepEqual(await ext.locator('#launcher').evaluate(computed),controlStyle);assert.equal(await ext.locator('#launcher').textContent(),'Askmark 펼치기');
+  await ext.locator('#close').click();assert.deepEqual(await ext.locator('#mode-compact').evaluate(computed),modeStyle);assert.deepEqual(await ext.locator('#launcher').evaluate(computed),controlStyle);assert.equal(await ext.locator('#launcher').textContent(),'AskMarker 펼치기');
   await ext.locator('#mode-compact').click();await ext.locator('#launcher').click();assert.equal(await ext.locator('#reading-mode').textContent(),'읽기 모드 OFF');assert.equal(await p.locator('[data-qb-inline]').count(),0);await ext.locator('#reading-mode').click();
   check('Expanded/collapsed controls share styles and labels; reading mode remains independent and available');
   const before=await noteData(),nativeFont=await p.locator('#first').evaluate(el=>getComputedStyle(el).fontFamily),codeFont=await p.locator('#code-font').evaluate(el=>getComputedStyle(el).fontFamily);
@@ -59,6 +59,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   await ext.locator('#close').click();await p.screenshot({path:path.join(out,'compact-dark.png'),animations:'disabled'});
   await p.setViewportSize({width:850,height:600});await ext.locator('#launcher').click();await ext.locator('#font-family').selectOption('mono');await ext.locator('#select-all').scrollIntoViewIfNeeded();assert.equal(await ext.locator('#reading-mode').count(),1);
   assert.deepEqual(errors,[]);check('Light/dark and compact screenshots; short-window controls remain reachable; no runtime errors');
-  fs.writeFileSync(path.join(out,'appearance-delivery-results.json'),JSON.stringify({version:'0.7.0',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; not live ChatGPT',checks,errors},null,2));
+  fs.writeFileSync(path.join(out,'appearance-delivery-results.json'),JSON.stringify({version:'0.7.1',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; not live ChatGPT',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

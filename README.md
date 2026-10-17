@@ -1,27 +1,31 @@
-# Askmark
+# AskMarker
 
 **Read. Mark. Ask again.**
 
-Highlight AI answers, add questions beneath the source, and collect the exact quote/question pairs into your next prompt. Use Askmark across AI chats, including **ChatGPT, Gemini and Grok**. Built around a ChatGPT reading workflow, with a general web-page mode for other services. No AI API key, server or separate account.
+Highlight AI answers, add questions beneath the source, and collect the exact quote/question pairs into your next prompt. Use AskMarker across AI chats, including **ChatGPT, Gemini and Grok**. Built around a ChatGPT reading workflow, with a general web-page mode for other services. No AI API key, server or separate account.
 
 [한국어 안내](README.ko.md) · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md)
 
-![Askmark 0.7.0 on a synthetic demonstration page](docs/images/v0.7.0-boxes-dark.png)
+![AskMarker 0.7.1 on a synthetic demonstration page](docs/images/v0.7.1-boxes-dark.png)
 
 *Actual unpacked extension on synthetic HTML, not a live ChatGPT conversation. UI language: Korean.*
 
-## What's new in 0.7.0
+## What's new in 0.7.1
+
+Renamed to **AskMarker** across the extension, panel controls, documentation and downloads. Existing note/settings keys and the backup format are unchanged. Update the files in your existing registered folder to retain the extension ID and history. The repository is now [choiys1200/AskMarker](https://github.com/choiys1200/AskMarker).
+
+## Features introduced in 0.7.0
 
 - Modular source boundaries for source anchoring, prompt formatting, composer delivery, storage choices, cards and appearance. Appearance changes cannot write notes or prompt membership.
 - Refined light/dark UI with consistent reading-mode and expand/collapse controls.
-- System/local font options for Askmark and answer paragraphs in reading mode. Code fonts remain unchanged; no downloaded fonts.
+- System/local font options for AskMarker and answer paragraphs in reading mode. Code fonts remain unchanged; no downloaded fonts.
 - Adjustable pointer opacity/intensity, with the same eight-color radial glow.
 - Selection in ChatGPT's editable writing blocks, including email/message examples; notes appear below the complete writing/code box without modifying its editor document.
 - Successfully appending a prompt clears its captured question selections. Notes and annotations remain. New questions start checked; recheck old ones to reuse them. Failed/cancelled insertions and clipboard-only copies keep selections.
 
 ## Use
 
-1. On ChatGPT, Askmark loads automatically. On Gemini, Grok or another ordinary web page, click the **Askmark extension icon** first. Enable reading mode and select a passage. A small **질문 추가** (Add question) button appears without opening an editor.
+1. On ChatGPT, AskMarker loads automatically. On Gemini, Grok or another ordinary web page, click the **AskMarker extension icon** first. Enable reading mode and select a passage. A small **질문 추가** (Add question) button appears without opening an editor.
 2. Click it, write beneath the source and save. Repeat as you read.
 3. Choose colors, local fonts and pointer intensity in the right-hand panel. Per-question color dots stay compact.
 4. Check the questions to include. On ChatGPT, click its input and confirm **모아서 입력**, or use the panel's append button. Existing input is preserved; duplicates are skipped. On other services, use **바로 복사** (Copy) or the editable preview, then paste into that service's input.
@@ -31,26 +35,26 @@ Editable preview, clipboard copy, select/deselect all, local backup/import, and 
 
 ## Install / update
 
-[Install ZIP](releases/askmark-v0.7.0.zip) · [Complete source ZIP](releases/askmark-v0.7.0-source.zip)
+[Install ZIP](releases/askmarker-v0.7.1.zip) · [Complete source ZIP](releases/askmarker-v0.7.1-source.zip)
 
-Extract the install ZIP, open `chrome://extensions`, enable Developer mode and load the `askmark` directory containing `manifest.json`. The install ZIP is prebuilt; Node.js is not needed.
+Extract the install ZIP, open `chrome://extensions`, enable Developer mode and load the `askmarker` directory containing `manifest.json`. The install ZIP is prebuilt; Node.js is not needed.
 
-**Existing users:** back up notes, then overwrite `manifest.json`, `content.js` and `background.js` **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.0** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
+**Existing users:** back up notes, then overwrite `manifest.json`, `content.js` and `background.js` **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.1** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
 
 ## Site support and verification
 
 | Capability | ChatGPT | Gemini, Grok and other ordinary AI web pages |
 | --- | --- | --- |
-| Start Askmark | Automatic | Click the extension icon on the page |
+| Start AskMarker | Automatic | Click the extension icon on the page |
 | Select text, highlight, add questions, sidebar, preview and copy | Dedicated answer integration | General web-page mode for selectable DOM text |
 | Append to the AI input / click-to-confirm prompt offer | Yes | Copy and paste manually |
 | Exact source restoration | Message identity and text offsets | Exact indexed page text; page changes may hide annotations while retaining the notes |
 
-Other services do not need a separate AI API integration for marking and copying. This is **not a promise of every renderer or feature on every AI site**: embedded frames, closed shadow roots, non-text surfaces and editable answer widgets may not be selectable by the general adapter. Other-site records are separated by full page URL; chats that reuse one URL share that bucket. Answer-body font overrides and editable writing-box handling are currently ChatGPT-specific. Askmark's own UI font settings apply everywhere.
+Other services do not need a separate AI API integration for marking and copying. This is **not a promise of every renderer or feature on every AI site**: embedded frames, closed shadow roots, non-text surfaces and editable answer widgets may not be selectable by the general adapter. Other-site records are separated by full page URL; chats that reuse one URL share that bucket. Answer-body font overrides and editable writing-box handling are currently ChatGPT-specific. AskMarker's own UI font settings apply everywhere.
 
-Sixteen validation suites: thirteen MV3/browser fixture suites, two mocked-storage/browser DOM suites, and one Node module-contract suite. Tests cover repeated cancellation, source restoration, old notes, draft retention under appearance changes, and successful/failed delivery selection behavior. The additional general-mode suite exercises synthetic pages at Gemini/Grok URLs with test-only host grants; it verifies runtime injection, marking, storage, preview and clipboard, not live site compatibility or the toolbar permission handshake.
+The 0.7.1 rename was checked with three real MV3/browser fixture suites (appearance/delivery, code/writing boxes and the main extension flow) and the Node module-contract suite. They cover the new labels, small-window layout, existing notes, repeated selection/cancellation and prompt delivery. The previous 0.7.0 release passed all sixteen suites, including the synthetic Gemini/Grok general-mode tests.
 
-The live ChatGPT writing-block structure was inspected in Chrome with v0.6.4 loaded. The browser tool blocked access to extension management, so **v0.7.0 has not been installed and interactively verified on live ChatGPT or the company PC. Live Gemini/Grok sessions are also unverified.** See [the report](docs/VALIDATION.md).
+These are isolated-browser fixtures, not live AI sessions. **Live 0.7.1 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
 
 ## Development
 

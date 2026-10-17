@@ -1,0 +1,35 @@
+{
+  "version": "0.7.1",
+  "product": "AskMarker",
+  "completedUTC": "2026-10-17T05:35:18.398146+00:00",
+  "contentSha256": "84bafef987312a92292cee826f3720ca37012d9d68553152e29a1a2525a319f4",
+  "suites": [
+    {
+      "suite": "appearance-delivery",
+      "result": "PASS",
+      "environment": "Real MV3 + synthetic HTML",
+      "evidence": "appearance-delivery.json"
+    },
+    {
+      "suite": "boxed-content",
+      "result": "PASS",
+      "environment": "Real MV3 + synthetic HTML",
+      "evidence": "boxed-content.json"
+    },
+    {
+      "suite": "extension",
+      "result": "PASS",
+      "environment": "Real MV3 + synthetic HTML",
+      "evidence": "extension.json"
+    },
+    {
+      "suite": "module-contract",
+      "result": "PASS",
+      "environment": "Node contract",
+      "evidence": "module-contract.json"
+    }
+  ],
+  "liveAISites": "NOT VERIFIED",
+  "companyPC": "NOT VERIFIED",
+  "storageContract": "Unchanged qb:* keys and question-basket-backup format; keep registered installation directory"
+}

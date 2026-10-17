@@ -8,3 +8,4 @@ test-results/
 __pycache__/
 question-basket-backup*.json
 askmark-backup*.json
+askmarker-backup*.json
