@@ -1,0 +1,19 @@
+{
+  "environment": "Real unpacked MV3 extension, isolated Chromium, local fixture. CDP fault-injected Document.host=HTMLCollection in the extension isolated world. Not live ChatGPT; the actual host value on the user page is not known.",
+  "results": [
+    {
+      "version": "0.6.4",
+      "documentHost": {
+        "type": "HTMLCollection",
+        "length": 2,
+        "method": "undefined"
+      },
+      "result": "PASS",
+      "realMouseCancelCycles": 10,
+      "savedAndRestored": 2,
+      "promptVerified": true,
+      "siteNamedFormsUntouched": true,
+      "errors": []
+    }
+  ]
+}

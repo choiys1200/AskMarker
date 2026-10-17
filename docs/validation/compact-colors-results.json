@@ -1,0 +1,12 @@
+{
+  "version": "0.6.2",
+  "environment": "Real MV3 extension in Chromium; synthetic HTML, NOT live ChatGPT",
+  "buttonSize": 12,
+  "paletteHeight": 16,
+  "checks": [
+    "Per-question buttons are 12x12px; palette row 16px high; all eight colors remain in one line",
+    "Real mouse clicks on every small dot update selected name, ring, highlight and source bubble independently",
+    "Light/dark screenshots checked; persisted color; no runtime errors"
+  ],
+  "errors": []
+}

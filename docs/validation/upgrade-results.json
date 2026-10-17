@@ -1,0 +1,7 @@
+{
+  "test": "0.2 extension installation → save in chrome.storage.local → close browser → replace three files at SAME extension path → reopen SAME profile → 0.6.1 startup",
+  "result": "PASS",
+  "sameExtensionId": true,
+  "recordUnchanged": true,
+  "bubbleRestored": true
+}

@@ -1,0 +1,14 @@
+{
+  "environment": "Browser DOM with mocked chrome.storage; not extension integration and not live ChatGPT",
+  "checks": [
+    "Storage failure retains input; cancel then select recovers",
+    "Pending storage write does not block new selection or swap its source",
+    "Delayed storage read cannot reselect a question after its exclusion was saved",
+    "Prompt-choice storage failure restores the persisted checkbox without deleting notes",
+    "Raw source extraction excludes extension UI across paragraphs"
+  ],
+  "selectionComparison": {
+    "selection": "AI 답변을 읽다가 궁금한 문장을 드래그합니다. 이 문장의 근거가 궁금하면 질문을 남겨 보세요.\n\n읽던 흐름을 유지하면서 여러 개의 질문을 모을 수 있습니다. 모두 읽은 뒤 하나의 프롬프트로 정리합니다.",
+    "range": "AI 답변을 읽다가 궁금한 문장을 드래그합니다. 이 문장의 근거가 궁금하면 질문을 남겨 보세요.읽던 흐름을 유지하면서 여러 개의 질문을 모을 수 있습니다. 모두 읽은 뒤 하나의 프롬프트로 정리합니다."
+  }
+}

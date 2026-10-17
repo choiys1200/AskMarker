@@ -1,0 +1,30 @@
+{
+  "environment": "Local browser fixture with mocked storage. No live ChatGPT verification.",
+  "results": [
+    {
+      "case": "empty basket disabled button cursor",
+      "version": "0.6.1",
+      "cursor": "default"
+    },
+    {
+      "case": "selection includes an inline citation button",
+      "version": "0.6.1",
+      "editorOpened": true
+    },
+    {
+      "case": "site consumes document pointerup",
+      "version": "0.6.1",
+      "editorOpened": true
+    },
+    {
+      "case": "manual selection fallback → inline input → save → generate enabled",
+      "version": "0.6.1",
+      "result": "PASS"
+    },
+    {
+      "case": "v0.3.0 anchor still restores even when source contains citation buttons",
+      "version": "0.6.1",
+      "result": "PASS"
+    }
+  ]
+}
