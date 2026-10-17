@@ -11,7 +11,7 @@ const fixture=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8');
  const check=(name,details)=>{results.push({name,result:'PASS',details});console.log('PASS',name);};
  try{
  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');
- const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.7.0');check('Real extension loaded',{version:manifest.version,browser:ctx.browser()?.version(),extensionId:await worker.evaluate(()=>chrome.runtime.id)});
+ const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.7.1');check('Real extension loaded',{version:manifest.version,browser:ctx.browser()?.version(),extensionId:await worker.evaluate(()=>chrome.runtime.id)});
  await ctx.route('https://chatgpt.com/**',r=>r.fulfill({status:200,contentType:'text/html',body:fixture}));
  const page=ctx.pages()[0]||await ctx.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto('https://chatgpt.com/c/local-fixture');
@@ -50,7 +50,7 @@ const fixture=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8');
  }
  await saveDraft(b,'첫 질문의 근거를 알려 주세요.');await countSaved(1);
  b=await drag('second');assert.equal(await ext.locator('#color-palette').getByRole('button',{name:'핑크',exact:true}).getAttribute('aria-pressed'),'true');await ext.locator('#color-palette').getByRole('button',{name:'보라',exact:true}).click();await saveDraft(b,'두 번째 원문을 더 쉽게 설명해 주세요.');await countSaved(2);
- await ext.getByRole('button',{name:'Askmark 접기',exact:true}).click();
+ await ext.getByRole('button',{name:'AskMarker 접기',exact:true}).click();
  b=await drag('third');await ext.locator('#launcher').click();await ext.locator('#color-palette').getByRole('button',{name:'파랑',exact:true}).click();await saveDraft(b,'세 번째 질문입니다.');await countSaved(3);assert.equal(await inline().count(),3);assert.equal(await hcount(),3);
  check('04,06,07: three successive notes, five colors, last-color default, collapsed panel');
  // A nonempty draft must keep its source and input while another selection is made.

@@ -1,6 +1,6 @@
 {
-  "name": "askmark",
-  "version": "0.7.0",
+  "name": "askmarker",
+  "version": "0.7.1",
   "private": true,
   "description": "Highlight AI answers. Collect questions. Ask again.",
   "scripts": {

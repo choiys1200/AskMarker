@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Askmark · 질문 바구니",
-  "version": "0.7.0",
+  "name": "AskMarker",
+  "version": "0.7.1",
   "description": "읽다가 선택한 문장에 질문을 달고, 모아서 하나의 후속 프롬프트로 만듭니다.",
   "minimum_chrome_version": "111",
   "permissions": [
@@ -14,7 +14,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Askmark 켜기 / 열기"
+    "default_title": "AskMarker 켜기 / 열기"
   },
   "content_scripts": [
     {

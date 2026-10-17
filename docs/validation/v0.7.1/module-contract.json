@@ -1,0 +1,8 @@
+{
+  "environment": "Node unit/architecture tests; no browser",
+  "checks": [
+    "Pure prompt formatting preserves exact pairs/order; appearance values validated without DOM",
+    "Consumed membership survives delayed reads; new note/conversation defaults; external changes; persistence failure reported",
+    "Appearance/panel dependency contract forbids core note, choice, source and composer access"
+  ]
+}
