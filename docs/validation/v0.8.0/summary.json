@@ -1,0 +1,144 @@
+{
+  "version": "0.8.0",
+  "completedUTC": "2026-10-17T07:29:23.290144+00:00",
+  "runtimeProvenance": "Executable files and PNG icons extracted from installation ZIP. Final ZIP executable hashes match the tested runtime. Tests/fixtures came from source ZIP; edge default-color expectation updated to purple.",
+  "runtimeSha256": {
+    "manifest.json": "6cbd6d1edfcd862b5feec3971b4767c40aa680ad012bd8369f17992bb6a70b36",
+    "background.js": "32510fec00bfe6a2d1741e9de22ce4381f4313c04ce78d22aaaaa3fdfc3a0859",
+    "content.js": "8baa51c3aba154750f0a7a060341cee6a7cd002045b8e183475242849fc8fdfa",
+    "assets/icons/markchat-128.png": "b83b5943e0a477a7f2f85ab5c066be0339bd6fc64c7faa83f1d76294785f9929",
+    "assets/icons/markchat-16.png": "af734c156bfd5af1c0ede3998dbcb36bc4f51e05cce60b24ac89f426a1868dd8",
+    "assets/icons/markchat-24.png": "78852694e1ef4d9426cc69bdf507aaf48e52ab2a3010dce1f5385aeb75844064",
+    "assets/icons/markchat-256.png": "6f294988aa8df11a34d1abb1360384a9a00f93e3eb1d620b875c19a862fa2bf6",
+    "assets/icons/markchat-32.png": "618b7a75d844477098c506b525b2bd244f2166d5e9156d19635b9890ea2d5a0c",
+    "assets/icons/markchat-48.png": "0a253e42c8d2bb87a55696fc553d067172cccc8c62dd1b0971706df4999e8781"
+  },
+  "contentSha256": "8baa51c3aba154750f0a7a060341cee6a7cd002045b8e183475242849fc8fdfa",
+  "counts": {
+    "mv3-fixture": 13,
+    "mv3-fixture-test-hosts": 2,
+    "mv3-update-instrumented": 1,
+    "mock-storage-browser": 2,
+    "node-contract": 1
+  },
+  "suites": [
+    {
+      "suite": "appearance-delivery-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "appearance-delivery-test.json"
+    },
+    {
+      "suite": "automation-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "automation-test.json"
+    },
+    {
+      "suite": "boxed-content-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "boxed-content-test.json"
+    },
+    {
+      "suite": "bubble-flow-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "bubble-flow-test.json"
+    },
+    {
+      "suite": "cross-site-composer-test",
+      "environment": "mv3-fixture-test-hosts",
+      "result": "PASS",
+      "evidence": "cross-site-composer-test.json"
+    },
+    {
+      "suite": "dock-text-size-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "dock-text-size-test.json"
+    },
+    {
+      "suite": "edge-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "edge-test.json"
+    },
+    {
+      "suite": "extension-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "extension-test.json"
+    },
+    {
+      "suite": "generic-sites-test",
+      "environment": "mv3-fixture-test-hosts",
+      "result": "PASS",
+      "evidence": "generic-sites-test.json"
+    },
+    {
+      "suite": "icon-upgrade-test",
+      "environment": "mv3-update-instrumented",
+      "result": "PASS",
+      "evidence": "icon-upgrade-test.json"
+    },
+    {
+      "suite": "interaction-test",
+      "environment": "mock-storage-browser",
+      "result": "PASS",
+      "evidence": "interaction-test.json"
+    },
+    {
+      "suite": "mock-test",
+      "environment": "mock-storage-browser",
+      "result": "PASS",
+      "evidence": "mock-test.json"
+    },
+    {
+      "suite": "modern-chatgpt-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "modern-chatgpt-test.json"
+    },
+    {
+      "suite": "module-contract-test",
+      "environment": "node-contract",
+      "result": "PASS",
+      "evidence": "module-contract-test.json"
+    },
+    {
+      "suite": "prompt-selection-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "prompt-selection-test.json"
+    },
+    {
+      "suite": "reading-mode-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "reading-mode-test.json"
+    },
+    {
+      "suite": "root-host-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "root-host-test.json"
+    },
+    {
+      "suite": "selection-action-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "selection-action-test.json"
+    },
+    {
+      "suite": "selection-compatibility-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "selection-compatibility-test.json"
+    }
+  ],
+  "liveDOMObservation": "Gemini Quill textbox and Grok ProseMirror combobox attributes observed read-only in connected Chrome",
+  "liveNewVersionInsertion": "NOT VERIFIED: provider frameworks, live service insertion and toolbar activeTab click not exercised",
+  "companyPC": "NOT VERIFIED",
+  "screenshots": "Local work only, no screenshots in repository or ZIP"
+}

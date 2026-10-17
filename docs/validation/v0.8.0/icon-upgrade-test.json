@@ -1,0 +1,9 @@
+{
+  "version": "0.8.0",
+  "environment": "Actual packaged 0.7.3 update in isolated Chromium, successful real action API instrumented; AI page is synthetic",
+  "checks": [
+    "0.7.3 → 0.8.0 update keeps extension ID and every non-icon storage value; Chrome accepts fixed MarkChat; options registration removed",
+    "Updated panel retains saved question, prompt membership and reading controls with no icon-choice button",
+    "Restart keeps the single manifest icon and preserved records; obsolete option files left by overwrite cannot restore the chooser"
+  ]
+}

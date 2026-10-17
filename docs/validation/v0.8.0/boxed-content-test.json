@@ -1,0 +1,16 @@
+{
+  "environment": "MV3 + synthetic boxes based on live observed DOM; not live installed-version validation",
+  "results": [
+    {
+      "version": "0.8.0",
+      "result": "PASS",
+      "checks": [
+        "Ten real mouse drag/add/cancel cycles in editable mail and syntax-highlighted code",
+        "Saved box notes highlight source and sit below the box; source editor/code contents untouched",
+        "New and v0.6.4 anchors coexist; reload, narrow viewport and internal scroll preserve box connection",
+        "Edited source detaches only affected modern anchors without deleting notes; unrelated editor rejected; no errors"
+      ],
+      "errors": []
+    }
+  ]
+}

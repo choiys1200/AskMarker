@@ -2,93 +2,45 @@
 
 **Read. Mark. Ask again.**
 
-Highlight AI answers, add questions beneath the source, and collect the exact quote/question pairs into your next prompt. Use AskMarker across AI chats, including **ChatGPT, Gemini and Grok**. Built around a ChatGPT reading workflow, with a general web-page mode for other services. No AI API key, server or separate account.
+Highlight AI answers, ask beneath the source, and collect exact quote/question pairs into your next prompt. Use AskMarker with ChatGPT, Gemini, Grok and other AI pages containing selectable text. No AI API key, server or separate account.
 
-[한국어 안내](README.ko.md) · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md)
+[한국어 안내](README.ko.md) · [Install ZIP](releases/askmarker-v0.8.0.zip) · [Complete source](releases/askmarker-v0.8.0-source.zip) · [Validation](docs/VALIDATION.md) · [Architecture](docs/ARCHITECTURE.md)
 
-## Fixes and package verification in 0.7.7
+## New in 0.8.0
 
-Fixed clipped panel footers with large text at intermediate window heights and restored missing appearance-key imports used by backup export. All 18 regression suites passed against executable files extracted from the install ZIP in isolated Chromium. Live AI sessions and the company PC remain unverified.
-
-## New in 0.7.6
-
-- Drag the handle above the compact right-hand menu to move it vertically. The saved position survives expand/collapse and reload; window resizing keeps it reachable. Arrow keys and Home/End work on the handle.
-- Removed expand/collapse arrows and increased primary menu text from 12px to 13px, with consistent styling in both states.
-- Text size: **Current (default)**, **System/browser default**, or **Custom (80–160%)**. This scales AskMarker menus and question bubbles. Source text keeps the site's size. System mode uses the browser default, not a direct OS text-size API.
-- Text size and dock position have their own settings and presentation modules, independent of notes and prompt choices.
-
-## Icon
-
-Version 0.7.5 also displays the same MarkChat question-mark icon beside AskMarker in the expanded panel.
-
-**MarkChat is the single fixed AskMarker icon.** The speech bubble and highlighted line identify the extension in the toolbar and extension manager. No icon chooser or extra setup is needed. The enlarged artwork from 0.7.3 is retained.
-
-Version 0.7.4 removes the other four designs, the options page and its panel button. Updates clear only the retired icon preference; saved questions and reading settings are preserved. Original SVG and six transparent PNG sizes are included in the source archive.
-
-## What's new in 0.7.1
-
-Renamed to **AskMarker** across the extension, panel controls, documentation and downloads. Existing note/settings keys and the backup format are unchanged. Update the files in your existing registered folder to retain the extension ID and history. The repository is now [choiys1200/AskMarker](https://github.com/choiys1200/AskMarker).
-
-## Features introduced in 0.7.0
-
-- Modular source boundaries for source anchoring, prompt formatting, composer delivery, storage choices, cards and appearance. Appearance changes cannot write notes or prompt membership.
-- Refined light/dark UI with consistent reading-mode and expand/collapse controls.
-- System/local font options for AskMarker and answer paragraphs in reading mode. Code fonts remain unchanged; no downloaded fonts.
-- Adjustable pointer opacity/intensity, with the same eight-color radial glow.
-- Selection in ChatGPT's editable writing blocks, including email/message examples; notes appear below the complete writing/code box without modifying its editor document.
-- Successfully appending a prompt clears its captured question selections. Notes and annotations remain. New questions start checked; recheck old ones to reuse them. Failed/cancelled insertions and clipboard-only copies keep selections.
+- Gemini Quill and Grok ProseMirror/combobox composer recognition, plus ordinary textarea and editable textbox/combobox support on other sites.
+- Hover briefly over the input, or click it, to offer **모아서 입력** (Collect and append). Confirmation preserves existing text, skips pairs already present, and unchecks delivered questions. The extension never sends the message.
+- The right-panel offer toggle works across sites. Manual append remains available while automatic offers are off. With multiple editors, point to or click the intended editor rather than guessing a target.
+- Text size defaults to **System/browser default**. **Custom input** accepts 80–160% through a number field or slider, affecting AskMarker UI and question bubbles.
+- Default purple is **#6554e8**, the MarkChat icon color. The previous purple is replaced, keeping eight colors. Explicit previous color choices and per-note keys are preserved.
 
 ## Use
 
-1. On ChatGPT, AskMarker loads automatically. On Gemini, Grok or another ordinary web page, click the **AskMarker extension icon** first. Enable reading mode and select a passage. A small **질문 추가** (Add question) button appears without opening an editor.
-2. Click it, write beneath the source and save. Repeat as you read.
-3. Choose colors, local fonts and pointer intensity in the right-hand panel. Per-question color dots stay compact.
-4. Check the questions to include. On ChatGPT, click its input and confirm **모아서 입력**, or use the panel's append button. Existing input is preserved; duplicates are skipped. On other services, use **바로 복사** (Copy) or the editable preview, then paste into that service's input.
-5. Review and send yourself. After successful ChatGPT insertion, the consumed questions are unchecked so the next reading round starts with only new questions selected. Clipboard-only copies keep selections; use **선택 해제** after pasting when you want a fresh batch.
+1. ChatGPT loads automatically. On Gemini, Grok or another ordinary page, click the **AskMarker toolbar icon** first.
+2. Enable reading mode, select a passage, click **질문 추가** (Add question), then save beneath the source. Repeat while reading.
+3. Check questions in the sidebar. New questions start checked; previously delivered questions require explicit reselection.
+4. Hover over or click the AI input and confirm **모아서 입력**. Review and send yourself. Alternatively use manual append, editable preview or clipboard copy. Copy alone keeps selections.
 
-Editable preview, clipboard copy, select/deselect all, local backup/import, and synchronized inline/sidebar editing remain available. Reading mode and panel collapse are independent. Turning reading mode off hides annotations and preserves notes. Unsaved drafts survive mode toggles in the current tab, not reloads or tab closure. If exact source identity cannot be confirmed, notes stay in the list without attaching to another sentence.
+Inline notes, highlights and sidebar editing stay synchronized. Reading mode OFF hides source annotations and retains records. Unsaved drafts survive mode toggles in the current tab, not reloads or closure. The compact right-hand dock moves vertically through its top handle; position persists and stays inside the viewport. Keyboard arrows and Home/End also work.
+
+## Scope
+
+ChatGPT uses dedicated answer/composer recognition and conversation IDs. Gemini and Grok use observed composer attributes with general source anchoring. Other pages use ordinary DOM editor recognition. Other-site records are separated by the full page URL; multiple chats reusing one URL share a bucket. Changed sources remain in the list without guessing a new anchor.
+
+This does not promise every renderer on every AI site. Frames, closed shadow roots, non-text surfaces and specialized editors may not be recognized. If input acceptance cannot be confirmed, choices stay selected and copying remains available. Rich editors may display paragraph breaks differently from plain textareas; exact quote/question wording is retained.
 
 ## Install / update
 
-[Install ZIP](releases/askmarker-v0.7.7.zip) · [Complete source ZIP](releases/askmarker-v0.7.7-source.zip)
+Extract the prebuilt install ZIP and load its `askmarker` folder with Chrome Developer mode. Node.js is not required.
 
-Extract the install ZIP, open `chrome://extensions`, enable Developer mode and load the `askmarker` directory containing `manifest.json`. The install ZIP is prebuilt; Node.js is not needed.
+Existing users: back up records, overwrite **all ZIP files/subdirectories in the existing registered folder**, reload the extension and refresh the page. On Gemini/Grok and other manually activated pages, click the extension icon again. Confirm **v0.8.0**. Keep the original extension/path to preserve its ID and local storage. Note keys, prompt choices and backup format remain compatible. Retired Current size mode reads as System; explicit Custom values remain. Legacy colorless notes retain their yellow fallback.
 
-**Existing users:** back up notes, then overwrite **all files and subdirectories from the new ZIP, including `assets/`** **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.7** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
+## Validation
 
-## Site support and verification
+All 19 suites passed against executable files extracted from the install ZIP. Actual Gemini/Grok editor attributes were inspected read-only in connected Chrome; synthetic fixtures exercised those structures. **New-version insertion on live providers, their real editor frameworks and the company PC remain unverified.** See the environment-specific [report](docs/VALIDATION.md).
 
-| Capability | ChatGPT | Gemini, Grok and other ordinary AI web pages |
-| --- | --- | --- |
-| Start AskMarker | Automatic | Click the extension icon on the page |
-| Select text, highlight, add questions, sidebar, preview and copy | Dedicated answer integration | General web-page mode for selectable DOM text |
-| Append to the AI input / click-to-confirm prompt offer | Yes | Copy and paste manually |
-| Exact source restoration | Message identity and text offsets | Exact indexed page text; page changes may hide annotations while retaining the notes |
+## Development / privacy
 
-Other services do not need a separate AI API integration for marking and copying. This is **not a promise of every renderer or feature on every AI site**: embedded frames, closed shadow roots, non-text surfaces and editable answer widgets may not be selectable by the general adapter. Other-site records are separated by full page URL; chats that reuse one URL share that bucket. Answer-body font overrides and editable writing-box handling are currently ChatGPT-specific. AskMarker's own UI font settings apply everywhere.
+Edit `src/`, then run `npm run build`, `npm run check:build`, `npm test` and `python scripts/package.py`. Tests require Playwright and extension-capable Chromium; set `QA_BROWSER` and optionally `QA_PYTHON`/`QA_OUTPUT`. The build uses static local modules with no eval or network loader.
 
-Version 0.7.7 passed all 18 regression suites: packaged-runtime UI/selection/delivery checks, backup round trips, storage-failure simulations, module contracts and an update from packaged 0.7.3. Environment and instrumentation boundaries are documented in the validation report.
-
-These are isolated-browser fixtures, not live AI sessions. **Live 0.7.7 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
-
-## Development
-
-Edit **`src/`**, not generated `content.js`. See [module responsibilities and extension rules](docs/ARCHITECTURE.md).
-
-```sh
-npm install
-npm run build
-npm run check:build
-npm test
-python scripts/package.py
-```
-
-Set `QA_PYTHON` to Python for the packaged-version update check. Set `QA_BROWSER` to an extension-capable Chromium executable and optionally `QA_OUTPUT` to a test-artifact directory. The static CommonJS/CSS/HTML bundler uses only Node built-ins: no eval, network loader or framework. The prebuilt content script and local PNG assets ship together; copy the complete runtime directory when updating.
-
-UI direction was informed by [21st.dev](https://21st.dev/); the implementation uses original local CSS rather than imported components.
-
-## Privacy
-
-Notes and settings are stored in `chrome.storage.local`. No network requests, font downloads or automatic message sending. Exported backups include selected quotes and questions; keep them private.
-
-Early release. AI sites' DOM changes may require compatibility fixes. Not affiliated with OpenAI, Google or xAI.
+Notes/settings use `chrome.storage.local`. No network calls, downloaded fonts or automatic sends. Backups contain selected quotes and questions. Not affiliated with OpenAI, Google or xAI.

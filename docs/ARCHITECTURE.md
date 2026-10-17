@@ -20,6 +20,7 @@
 | `src/storage/prompt-choices.js` | 체크 상태, 늦게 온 읽기/쓰기 충돌, 다른 탭 동기화 | 질문 내용, 형광펜, DOM |
 | `src/platform/selectors.js` | ChatGPT의 답변·입력창·작성 박스 경계 | 저장, 화면 설정 |
 | `src/platform/source.js` | 선택 허용, 원문 인덱스, 정확한 위치 복원, 배치 기준 | 저장소, 글꼴/포인터 설정 |
+| `src/platform/composer-sites.js` | 서비스별 입력창 선택자·이름 | 저장소, 질문, 전송 |
 | `src/platform/composer.js` | 기존 입력 보존, 중복 방지, 입력 후 수락 확인 | 질문 목록, 체크 상태 |
 | `src/ui/appearance.js` | 글꼴·포인터 진하기·UI 글씨 크기와 전용 설정 저장 | 질문/선택/원문/입력 어댑터 |
 | `src/ui/panel.js` | 펼침·접힘과 읽기 버튼 표시 | 질문 저장, 초안, 프롬프트 |
@@ -70,3 +71,12 @@ python scripts/package.py
 - `background.js`는 설치/업데이트 이벤트와 워커 시작 시 기본 아이콘을 적용하고 폐기한 `qb:appearance:icon:v1` 한 키만 정리합니다. 질문·체크·읽기 설정에는 접근하지 않습니다.
 - 기존 도구 모음 클릭의 콘텐츠 스크립트 실행은 유지합니다. 팝업이나 옵션 메뉴를 추가하지 않습니다.
 - `assets/icons/`에는 MarkChat의 원본 SVG와 16·24·32·48·128·256px PNG만 있습니다. `scripts/render-icons.cjs`는 개발용 재생성 도구입니다.
+
+
+## 0.8.0: 여러 AI 입력창과 기본값
+
+- `composer-sites.js`가 ChatGPT, 관찰한 Gemini/Grok 입력창, 일반 textarea/편집기 선택자를 구분합니다. 새 서비스의 DOM 규칙은 여기서 추가하며 원문 저장·복원과 분리합니다.
+- `composer.js`가 표시·편집 가능 여부와 검색/읽기 전용/우리 UI를 검사합니다. 여러 후보는 임의 선택하지 않고 사용자가 가리킨 대상만 기억합니다. DOM 교체 시 ID·태그·라벨 또는 유일한 후보로 재인식합니다.
+- 앱은 350ms hover 의도와 클릭 확인, 선택한 질문 묶음을 관리합니다. 안내는 포커스를 옮기거나 입력하지 않습니다. 입력/IME/단순 통과/ON-OFF 전환은 대기 타이머를 취소합니다. 실제 입력 성공 뒤에만 그 묶음의 체크를 해제합니다.
+- 글씨 크기 정규화는 System/Custom 두 모드이며 기본 System입니다. 구 Current 값은 System으로 읽고 Custom 퍼센트는 유지합니다. 숫자와 슬라이더는 같은 크기 상태를 사용합니다.
+- `DEFAULT_COLOR`는 새 질문의 purple이며 purple 팔레트는 아이콘의 #6554e8입니다. 저장된 질문을 쓰거나 색 키를 마이그레이션하지 않습니다. `colorOf`의 구버전 색 없음→yellow 계약은 유지합니다.

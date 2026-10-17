@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AskMarker",
-  "version": "0.7.7",
+  "version": "0.8.0",
   "description": "읽다가 선택한 문장에 질문을 달고, 모아서 하나의 후속 프롬프트로 만듭니다.",
   "minimum_chrome_version": "111",
   "permissions": [
