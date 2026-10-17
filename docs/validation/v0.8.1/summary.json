@@ -1,0 +1,54 @@
+{
+  "version": "0.8.1",
+  "completedUTC": "2026-10-17T07:39:15.010424+00:00",
+  "runtimeProvenance": "Install-ZIP executable files. Toolbar test copy captures the registered background callback and adds test-only host grants; callback invokes real chrome.scripting reinjection. Other browser suites use shipped manifest/runtime.",
+  "runtimeSha256": {
+    "manifest.json": "0551415f727d54c9e672c1bc06a85f5cbad71aee1c28055fb38f5e99402240e7",
+    "background.js": "32510fec00bfe6a2d1741e9de22ce4381f4313c04ce78d22aaaaa3fdfc3a0859",
+    "content.js": "8c2144ec6650ded6db4a350f32ea92ca6d9df42e307483f9c3480c49a63759fa",
+    "assets/icons/markchat-128.png": "b83b5943e0a477a7f2f85ab5c066be0339bd6fc64c7faa83f1d76294785f9929",
+    "assets/icons/markchat-16.png": "af734c156bfd5af1c0ede3998dbcb36bc4f51e05cce60b24ac89f426a1868dd8",
+    "assets/icons/markchat-24.png": "78852694e1ef4d9426cc69bdf507aaf48e52ab2a3010dce1f5385aeb75844064",
+    "assets/icons/markchat-256.png": "6f294988aa8df11a34d1abb1360384a9a00f93e3eb1d620b875c19a862fa2bf6",
+    "assets/icons/markchat-32.png": "618b7a75d844477098c506b525b2bd244f2166d5e9156d19635b9890ea2d5a0c",
+    "assets/icons/markchat-48.png": "0a253e42c8d2bb87a55696fc553d067172cccc8c62dd1b0971706df4999e8781"
+  },
+  "contentSha256": "8c2144ec6650ded6db4a350f32ea92ca6d9df42e307483f9c3480c49a63759fa",
+  "suites": [
+    {
+      "suite": "menu-visibility",
+      "environment": "mv3-toolbar-callback-instrumented",
+      "result": "PASS",
+      "evidence": "menu-visibility.json"
+    },
+    {
+      "suite": "appearance-delivery",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "appearance-delivery.json"
+    },
+    {
+      "suite": "dock-text-size",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "dock-text-size.json"
+    },
+    {
+      "suite": "module-contract",
+      "environment": "node-contract",
+      "result": "PASS",
+      "evidence": "module-contract.json"
+    },
+    {
+      "suite": "selection-action",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "selection-action.json"
+    }
+  ],
+  "scope": "Five suites relevant to compact-menu visibility; 0.8.0 full 19-suite run remains historical, not rerun in full.",
+  "actualToolbarUI": "NOT VERIFIED: registered callback invoked programmatically instead of a real toolbar UI click",
+  "liveAI": "NOT VERIFIED: synthetic ChatGPT/Gemini HTML in isolated Chromium",
+  "companyPC": "NOT VERIFIED",
+  "screenshots": "Local work only, no screenshots in repository or ZIP"
+}
