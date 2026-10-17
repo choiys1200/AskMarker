@@ -1,0 +1,20 @@
+{
+  "version": "0.7.0",
+  "environment": "Real MV3 extension loaded in Chromium; local HTML fixture; NOT live ChatGPT",
+  "checks": [
+    "Default OFF: native selection, no annotations, no laser",
+    "ON: ten actual drag/cancel cycles alternate same/different source",
+    "Laser follows pointer and cannot intercept text clicks or drags",
+    "Five colors, focused highlight, three saves, OFF keeps records and ON restores all",
+    "Typed draft source/color/text survives ON/OFF, panel editing and collapse; cancel recovers",
+    "Saved edit survives mode switch; OFF edits/color synchronize to ON bubble",
+    "OFF deletion removes only its note; shared-source annotation survives",
+    "Window/internal scrolling, resizing and DOM rerender while OFF restore correct flow",
+    "Reload starts OFF; persisted records restore when enabled",
+    "OFF prompt exact pairs, excludes draft, preserves composer and prevents duplicate",
+    "SPA conversation navigation isolates notes and retained drafts",
+    "A retained draft can be saved while OFF and restored as a saved bubble",
+    "No page or extension isolated-world runtime errors"
+  ],
+  "errors": []
+}

@@ -1,0 +1,116 @@
+{
+  "version": "0.7.0",
+  "completedUTC": "2026-10-17T02:13:30.079084+00:00",
+  "contentSha256": "41138766f2b5d80f62745e4d72c8eb55ec3a507e30db8a364c5e5a6636313958",
+  "suites": [
+    {
+      "suite": "appearance-delivery-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "appearance-delivery-test.json"
+    },
+    {
+      "suite": "automation-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "automation-test.json"
+    },
+    {
+      "suite": "boxed-content-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "boxed-content-test.json"
+    },
+    {
+      "suite": "bubble-flow-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "bubble-flow-test.json"
+    },
+    {
+      "suite": "edge-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "edge-test.json"
+    },
+    {
+      "suite": "extension-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "extension-test.json"
+    },
+    {
+      "suite": "generic-sites-test",
+      "environment": "mv3-fixture-test-hosts",
+      "result": "PASS",
+      "evidence": "generic-sites-test.json"
+    },
+    {
+      "suite": "interaction-test",
+      "environment": "mock-storage-browser",
+      "result": "PASS",
+      "evidence": "interaction-test.json"
+    },
+    {
+      "suite": "mock-test",
+      "environment": "mock-storage-browser",
+      "result": "PASS",
+      "evidence": "mock-test.json"
+    },
+    {
+      "suite": "modern-chatgpt-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "modern-chatgpt-test.json"
+    },
+    {
+      "suite": "module-contract-test",
+      "environment": "node-contract",
+      "result": "PASS",
+      "evidence": "module-contract-test.json"
+    },
+    {
+      "suite": "prompt-selection-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "prompt-selection-test.json"
+    },
+    {
+      "suite": "reading-mode-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "reading-mode-test.json"
+    },
+    {
+      "suite": "root-host-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "root-host-test.json"
+    },
+    {
+      "suite": "selection-action-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "selection-action-test.json"
+    },
+    {
+      "suite": "selection-compatibility-test",
+      "environment": "mv3-fixture",
+      "result": "PASS",
+      "evidence": "selection-compatibility-test.json"
+    }
+  ],
+  "counts": {
+    "mv3_fixture": 12,
+    "mv3_fixture_test_hosts": 1,
+    "mock_storage_browser": 2,
+    "node_contract": 1
+  },
+  "liveChatGPT": {
+    "observedVersion": "0.6.4",
+    "observation": "Read-only writing-block DOM inspection on 2026-10-17. No actual conversation content in fixtures.",
+    "installed070Interaction": "NOT VERIFIED: browser URL policy blocked extension management"
+  },
+  "liveGeminiGrok": "NOT VERIFIED: generic runtime tested on synthetic pages, not provider DOM or toolbar activeTab grant",
+  "companyPC": "NOT VERIFIED"
+}

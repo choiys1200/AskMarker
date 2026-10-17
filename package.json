@@ -1,10 +1,12 @@
 {
   "name": "askmark",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "private": true,
   "description": "Highlight AI answers. Collect questions. Ask again.",
   "scripts": {
-    "test": "node scripts/test.cjs"
+    "build": "node scripts/build.cjs",
+    "check:build": "node scripts/build.cjs --check",
+    "test": "node scripts/build.cjs --check && node scripts/test.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

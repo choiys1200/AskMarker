@@ -2,101 +2,74 @@
 
 **Read. Mark. Ask again.**
 
-Read a long ChatGPT answer, select a passage, and click **질문 추가** (Add question) to write right beneath it. Keep reading, then collect your quotes and questions into one follow-up prompt.
+Highlight AI answers, add questions beneath the source, and collect the exact quote/question pairs into your next prompt. Use Askmark across AI chats, including **ChatGPT, Gemini and Grok**. Built around a ChatGPT reading workflow, with a general web-page mode for other services. No AI API key, server or separate account.
 
-[한국어 안내](README.ko.md) · [Validation](docs/VALIDATION.md)
+[한국어 안내](README.ko.md) · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md)
 
-![Askmark on a synthetic demonstration page](docs/images/compact-colors-dark.png)
+![Askmark 0.7.0 on a synthetic demonstration page](docs/images/v0.7.0-boxes-dark.png)
 
-*Screenshot: the actual extension on a synthetic test page, not a live ChatGPT conversation. The interface is currently in Korean.*
+*Actual unpacked extension on synthetic HTML, not a live ChatGPT conversation. UI language: Korean.*
 
-## What it does
+## What's new in 0.7.0
 
-- Reading mode with a soft pointer glow and persistent source highlights.
-- Selecting text shows a small **Add question** button. It does not open an editor, steal focus, or create a draft until you click it.
-- Inline question bubbles and a synchronized right-hand list.
-- Compact 12px color dots in each question card, with a selection ring, checkmark and color-name tooltip.
-- Eight colors selected from the right panel; the pointer follows the active question color.
-- Exact quote/question pairing, editing, deletion, and local backup/import.
-- A checkbox before each question title chooses whether to include it in the next prompt. Select or deselect all in one click. Unchecking keeps the record and annotations.
-- An editable follow-up prompt containing only checked questions; copy it or append it to ChatGPT's existing input.
-- Optional confirmation beside your pointer when clicking ChatGPT's input. Confirm to append checked pairs with duplicate protection. Askmark never submits the message.
-- No AI API key, server, or separate account.
-
-## Supported sites
-
-| Site | Status |
-| --- | --- |
-| ChatGPT (`chatgpt.com`) | Dedicated integration implemented; fixture-tested. Live installed-build verification remains outstanding. |
-| Claude, Gemini, Perplexity, other AI sites | Not supported or verified as dedicated integrations yet. |
-| Other ordinary web pages | Experimental toolbar-triggered injection exists. Do not assume reliable anchoring or AI-composer integration. |
-
-The current composer integration specifically targets ChatGPT. Other providers need their own answer recognition, conversation identity, source restoration, and input adapter. Multi-provider support is a future direction, not an existing feature.
-
-## Install
-
-[Install ZIP](releases/askmark-v0.6.4.zip) · [Complete source ZIP](releases/askmark-v0.6.4-source.zip)
-
-1. Download and extract [Askmark v0.6.4](releases/askmark-v0.6.4.zip), or download this repository.
-2. Open `chrome://extensions` and enable Developer mode.
-3. Choose **Load unpacked** and select the directory containing `manifest.json`.
-4. Refresh the ChatGPT tab. Open Askmark and enable reading mode.
-
-### Update from Question Basket
-
-Keep the existing installation directory and extension installed. Back up your notes, then replace `manifest.json`, `content.js`, and `background.js` in that same directory. Reload the extension **and** refresh the ChatGPT tab. Confirm v0.6.4 in the panel. Existing `qb:note:` records and backup format are preserved.
+- Modular source boundaries for source anchoring, prompt formatting, composer delivery, storage choices, cards and appearance. Appearance changes cannot write notes or prompt membership.
+- Refined light/dark UI with consistent reading-mode and expand/collapse controls.
+- System/local font options for Askmark and answer paragraphs in reading mode. Code fonts remain unchanged; no downloaded fonts.
+- Adjustable pointer opacity/intensity, with the same eight-color radial glow.
+- Selection in ChatGPT's editable writing blocks, including email/message examples; notes appear below the complete writing/code box without modifying its editor document.
+- Successfully appending a prompt clears its captured question selections. Notes and annotations remain. New questions start checked; recheck old ones to reuse them. Failed/cancelled insertions and clipboard-only copies keep selections.
 
 ## Use
 
-1. Enable reading mode and drag over an answer passage. Continue reading freely, or click the small **질문 추가** button.
-2. After clicking Add question, type in the bubble beneath the passage and save. Repeat while reading.
-3. Check only the questions you want in the next prompt. Save or cancel unfinished drafts, then click the ChatGPT input. Choose **모아서 입력** in the confirmation beside your pointer, or use the right-hand append/copy buttons.
-4. Review the prompt and send it yourself.
+1. On ChatGPT, Askmark loads automatically. On Gemini, Grok or another ordinary web page, click the **Askmark extension icon** first. Enable reading mode and select a passage. A small **질문 추가** (Add question) button appears without opening an editor.
+2. Click it, write beneath the source and save. Repeat as you read.
+3. Choose colors, local fonts and pointer intensity in the right-hand panel. Per-question color dots stay compact.
+4. Check the questions to include. On ChatGPT, click its input and confirm **모아서 입력**, or use the panel's append button. Existing input is preserved; duplicates are skipped. On other services, use **바로 복사** (Copy) or the editable preview, then paste into that service's input.
+5. Review and send yourself. After successful ChatGPT insertion, the consumed questions are unchecked so the next reading round starts with only new questions selected. Clipboard-only copies keep selections; use **선택 해제** after pasting when you want a fresh batch.
 
-Turning reading mode off hides source annotations, not saved records. Unsaved drafts survive mode changes in the current tab but not a reload or tab close. If exact source identity cannot be confirmed, the note stays in the right-hand list without being attached to another sentence.
+Editable preview, clipboard copy, select/deselect all, local backup/import, and synchronized inline/sidebar editing remain available. Reading mode and panel collapse are independent. Turning reading mode off hides annotations and preserves notes. Unsaved drafts survive mode toggles in the current tab, not reloads or tab closure. If exact source identity cannot be confirmed, notes stay in the list without attaching to another sentence.
 
-The selection button follows the passage during scrolling. Clicking elsewhere, pressing Esc, clearing the selection, or turning reading mode off dismisses it without changing saved questions or typed drafts. Selecting another passage replaces the pending selection only.
+## Install / update
 
-![Small Add question button after a reading selection](docs/images/selection-button.png)
+[Install ZIP](releases/askmark-v0.7.0.zip) · [Complete source ZIP](releases/askmark-v0.7.0-source.zip)
 
-Question checkboxes control prompt membership, independently of the active color/editor. New and older questions start checked; choices persist locally across refreshes and are included in backups. Uncheck old questions before the next prompt, or use **선택 해제** (Deselect all). Recheck a question to reuse it. The selection diagnostic copy button has been removed from the interface.
+Extract the install ZIP, open `chrome://extensions`, enable Developer mode and load the `askmark` directory containing `manifest.json`. The install ZIP is prebuilt; Node.js is not needed.
 
-The right-hand **입력창 클릭 시 모아 입력할지 묻기** checkbox controls the click confirmation independently of reading mode. Clearing the input allows you to add the checked pairs again after confirmation. Pairs already present in the current input are skipped. Both the legacy `#prompt-textarea` and current ID-less `data-composer-markdown` editor are recognized. A paragraph in a horizontal/grid layout keeps its question bubble below its text, rather than in another layout column.
+**Existing users:** back up notes, then overwrite `manifest.json`, `content.js` and `background.js` **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.0** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
 
-![Input confirmation on a synthetic test page, captured in v0.6.4](docs/images/composer-offer.png)
+## Site support and verification
 
-The generated prompt contains numbered quotes and your questions. The old instruction to ignore instructions inside quotes has been removed; the source quote and your question remain verbatim.
+| Capability | ChatGPT | Gemini, Grok and other ordinary AI web pages |
+| --- | --- | --- |
+| Start Askmark | Automatic | Click the extension icon on the page |
+| Select text, highlight, add questions, sidebar, preview and copy | Dedicated answer integration | General web-page mode for selectable DOM text |
+| Append to the AI input / click-to-confirm prompt offer | Yes | Copy and paste manually |
+| Exact source restoration | Message identity and text offsets | Exact indexed page text; page changes may hide annotations while retaining the notes |
 
-## Privacy
+Other services do not need a separate AI API integration for marking and copying. This is **not a promise of every renderer or feature on every AI site**: embedded frames, closed shadow roots, non-text surfaces and editable answer widgets may not be selectable by the general adapter. Other-site records are separated by full page URL; chats that reuse one URL share that bucket. Answer-body font overrides and editable writing-box handling are currently ChatGPT-specific. Askmark's own UI font settings apply everywhere.
 
-Notes are stored in `chrome.storage.local`. Askmark does not make network requests. Text is placed in the site's composer only through the described user actions; the user controls submission. Exported backups contain your selected quotes and questions, so keep them private.
+Sixteen validation suites: thirteen MV3/browser fixture suites, two mocked-storage/browser DOM suites, and one Node module-contract suite. Tests cover repeated cancellation, source restoration, old notes, draft retention under appearance changes, and successful/failed delivery selection behavior. The additional general-mode suite exercises synthetic pages at Gemini/Grok URLs with test-only host grants; it verifies runtime injection, marking, storage, preview and clipboard, not live site compatibility or the toolbar permission handshake.
+
+The live ChatGPT writing-block structure was inspected in Chrome with v0.6.4 loaded. The browser tool blocked access to extension management, so **v0.7.0 has not been installed and interactively verified on live ChatGPT or the company PC. Live Gemini/Grok sessions are also unverified.** See [the report](docs/VALIDATION.md).
 
 ## Development
 
-The extension is plain JavaScript and needs no build step. Tests use Node.js and Playwright:
+Edit **`src/`**, not generated `content.js`. See [module responsibilities and extension rules](docs/ARCHITECTURE.md).
 
 ```sh
 npm install
-```
-
-Set `QA_BROWSER` to an extension-capable Chromium executable, then:
-
-```sh
+npm run build
+npm run check:build
 npm test
-```
-
-Tests use isolated browser profiles and synthetic HTML routed under a ChatGPT URL. Two suites use mocked storage for failure injection. They do not prove compatibility with a live account's current ChatGPT renderer. See [validation details](docs/VALIDATION.md).
-
-To produce the install ZIP with Python 3:
-
-```sh
 python scripts/package.py
 ```
 
-## Release 0.6.4
+Set `QA_BROWSER` to an extension-capable Chromium executable and optionally `QA_OUTPUT` to a test-artifact directory. The static CommonJS/CSS/HTML bundler uses only Node built-ins: no eval, network loader or framework. The checked-in prebuilt content script keeps deployment compatible with the existing three-file extension runtime.
 
-Added **[ ] 질문 N** checkboxes for prompt inclusion, with select/deselect all and locally persisted choices. Preview, copy, manual append, and input-click confirmation all use only checked questions. Unchecking never deletes notes or annotations. Removed the selection diagnostic copy UI; stored-note format and permissions remain unchanged.
+UI direction was informed by [21st.dev](https://21st.dev/); the implementation uses original local CSS rather than imported components.
 
-## Project status
+## Privacy
 
-Early release. ChatGPT DOM changes can require compatibility fixes. This project is not affiliated with OpenAI.
+Notes and settings are stored in `chrome.storage.local`. No network requests, font downloads or automatic message sending. Exported backups include selected quotes and questions; keep them private.
+
+Early release. AI sites' DOM changes may require compatibility fixes. Not affiliated with OpenAI, Google or xAI.
