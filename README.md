@@ -8,6 +8,8 @@ Highlight AI answers, add questions beneath the source, and collect the exact qu
 
 ## Icon
 
+Version 0.7.5 also displays the same MarkChat question-mark icon beside AskMarker in the expanded panel.
+
 **MarkChat is the single fixed AskMarker icon.** The speech bubble and highlighted line identify the extension in the toolbar and extension manager. No icon chooser or extra setup is needed. The enlarged artwork from 0.7.3 is retained.
 
 Version 0.7.4 removes the other four designs, the options page and its panel button. Updates clear only the retired icon preference; saved questions and reading settings are preserved. Original SVG and six transparent PNG sizes are included in the source archive.
@@ -37,11 +39,11 @@ Editable preview, clipboard copy, select/deselect all, local backup/import, and 
 
 ## Install / update
 
-[Install ZIP](releases/askmarker-v0.7.4.zip) · [Complete source ZIP](releases/askmarker-v0.7.4-source.zip)
+[Install ZIP](releases/askmarker-v0.7.5.zip) · [Complete source ZIP](releases/askmarker-v0.7.5-source.zip)
 
 Extract the install ZIP, open `chrome://extensions`, enable Developer mode and load the `askmarker` directory containing `manifest.json`. The install ZIP is prebuilt; Node.js is not needed.
 
-**Existing users:** back up notes, then overwrite **all files and subdirectories from the new ZIP, including `assets/`** **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.4** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
+**Existing users:** back up notes, then overwrite **all files and subdirectories from the new ZIP, including `assets/`** **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.5** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
 
 ## Site support and verification
 
@@ -54,9 +56,9 @@ Extract the install ZIP, open `chrome://extensions`, enable Developer mode and l
 
 Other services do not need a separate AI API integration for marking and copying. This is **not a promise of every renderer or feature on every AI site**: embedded frames, closed shadow roots, non-text surfaces and editable answer widgets may not be selectable by the general adapter. Other-site records are separated by full page URL; chats that reuse one URL share that bucket. Answer-body font overrides and editable writing-box handling are currently ChatGPT-specific. AskMarker's own UI font settings apply everywhere.
 
-Version 0.7.4 was checked using an actual extension update from 0.7.3 to 0.7.4 in isolated Chromium, the main reading-flow suite and synthetic general AI pages. The update preserves note/choice data, removes the retired icon preference and exposes no icon-selection UI. Earlier version reports remain archived.
+Version 0.7.5 was checked with the appearance and prompt-delivery suite using an actual MV3 extension in isolated Chromium. The panel icon was visually checked in light and dark themes. Earlier version reports remain archived.
 
-These are isolated-browser fixtures, not live AI sessions. **Live 0.7.4 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
+These are isolated-browser fixtures, not live AI sessions. **Live 0.7.5 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
 
 ## Development
 

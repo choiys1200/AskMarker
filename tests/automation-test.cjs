@@ -5,7 +5,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  const ctx=await chromium.launchPersistentContext(fs.mkdtempSync(path.join(out,'profile-')),{headless:true,executablePath:process.env.QA_BROWSER,permissions:['clipboard-read','clipboard-write'],viewport:{width:1560,height:1100},args:[`--disable-extensions-except=${root}`,`--load-extension=${root}`]});
  const checks=[],errors=[],check=n=>{checks.push(n);console.log('PASS',n);};
  try{
- const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.7.4');
+ const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.7.5');
  let html=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8').replace('<article data-message-id="answer-one" data-message-author-role="assistant">','<article data-dil-source-message-id="answer-one"><div data-markdown-text-style="assistant-message" style="display:flex;flex-direction:column">').replace('</article>','</div></article>');
  html=html.replace('<div id="prompt-textarea"','<div data-composer-body><div data-composer-input><div data-composer-markdown');
  html=html.replace('</main>','</div></div><div id="other-editor" contenteditable="true" role="textbox">다른 편집기</div><button id="send-test" onclick="document.body.dataset.sent=\'true\'">테스트 전송</button></main>');
@@ -52,6 +52,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  await composer.fill('');await ext.locator('#reading-mode').click();await p.setViewportSize({width:1560,height:1500});await p.evaluate(()=>scrollTo(0,0));await p.screenshot({path:path.join(out,'implementation-light.png'),fullPage:true});await ask();await p.screenshot({path:path.join(out,'composer-offer.png'),fullPage:true});await composer.press('Escape');
  await p.emulateMedia({colorScheme:'dark'});await p.evaluate(()=>document.documentElement.classList.add('dark'));await p.addStyleTag({content:'body{background:#171c1a;color:#eef4ef}[data-composer-markdown]{background:#202a27;color:#eee}'});await p.evaluate(()=>scrollTo(0,0));await p.screenshot({path:path.join(out,'implementation-dark.png'),fullPage:true});
  assert.equal(await p.locator('body').getAttribute('data-sent'),null);assert.deepEqual(errors,[]);check('Composer replacement safe; no page/isolated-world errors or transmission');
- fs.writeFileSync(path.join(out,'automation-results.json'),JSON.stringify({version:'0.7.4',environment:'Real unpacked MV3 extension in Chromium; synthetic current ChatGPT structure; NOT live ChatGPT',checks,errors},null,2));
+ fs.writeFileSync(path.join(out,'automation-results.json'),JSON.stringify({version:'0.7.5',environment:'Real unpacked MV3 extension in Chromium; synthetic current ChatGPT structure; NOT live ChatGPT',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
