@@ -56,17 +56,13 @@ npm test
 python scripts/package.py
 ```
 
-`content.js`는 배포용 생성물입니다. 직접 수정하지 않습니다. 의존성 없는 정적 빌더가 `src/`의 상대 경로 모듈과 CSS/HTML을 하나의 MV3 콘텐츠 스크립트로 묶습니다. `eval`, 외부 로더, 네트워크 요청은 없습니다. 기존 설치 폴더의 전체 런타임 파일과 하위 폴더를 덮어써 확장 ID·기록을 유지합니다. 0.7.2부터 `extension/`과 `assets/`도 필요합니다.
+`content.js`는 배포용 생성물입니다. 직접 수정하지 않습니다. 의존성 없는 정적 빌더가 `src/`의 상대 경로 모듈과 CSS/HTML을 하나의 MV3 콘텐츠 스크립트로 묶습니다. `eval`, 외부 로더, 네트워크 요청은 없습니다. 기존 설치 폴더의 전체 런타임 파일과 하위 폴더를 덮어써 확장 ID·기록을 유지합니다. 현재 런타임에는 `assets/`의 고정 MarkChat PNG가 포함됩니다.
 
 `module-contract-test.cjs`는 브라우저 없이 순수 함수·저장 상태와 의존 경계를 검사합니다. `appearance-delivery-test.cjs`는 실제 확장 환경에서 설정 변경 중 초안·저장 기록·체크 상태·코드 글꼴 보존을 검사합니다. 전체 회귀 모음은 취소 재선택, DOM 교체, 이전 저장 기록, 여러 대화, 입력창 처리까지 확인합니다.
 
-## 0.7.2: 독립된 아이콘 설정
+## 0.7.4: 단일 기본 아이콘
 
-- `extension/icon-catalog.js`: 고정 아이콘 목록·PNG 경로·전용 설정 키. 질문 모듈을 가져오지 않습니다.
-- `extension/icon-preferences.js`: 서비스 워커에서 `chrome.action.setIcon`·설정 저장·재시작 복원. 읽기/쓰기 순서를 직렬화하고 저장 실패 시 이전 아이콘으로 복구합니다. 알 수 없는 저장 값은 MarkChat으로 표시하며 허용 목록 외 경로는 받지 않습니다.
-- `extension/options.html`, `options.js`, `options.css`: 독립된 옵션 문서. 라디오·키보드·밝고 어두운 미리보기·다른 옵션 탭 동기화. 외부 이미지나 웹 글꼴을 읽지 않습니다.
-- `src/ui/icon-settings.js`: 옵션 페이지 열기 요청만 보냅니다. 원문/초안/질문 모듈 접근은 없습니다.
-- `background.js`: ES module로 설정 모듈을 조립합니다. 기존 도구 모음 클릭의 콘텐츠 스크립트 실행 기능은 유지합니다. 팝업은 추가하지 않습니다.
-- `qb:appearance:icon:v1`만 새로 씁니다. 질문/백업 저장 형식과 권한은 변경하지 않습니다.
-- 설치·확장 관리 아이콘은 manifest의 MarkChat PNG이며, 사용자 선택은 action API로 도구 모음에 적용됩니다. [Chrome action API](https://developer.chrome.com/docs/extensions/reference/api/action) / [Options page](https://developer.chrome.com/docs/extensions/develop/ui/options-page).
-- `scripts/render-icons.cjs`는 개발용 PNG 재생성 도구입니다. 확장 설치·사용에 실행할 필요가 없습니다.
+- `manifest.json`의 `icons`·`action.default_icon`은 MarkChat PNG만 참조합니다. 옵션 페이지와 아이콘 선택 모듈·패널 버튼·메시지 처리를 제거했습니다.
+- `background.js`는 설치/업데이트 이벤트와 워커 시작 시 기본 아이콘을 적용하고 폐기한 `qb:appearance:icon:v1` 한 키만 정리합니다. 질문·체크·읽기 설정에는 접근하지 않습니다.
+- 기존 도구 모음 클릭의 콘텐츠 스크립트 실행은 유지합니다. 팝업이나 옵션 메뉴를 추가하지 않습니다.
+- `assets/icons/`에는 MarkChat의 원본 SVG와 16·24·32·48·128·256px PNG만 있습니다. `scripts/render-icons.cjs`는 개발용 재생성 도구입니다.

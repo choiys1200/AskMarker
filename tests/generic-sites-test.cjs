@@ -11,7 +11,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  manifest.host_permissions=['https://gemini.google.com/*','https://grok.com/*'];
  fs.writeFileSync(path.join(extension,'manifest.json'),JSON.stringify(manifest));
  for(const f of ['background.js','content.js'])fs.copyFileSync(path.join(root,f),path.join(extension,f));
- for(const dir of ['extension','assets'])fs.cpSync(path.join(root,dir),path.join(extension,dir),{recursive:true});
+ for(const dir of ['assets'])fs.cpSync(path.join(root,dir),path.join(extension,dir),{recursive:true});
  const ctx=await chromium.launchPersistentContext(fs.mkdtempSync(path.join(out,'profile-')),{headless:true,executablePath:process.env.QA_BROWSER,viewport:{width:1450,height:950},args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`]});
  const cases=[];
  try{

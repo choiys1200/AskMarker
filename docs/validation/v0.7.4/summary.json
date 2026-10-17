@@ -1,0 +1,26 @@
+{
+  "version": "0.7.4",
+  "completedUTC": "2026-10-17T06:07:41.705285+00:00",
+  "contentSha256": "2c770ae08baf0093e489ac8c54b7dff2ecb55570eab3b6ef835f6d547be67114",
+  "suites": [
+    {
+      "suite": "icon-upgrade",
+      "result": "PASS",
+      "evidence": "icon-upgrade.json"
+    },
+    {
+      "suite": "extension",
+      "result": "PASS",
+      "evidence": "extension.json"
+    },
+    {
+      "suite": "generic-sites",
+      "result": "PASS",
+      "evidence": "generic-sites.json"
+    }
+  ],
+  "environment": "Real MV3 in isolated Chromium; controlled AI pages",
+  "liveUserChromeToolbar": "NOT VERIFIED",
+  "liveAIConversations": "NOT VERIFIED",
+  "icon": "Fixed MarkChat only; no chooser or alternate assets"
+}
