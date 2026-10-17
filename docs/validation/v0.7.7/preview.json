@@ -1,0 +1,16 @@
+{
+  "version": "0.7.7",
+  "viewport": {
+    "width": 700,
+    "height": 300
+  },
+  "scale": 160,
+  "result": "PASS",
+  "environment": "Packaged MV3 + synthetic HTML + real wheel",
+  "proof": {
+    "overflow": "auto",
+    "scrollTop": 97,
+    "clientHeight": 250,
+    "scrollHeight": 347
+  }
+}

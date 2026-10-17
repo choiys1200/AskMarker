@@ -12,6 +12,7 @@ const {createCards}=require('./ui/cards');
 const {createPanel}=require('./ui/panel');
 const {createAppearance}=require('./ui/appearance');
 const {createDock}=require('./ui/dock');
+const {FONT_KEY,OPACITY_KEY}=require('./domain/appearance');
 const VERSION='__ASKMARK_VERSION__'; // Replaced from manifest.json by the static build.
 function start(){
   const FLAG = '__questionBasketV1';

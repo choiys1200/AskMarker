@@ -1,0 +1,15 @@
+{
+  "version": "0.7.7",
+  "environment": "Real unpacked MV3 extension in Chromium; controlled HTML fixture; NOT live ChatGPT or company PC",
+  "checks": [
+    "Legacy records unchanged; checked by default; [ ] before question title; diagnostic UI absent",
+    "Mouse label/checkbox exclusion keeps notes, bubbles and highlights; preview and both copy paths include checked pairs only",
+    "Manual append, input-click confirmation and preview append exclude old unchecked questions, preserve input and prevent duplicates",
+    "Deselect all, select all and keyboard Space work; zero selection disables output; color/edit activation never reselects a question",
+    "Selection persists after reload/route return; same IDs in different conversations stay separate; other-tab changes synchronize and invalidate an open preview",
+    "New saved question starts checked while old exclusions persist; reading mode and panel collapse preserve prompt choices",
+    "Backup/import restores checked/excluded choices without dropping, rewriting or duplicating saved questions",
+    "Current light/dark implementation screenshots; compact colors retained; deleting an unchecked note keeps other annotations and selected choices; no runtime errors"
+  ],
+  "errors": []
+}

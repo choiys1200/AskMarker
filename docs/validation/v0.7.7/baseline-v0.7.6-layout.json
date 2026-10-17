@@ -1,0 +1,96 @@
+{
+  "version": "0.7.6",
+  "environment": "Actual packaged MV3 extension in isolated Chromium; synthetic HTML; 160% UI text",
+  "results": [
+    {
+      "height": 1200,
+      "panelBottom": 1184,
+      "footerBottom": 1183,
+      "lastBottom": 1168,
+      "overflow": "hidden",
+      "scrollHeight": 1166,
+      "clientHeight": 1166,
+      "clipped": false
+    },
+    {
+      "height": 900,
+      "panelBottom": 884,
+      "footerBottom": 883,
+      "lastBottom": 868,
+      "overflow": "hidden",
+      "scrollHeight": 866,
+      "clientHeight": 866,
+      "clipped": false
+    },
+    {
+      "height": 850,
+      "panelBottom": 834,
+      "footerBottom": 833,
+      "lastBottom": 818,
+      "overflow": "hidden",
+      "scrollHeight": 816,
+      "clientHeight": 816,
+      "clipped": false
+    },
+    {
+      "height": 800,
+      "panelBottom": 784,
+      "footerBottom": 814.671875,
+      "lastBottom": 799.671875,
+      "overflow": "hidden",
+      "scrollHeight": 798,
+      "clientHeight": 766,
+      "clipped": true
+    },
+    {
+      "height": 760,
+      "panelBottom": 744,
+      "footerBottom": 814.671875,
+      "lastBottom": 799.671875,
+      "overflow": "hidden",
+      "scrollHeight": 798,
+      "clientHeight": 726,
+      "clipped": true
+    },
+    {
+      "height": 720,
+      "panelBottom": 704,
+      "footerBottom": 814.671875,
+      "lastBottom": 799.671875,
+      "overflow": "hidden",
+      "scrollHeight": 798,
+      "clientHeight": 686,
+      "clipped": true
+    },
+    {
+      "height": 701,
+      "panelBottom": 685,
+      "footerBottom": 814.671875,
+      "lastBottom": 799.671875,
+      "overflow": "hidden",
+      "scrollHeight": 798,
+      "clientHeight": 667,
+      "clipped": true
+    },
+    {
+      "height": 700,
+      "panelBottom": 684,
+      "footerBottom": 1300.15625,
+      "lastBottom": 1289.15625,
+      "overflow": "auto",
+      "scrollHeight": 1283,
+      "clientHeight": 666,
+      "clipped": false
+    },
+    {
+      "height": 600,
+      "panelBottom": 584,
+      "footerBottom": 1300.15625,
+      "lastBottom": 1289.15625,
+      "overflow": "auto",
+      "scrollHeight": 1283,
+      "clientHeight": 566,
+      "clipped": false
+    }
+  ]
+}

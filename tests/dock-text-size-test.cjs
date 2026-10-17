@@ -30,6 +30,9 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   await p.setViewportSize({width:900,height:420});await p.waitForFunction(()=>{const r=document.querySelector('#question-basket-extension').shadowRoot.getElementById('dock').getBoundingClientRect();return r.top>=8&&r.bottom<=innerHeight-7;});await p.setViewportSize({width:1560,height:1200});
   check('Top/bottom clamp, keyboard movement, injected pointer cancellation and viewport resize keep the dock reachable');
   await ext.locator('#mode-compact').click();await ext.locator('#launcher').click();
+  const downloaded=p.waitForEvent('download');await ext.locator('#export').click();const file=await downloaded,backup=JSON.parse(fs.readFileSync(await file.path(),'utf8'));
+  assert.equal(backup.format,'question-basket-backup');for(const [key,value]of Object.entries(original))assert.deepEqual(backup.data[key],value);assert.deepEqual(await data(),original);
+  check('Backup download still exports exact saved notes and prompt membership after presentation changes');
   assert.equal(await ext.locator('#font-size-mode').inputValue(),'current');assert.equal(await ext.locator('#font-size-custom').isVisible(),false);
   const saved=p.locator('[data-qb-inline="saved"]'),nativeSource=await fontSize(p.locator('#second'));
   assert.equal(await fontSize(saved.locator('.question')),14);
@@ -58,10 +61,20 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   check('Text-size mode and custom value synchronize between tabs and persist on reload; cancelling the draft leaves all saved data intact');
   await ext.locator('#font-size-mode').selectOption('custom');await ext.locator('#font-size-scale').focus();await p.keyboard.press('End');await p.keyboard.press('Tab');
   await p.screenshot({path:path.join(out,'size-160-light.png'),fullPage:true,animations:'disabled'});await ext.locator('#panel').screenshot({path:path.join(out,'panel-160-light.png'),animations:'disabled'});
+  // At 701–800px the old <=700px media query did not cover 160% text.
+  // Exercise wheel scrolling, rather than Playwright's automatic element scroll.
+  for(const height of [800,760,720,701]){
+   await p.setViewportSize({width:1100,height});await ext.locator('#panel').evaluate(el=>el.scrollTop=0);
+   assert.match(await ext.locator('#panel').evaluate(el=>getComputedStyle(el).overflowY),/auto|scroll/);
+   const r=await ext.locator('#panel').boundingBox();await p.mouse.move(r.x+r.width/2,r.y+r.height-20);await p.mouse.wheel(0,2000);
+   await p.waitForFunction(()=>{const root=document.querySelector('#question-basket-extension').shadowRoot,panel=root.getElementById('panel'),r=panel.getBoundingClientRect(),last=panel.querySelector('footer>p:last-child').getBoundingClientRect();return last.bottom<=r.bottom&&last.top>=r.top;});
+  }
+  await p.setViewportSize({width:1560,height:1200});await ext.locator('#panel').evaluate(el=>el.scrollTop=0);
+  check('160% text at 701/720/760/800px: real wheel scrolling reaches footer; no hidden-overflow trap');
   await p.emulateMedia({colorScheme:'dark'});await p.addStyleTag({content:'body{background:#14161d;color:#edf0f8}'});await ext.locator('#panel').screenshot({path:path.join(out,'panel-160-dark.png'),animations:'disabled'});
   await ext.locator('#close').click();await handle.focus();await handle.press('Home');for(let i=0;i<12;i++)await handle.press('ArrowDown');await dock.screenshot({path:path.join(out,'dock-dark.png'),animations:'disabled'});
   await p.setViewportSize({width:440,height:420});await handle.press('End');b=await dock.boundingBox();assert.ok(b.y>=8&&b.y+b.height<=412.1);await ext.locator('#launcher').click();await ext.locator('#font-size-mode').scrollIntoViewIfNeeded();await ext.locator('#font-size-mode').selectOption('current');await ext.locator('#quick-copy').scrollIntoViewIfNeeded();assert.equal(await ext.locator('#quick-copy').isVisible(),true);
   assert.deepEqual(errors,[]);check('Light/dark 160% rendering, movable compact dock and short/narrow-window settings/actions remain accessible; no runtime errors');
-  fs.writeFileSync(path.join(out,'dock-text-size-results.json'),JSON.stringify({version:'0.7.6',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; browser default-size changes via CDP and one injected pointercancel; not live AI/user Chrome',checks,errors},null,2));
+  fs.writeFileSync(path.join(out,'dock-text-size-results.json'),JSON.stringify({version:'0.7.7',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; browser default-size changes via CDP and one injected pointercancel; not live AI/user Chrome',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
