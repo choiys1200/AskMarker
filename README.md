@@ -4,7 +4,11 @@
 
 Highlight AI answers, ask beneath the source, and collect exact quote/question pairs into your next prompt. Use AskMarker with ChatGPT, Gemini, Grok and other AI pages containing selectable text. No AI API key, server or separate account.
 
-[한국어 안내](README.ko.md) · [Install ZIP](releases/askmarker-v0.8.0.zip) · [Complete source](releases/askmarker-v0.8.0-source.zip) · [Validation](docs/VALIDATION.md) · [Architecture](docs/ARCHITECTURE.md)
+[한국어 안내](README.ko.md) · [Install ZIP](releases/askmarker-v0.8.1.zip) · [Complete source](releases/askmarker-v0.8.1-source.zip) · [Validation](docs/VALIDATION.md) · [Architecture](docs/ARCHITECTURE.md)
+
+## New in 0.8.1
+
+Click **숨기기** (Hide) in the compact menu to hide it in the current tab. Click the AskMarker toolbar icon to restore the compact menu. Notes, drafts, reading mode and dock position are retained. A page reload starts with the normal compact menu again.
 
 ## New in 0.8.0
 
@@ -33,11 +37,11 @@ This does not promise every renderer on every AI site. Frames, closed shadow roo
 
 Extract the prebuilt install ZIP and load its `askmarker` folder with Chrome Developer mode. Node.js is not required.
 
-Existing users: back up records, overwrite **all ZIP files/subdirectories in the existing registered folder**, reload the extension and refresh the page. On Gemini/Grok and other manually activated pages, click the extension icon again. Confirm **v0.8.0**. Keep the original extension/path to preserve its ID and local storage. Note keys, prompt choices and backup format remain compatible. Retired Current size mode reads as System; explicit Custom values remain. Legacy colorless notes retain their yellow fallback.
+Existing users: back up records, overwrite **all ZIP files/subdirectories in the existing registered folder**, reload the extension and refresh the page. On Gemini/Grok and other manually activated pages, click the extension icon again. Confirm **v0.8.1**. Keep the original extension/path to preserve its ID and local storage. Note keys, prompt choices and backup format remain compatible. Retired Current size mode reads as System; explicit Custom values remain. Legacy colorless notes retain their yellow fallback.
 
 ## Validation
 
-All 19 suites passed against executable files extracted from the install ZIP. Actual Gemini/Grok editor attributes were inspected read-only in connected Chrome; synthetic fixtures exercised those structures. **New-version insertion on live providers, their real editor frameworks and the company PC remain unverified.** See the environment-specific [report](docs/VALIDATION.md).
+Version 0.8.1 passed five relevant suites against the install-ZIP runtime. The toolbar test invokes the actual registered callback and real script reinjection through a test copy with extra host grants; it does not click the real toolbar UI. The full 19-suite 0.8.0 report remains historical. Actual Gemini/Grok editor attributes were inspected read-only in connected Chrome; synthetic fixtures exercised those structures. **New-version insertion on live providers, their real editor frameworks and the company PC remain unverified.** See the environment-specific [report](docs/VALIDATION.md).
 
 ## Development / privacy
 

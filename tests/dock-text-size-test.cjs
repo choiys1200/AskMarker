@@ -75,6 +75,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   await ext.locator('#close').click();await handle.focus();await handle.press('Home');for(let i=0;i<12;i++)await handle.press('ArrowDown');await dock.screenshot({path:path.join(out,'dock-dark.png'),animations:'disabled'});
   await p.setViewportSize({width:440,height:420});await handle.press('End');b=await dock.boundingBox();assert.ok(b.y>=8&&b.y+b.height<=412.1);await ext.locator('#launcher').click();await ext.locator('#font-size-mode').scrollIntoViewIfNeeded();await ext.locator('#font-size-mode').selectOption('system');await ext.locator('#quick-copy').scrollIntoViewIfNeeded();assert.equal(await ext.locator('#quick-copy').isVisible(),true);
   assert.deepEqual(errors,[]);check('Light/dark 160% rendering, movable compact dock and short/narrow-window settings/actions remain accessible; no runtime errors');
-  fs.writeFileSync(path.join(out,'dock-text-size-results.json'),JSON.stringify({version:'0.8.0',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; browser default-size changes via CDP and one injected pointercancel; not live AI/user Chrome',checks,errors},null,2));
+  fs.writeFileSync(path.join(out,'dock-text-size-results.json'),JSON.stringify({version:'0.8.1',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; browser default-size changes via CDP and one injected pointercancel; not live AI/user Chrome',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

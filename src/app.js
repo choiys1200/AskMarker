@@ -77,7 +77,7 @@ function start(){
   const panel=createPanel($),{open,collapse}=panel;
   const appearance=createAppearance({host,$,storage:chrome.storage.local,enqueue,tell});
   const dock=createDock({$,storage:chrome.storage.local,enqueue,tell});
-  globalThis[FLAG]={open};
+  globalThis[FLAG]={open:panel.fromToolbar};
   // Mode changes presentation only. Sessions own their text/source independently.
   function setReadingMode(enabled) {
     readingMode=enabled;pointerStart=null;manualSelection=null;
@@ -428,6 +428,7 @@ function start(){
   $('auto-insert').onchange=()=>{autoPreferenceChosen=true;autoInsert=$('auto-insert').checked;if(!autoInsert)hideOffer();chrome.storage.local.set({[AUTO_PREF]:autoInsert}).catch(()=>tell('입력 안내 설정을 저장하지 못했습니다.',true));};
   $('select-all').onclick=()=>choosePrompt(notes,true);$('deselect-all').onclick=()=>choosePrompt(notes,false);
   $('quick-insert').onclick=()=>insertSaved(false);$('quick-copy').onclick=()=>{checkRoute();if(selectedEntries().length)copy(buildPrompt(),selectedEntries());};
+  $('hide-menu').onclick=()=>{hideSelectionOffer();hideOffer();$('preview').hidden=true;$('toast').hidden=true;panel.hide();};
   $('launcher').onclick=open;$('close').onclick=collapse;$('generate').onclick=preview;$('preview-close').onclick=()=>{$('preview').hidden=true;};$('insert').onclick=insert;$('copy').onclick=()=>copy();$('export').onclick=exportData;$('import').onclick=()=>$('import-file').click();$('import-file').onchange=e=>importData(e.target.files[0]);
   $('legacy').onclick=()=>{legacyReview=!legacyReview;notes=[];$('preview').hidden=true;$('status').textContent=legacyReview?'이전 버전의 주소별 기록입니다.':'현재 대화의 질문을 표시합니다.';refresh();load();};
   $('clear').onclick=async()=>{
