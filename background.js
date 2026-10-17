@@ -1,5 +1,14 @@
-import {installIconPreferences} from './extension/icon-preferences.js';
-installIconPreferences(chrome);
+// Clear the retired icon preference when upgrading from 0.7.2/0.7.3.
+// The only icon from now on is the MarkChat PNG declared in the manifest.
+function restoreMarkChat() {
+  chrome.action.setIcon({path: chrome.runtime.getManifest().action.default_icon})
+    .catch(() => console.warn('AskMarker: 기본 아이콘을 적용하지 못했습니다.'));
+  chrome.storage.local.remove('qb:appearance:icon:v1')
+    .catch(() => console.warn('AskMarker: 이전 아이콘 설정을 정리하지 못했습니다.'));
+}
+chrome.runtime.onInstalled.addListener(restoreMarkChat);
+// Unpacked overwrite updates may start the new worker without onInstalled.
+restoreMarkChat();
 
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab.id) return;

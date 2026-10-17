@@ -12,7 +12,6 @@ const {createCards}=require('./ui/cards');
 const {createPanel}=require('./ui/panel');
 const {createAppearance}=require('./ui/appearance');
 const {FONT_KEY,OPACITY_KEY}=require('./domain/appearance');
-const {bindIconSettings}=require('./ui/icon-settings');
 const VERSION='__ASKMARK_VERSION__'; // Replaced from manifest.json by the static build.
 function start(){
   const FLAG = '__questionBasketV1';
@@ -76,7 +75,6 @@ function start(){
   function tell(text, error=false) { $('status').textContent=text; $('status').classList.toggle('error',error); $('toast').textContent=text; $('toast').hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>{$('toast').hidden=true;},4500); }
   const panel=createPanel($),{open,collapse}=panel;
   const appearance=createAppearance({host,$,storage:chrome.storage.local,enqueue,tell});
-  bindIconSettings({button:$('icon-settings'),runtime:chrome.runtime,tell});
   globalThis[FLAG]={open};
   // Mode changes presentation only. Sessions own their text/source independently.
   function setReadingMode(enabled) {
