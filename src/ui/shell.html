@@ -1,6 +1,7 @@
 <div id="laser" aria-hidden="true" hidden></div>
 <button id="selection-add" class="surface" title="선택한 원문에 질문을 남깁니다" hidden>질문 추가</button>
 <div id="dock" class="surface">
+  <button id="dock-handle" aria-label="메뉴 위치 이동" title="위아래로 드래그 · 방향키로 이동 · Home/End로 맨 위/아래"><span aria-hidden="true"></span></button>
   <button id="mode-compact" class="control mode-control" aria-pressed="false">읽기 모드 OFF</button>
   <button id="launcher" class="control panel-control" aria-label="AskMarker 펼치기" aria-expanded="false" aria-controls="panel">AskMarker 펼치기</button>
   <span id="small-count" hidden>0</span>
@@ -18,6 +19,9 @@
       <div class="setting-row"><label for="laser-opacity">포인터 진하기</label><input id="laser-opacity" type="range" min="0" max="100" step="5" value="60" aria-describedby="laser-opacity-value"><output id="laser-opacity-value" for="laser-opacity">60%</output></div>
       <div class="setting-row"><label for="font-family">글꼴</label><select id="font-family" aria-label="글꼴"></select></div>
       <p class="hint">질문 UI와 읽기 모드 본문에 적용 · 코드 글꼴 유지</p>
+      <div class="setting-row"><label for="font-size-mode">글씨 크기</label><select id="font-size-mode" aria-describedby="font-size-hint"><option value="current">현재 크기 (기본)</option><option value="system">시스템·브라우저 기본</option><option value="custom">직접 조절</option></select></div>
+      <div id="font-size-custom" class="setting-row" hidden><label for="font-size-scale">크기 조절</label><input id="font-size-scale" type="range" min="80" max="160" step="5" value="100" aria-describedby="font-size-value"><output id="font-size-value" for="font-size-scale">100%</output></div>
+      <p id="font-size-hint" class="hint">메뉴와 질문 말풍선에 적용</p>
     </section>
     <div id="selection-tools" class="row" hidden><span id="selected-count" role="status" aria-live="polite"></span><div class="tools"><button id="select-all" class="quiet">전체 선택</button><button id="deselect-all" class="quiet">선택 해제</button></div></div>
     <div id="list"></div><div id="draft-list"></div><div id="empty">답변에서 궁금한 부분을 드래그하세요.<br>작은 질문 추가 버튼을 누르면 글 아래에서 작성합니다.</div>

@@ -11,7 +11,7 @@ const {mountShell}=require('./ui/shell');
 const {createCards}=require('./ui/cards');
 const {createPanel}=require('./ui/panel');
 const {createAppearance}=require('./ui/appearance');
-const {FONT_KEY,OPACITY_KEY}=require('./domain/appearance');
+const {createDock}=require('./ui/dock');
 const VERSION='__ASKMARK_VERSION__'; // Replaced from manifest.json by the static build.
 function start(){
   const FLAG = '__questionBasketV1';
@@ -75,6 +75,7 @@ function start(){
   function tell(text, error=false) { $('status').textContent=text; $('status').classList.toggle('error',error); $('toast').textContent=text; $('toast').hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>{$('toast').hidden=true;},4500); }
   const panel=createPanel($),{open,collapse}=panel;
   const appearance=createAppearance({host,$,storage:chrome.storage.local,enqueue,tell});
+  const dock=createDock({$,storage:chrome.storage.local,enqueue,tell});
   globalThis[FLAG]={open};
   // Mode changes presentation only. Sessions own their text/source independently.
   function setReadingMode(enabled) {
@@ -167,12 +168,13 @@ function start(){
   window.addEventListener('resize',queueSelectionPosition);
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&selectionOffer){e.preventDefault();hideSelectionOffer();}},true);
   async function load() {
-    const serial=++loadSerial,key=viewKey(),readRevision=choices.revision(),appearanceRevision=appearance.revision();
+    const serial=++loadSerial,key=viewKey(),readRevision=choices.revision(),appearanceRevision=appearance.revision(),dockRevision=dock.revision();
     try {
       const data=await chrome.storage.local.get(null);
       if(serial!==loadSerial||key!==viewKey())return;
       choices.hydrate(data,readRevision);
       appearance.hydrate(data,appearanceRevision);
+      dock.hydrate(data,dockRevision);
       if(!initialized){lastColor=COLORS[data[PREF]?.lastColor]?data[PREF].lastColor:COLORS[data[LASER_PREF]]?data[LASER_PREF]:'yellow';if(!autoPreferenceChosen)autoInsert=data[AUTO_PREF]!==false;initialized=true;}
       hasLegacy=scope!==basePageKey()&&Object.entries(data).some(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&n.scope===basePageKey());
       notes=Object.entries(data).filter(([k,n])=>k.startsWith(PREFIX)&&validNote(n)&&sameConversation(n.scope,key)).map(([,n])=>n).sort((a,b)=>(a.created||0)-(b.created||0)||a.id.localeCompare(b.id));
@@ -449,7 +451,7 @@ function start(){
   // Capture the Range synchronously before focus/selection changes.
   window.addEventListener('pointerup',e=>{const started=pointerStart;pointerStart=null;if(!readingMode||!started||ownEvent(e)||!$('preview').hidden)return;recoverDrag(started,e.clientX,e.clientY);offerSelection(readSelection(false));},true);
   document.addEventListener('keyup',e=>{if(readingMode&&e.key==='Shift'&&!ownEvent(e)&&!editable(e.target)&&$('preview').hidden)offerSelection(readSelection(false));},true);
-  chrome.storage.onChanged.addListener((changes,area)=>{if(area!=='local')return;appearance.applyChanges(changes);if(typeof changes[AUTO_PREF]?.newValue==='boolean'){autoInsert=changes[AUTO_PREF].newValue;$('auto-insert').checked=autoInsert;if(!autoInsert)hideOffer();}if(COLORS[changes[PREF]?.newValue?.lastColor]){lastColor=changes[PREF].newValue.lastColor;showActiveColor();}choices.applyChanges(changes,notes);if(Object.keys(changes).some(k=>k.startsWith(PREFIX)))load();});
+  chrome.storage.onChanged.addListener((changes,area)=>{if(area!=='local')return;appearance.applyChanges(changes);dock.applyChanges(changes);if(typeof changes[AUTO_PREF]?.newValue==='boolean'){autoInsert=changes[AUTO_PREF].newValue;$('auto-insert').checked=autoInsert;if(!autoInsert)hideOffer();}if(COLORS[changes[PREF]?.newValue?.lastColor]){lastColor=changes[PREF].newValue.lastColor;showActiveColor();}choices.applyChanges(changes,notes);if(Object.keys(changes).some(k=>k.startsWith(PREFIX)))load();});
   function checkRoute(){const next=pageKey();if(next===scope)return;hideSelectionOffer();hideOffer();scope=next;legacyReview=false;notes=[];ranges.clear();pointerStart=null;$('preview').hidden=true;refresh();load();}
   // ChatGPT navigates without reload. Drafts retain their original scope until you return.
   routeTimer=setInterval(checkRoute,350);window.addEventListener('popstate',checkRoute);

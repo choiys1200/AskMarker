@@ -1,0 +1,35 @@
+{
+  "version": "0.7.6",
+  "completedUTC": "2026-10-17T06:46:23.778268+00:00",
+  "contentSha256": "3f0376bc308c7eaea995678add96c7dd61491bbc27c38d3f5f7d854162e18388",
+  "suites": [
+    {
+      "suite": "appearance-delivery",
+      "result": "PASS",
+      "checks": 6,
+      "evidence": "appearance-delivery.json"
+    },
+    {
+      "suite": "dock-text-size",
+      "result": "PASS",
+      "checks": 6,
+      "evidence": "dock-text-size.json"
+    },
+    {
+      "suite": "module-contract",
+      "result": "PASS",
+      "checks": 3,
+      "evidence": "module-contract.json"
+    },
+    {
+      "suite": "selection-action",
+      "result": "PASS",
+      "checks": 7,
+      "evidence": "selection-action.json"
+    }
+  ],
+  "liveAI": "NOT VERIFIED: isolated synthetic HTML only",
+  "companyPC": "NOT VERIFIED",
+  "operatingSystemTextSize": "NOT VERIFIED: browser font preferences changed via CDP",
+  "screenshots": "Local work folder only, not published"
+}
