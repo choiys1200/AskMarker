@@ -1,0 +1,92 @@
+{
+  "environment": "Real MV3 extension + synthetic DOM compatibility fixtures. Company PC and live installed 0.9.0 NOT tested.",
+  "results": [
+    {
+      "version": "0.9.0",
+      "name": "assistant-style-source",
+      "result": "PASS",
+      "realMouseCancelCycles": 10,
+      "syntheticElementBoundary": true,
+      "saveReload": true,
+      "userRejected": true,
+      "changedSourceRetained": true,
+      "diagnosticUiRemoved": true
+    },
+    {
+      "version": "0.9.0",
+      "name": "assistant-style-selection",
+      "result": "PASS",
+      "realMouseCancelCycles": 10,
+      "syntheticElementBoundary": true,
+      "saveReload": true,
+      "userRejected": true,
+      "changedSourceRetained": true,
+      "diagnosticUiRemoved": true
+    },
+    {
+      "version": "0.9.0",
+      "name": "renderer-source-no-selection",
+      "result": "PASS",
+      "realMouseCancelCycles": 10,
+      "syntheticElementBoundary": true,
+      "saveReload": true,
+      "userRejected": true,
+      "changedSourceRetained": true,
+      "diagnosticUiRemoved": true
+    },
+    {
+      "version": "0.9.0",
+      "name": "semantic-turn",
+      "result": "PASS",
+      "realMouseCancelCycles": 10,
+      "syntheticElementBoundary": true,
+      "saveReload": true,
+      "userRejected": true,
+      "changedSourceRetained": true,
+      "diagnosticUiRemoved": true
+    },
+    {
+      "version": "0.9.0",
+      "name": "assistant-style-no-id",
+      "result": "PASS",
+      "realMouseCancelCycles": 10,
+      "syntheticElementBoundary": true,
+      "saveReload": true,
+      "userRejected": true,
+      "changedSourceRetained": true,
+      "diagnosticUiRemoved": true
+    },
+    {
+      "version": "0.9.0",
+      "name": "legacy-no-id",
+      "result": "PASS",
+      "realMouseCancelCycles": 10,
+      "syntheticElementBoundary": true,
+      "saveReload": true,
+      "userRejected": true,
+      "changedSourceRetained": true,
+      "diagnosticUiRemoved": true
+    },
+    {
+      "version": "0.9.0",
+      "name": "assistant-turn-role",
+      "result": "PASS",
+      "realMouseCancelCycles": 10,
+      "syntheticElementBoundary": true,
+      "saveReload": true,
+      "userRejected": true,
+      "changedSourceRetained": true,
+      "diagnosticUiRemoved": true
+    },
+    {
+      "version": "0.9.0",
+      "result": "PASS",
+      "negativeCases": [
+        "mixed user/assistant",
+        "two different answers",
+        "contradictory IDs",
+        "generic markdown without assistant evidence"
+      ]
+    }
+  ]
+}

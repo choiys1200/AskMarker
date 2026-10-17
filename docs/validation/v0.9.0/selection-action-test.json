@@ -1,0 +1,14 @@
+{
+  "version": "0.9.0",
+  "environment": "Real unpacked MV3 in Chromium; controlled HTML; NOT live ChatGPT",
+  "checks": [
+    "Ten read-only drags keep native selection and focus; only one small button, no editor/highlight/record/layout shift",
+    "Explicit button opens focused editor under exact source; ten add/cancel/reselect cycles",
+    "Escape, outside click and cleared selection dismiss only the pending button",
+    "A new reading drag leaves the typed draft untouched; clicking Add creates independent source ownership",
+    "Saved annotations and collapsed-panel flow survive; mode OFF dismisses button without deleting records",
+    "Scroll/resize position follows selection; clipped or changed source never leaves a detached action button",
+    "Keyboard activation works; navigation clears only pending intent; no runtime errors"
+  ],
+  "errors": []
+}

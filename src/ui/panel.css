@@ -31,4 +31,5 @@ h1,h2{font-size:calc(17px * var(--askmark-ui-scale,1));letter-spacing:-.4px;marg
 #selection-tools{margin-bottom:10px;gap:4px;flex-wrap:wrap}#selected-count{font-size:calc(11px * var(--askmark-ui-scale,1));color:var(--muted)}#selection-tools .quiet{padding:3px 4px;font-size:calc(10px * var(--askmark-ui-scale,1))}
 #insert-offer{position:fixed;width:min(320px,calc(100vw - 24px));pointer-events:auto;border:1px solid var(--line);border-radius:12px;padding:13px 15px;box-shadow:0 6px 24px #0003;z-index:5}#insert-offer p{margin:0 0 8px}#insert-offer .hint{margin-bottom:10px}
 #selection-add{position:fixed;pointer-events:auto;padding:6px 11px;font-size:calc(12px * var(--askmark-ui-scale,1));line-height:1.4;border:1px solid var(--line);border-radius:8px;box-shadow:0 3px 12px #0002;z-index:3;white-space:nowrap}
+.setting-row select{min-width:0;flex-shrink:1}.language-row{margin-top:0;margin-bottom:12px}
 @media(max-height:700px){#panel{overflow-y:auto}#body{flex:none;overflow:visible}header,footer{padding:11px 15px}}

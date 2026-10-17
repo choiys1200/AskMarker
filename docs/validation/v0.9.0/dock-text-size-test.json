@@ -1,0 +1,15 @@
+{
+  "version": "0.9.0",
+  "environment": "Actual MV3 extension in isolated Chromium with synthetic HTML; browser default-size changes via CDP and one injected pointercancel; not live AI/user Chrome",
+  "checks": [
+    "Real mouse drag moves only vertically; reading/panel state unchanged; position survives expand/collapse and reload; arrows removed; controls follow browser size",
+    "Top/bottom clamp, keyboard movement, injected pointer cancellation and viewport resize keep the dock reachable",
+    "Backup download still exports exact saved notes and prompt membership after presentation changes",
+    "80–160% UI scaling preserves draft text/identity, exact quote, highlights, question/check data and native source font size",
+    "System size follows browser default 20px and live change to 18px; Custom 100% remains independent from the browser default",
+    "Text-size mode and custom value synchronize between tabs and persist on reload; cancelling the draft leaves all saved data intact",
+    "160% text at 701/720/760/800px: real wheel scrolling reaches footer; no hidden-overflow trap",
+    "Light/dark 160% rendering, movable compact dock and short/narrow-window settings/actions remain accessible; no runtime errors"
+  ],
+  "errors": []
+}
