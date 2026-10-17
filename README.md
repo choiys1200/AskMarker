@@ -6,6 +6,10 @@ Highlight AI answers, add questions beneath the source, and collect the exact qu
 
 [한국어 안내](README.ko.md) · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md)
 
+## Fixes and package verification in 0.7.7
+
+Fixed clipped panel footers with large text at intermediate window heights and restored missing appearance-key imports used by backup export. All 18 regression suites passed against executable files extracted from the install ZIP in isolated Chromium. Live AI sessions and the company PC remain unverified.
+
 ## New in 0.7.6
 
 - Drag the handle above the compact right-hand menu to move it vertically. The saved position survives expand/collapse and reload; window resizing keeps it reachable. Arrow keys and Home/End work on the handle.
@@ -46,11 +50,11 @@ Editable preview, clipboard copy, select/deselect all, local backup/import, and 
 
 ## Install / update
 
-[Install ZIP](releases/askmarker-v0.7.6.zip) · [Complete source ZIP](releases/askmarker-v0.7.6-source.zip)
+[Install ZIP](releases/askmarker-v0.7.7.zip) · [Complete source ZIP](releases/askmarker-v0.7.7-source.zip)
 
 Extract the install ZIP, open `chrome://extensions`, enable Developer mode and load the `askmarker` directory containing `manifest.json`. The install ZIP is prebuilt; Node.js is not needed.
 
-**Existing users:** back up notes, then overwrite **all files and subdirectories from the new ZIP, including `assets/`** **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.6** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
+**Existing users:** back up notes, then overwrite **all files and subdirectories from the new ZIP, including `assets/`** **in the existing registered directory**. Reload the extension and refresh the page; on other services click the extension icon again. Verify **v0.7.7** in the panel. Keep the extension and installation path to preserve its ID/storage. Existing note keys, choice keys, permissions and backup format remain compatible.
 
 ## Site support and verification
 
@@ -63,9 +67,9 @@ Extract the install ZIP, open `chrome://extensions`, enable Developer mode and l
 
 Other services do not need a separate AI API integration for marking and copying. This is **not a promise of every renderer or feature on every AI site**: embedded frames, closed shadow roots, non-text surfaces and editable answer widgets may not be selectable by the general adapter. Other-site records are separated by full page URL; chats that reuse one URL share that bucket. Answer-body font overrides and editable writing-box handling are currently ChatGPT-specific. AskMarker's own UI font settings apply everywhere.
 
-Version 0.7.6 passed four suites: dock/text-size behavior, existing appearance/prompt delivery, repeated drag/add/cancel behavior, and module contracts. Actual MV3 extensions ran in isolated Chromium against synthetic HTML. Light/dark and 160% rendering were visually checked. Earlier reports remain archived.
+Version 0.7.7 passed all 18 regression suites: packaged-runtime UI/selection/delivery checks, backup round trips, storage-failure simulations, module contracts and an update from packaged 0.7.3. Environment and instrumentation boundaries are documented in the validation report.
 
-These are isolated-browser fixtures, not live AI sessions. **Live 0.7.6 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
+These are isolated-browser fixtures, not live AI sessions. **Live 0.7.7 ChatGPT/Gemini/Grok and company-PC behavior remains unverified.** See [the report](docs/VALIDATION.md).
 
 ## Development
 

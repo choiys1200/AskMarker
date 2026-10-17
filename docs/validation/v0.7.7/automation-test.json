@@ -1,0 +1,17 @@
+{
+  "version": "0.7.7",
+  "environment": "Real unpacked MV3 extension in Chromium; synthetic current ChatGPT structure; NOT live ChatGPT",
+  "checks": [
+    "Ten real drag/cancel cycles; same/different source; no inline color buttons",
+    "Eight right-panel colors, focused highlight and laser synchronize",
+    "ID-less composer recognized; focus, programmatic and other-editor clicks never insert; dismiss/Escape preserve input",
+    "Confirmation appends exact pairs; draft blocks; existing text retained; no boilerplate warning, duplicate or send",
+    "Cleared input and another tab offer absent questions again without silently refilling",
+    "Only absent pairs append; unfinished saved edit blocks confirmation; saved revision available",
+    "Right-panel ON/OFF persists; manual append remains available while OFF and after reload",
+    "Scroll/resize dismiss offer; conversation navigation cancels it without mixing records",
+    "Legacy textarea, copy and editable preview preserve content",
+    "Composer replacement safe; no page/isolated-world errors or transmission"
+  ],
+  "errors": []
+}

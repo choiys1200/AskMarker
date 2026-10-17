@@ -64,5 +64,5 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   }finally{await ctx.close();}
  }
  if(process.env.QA_BASELINE)await run(path.resolve(process.env.QA_BASELINE),true);await run(root);
- fs.writeFileSync(path.join(out,'selection-results.json'),JSON.stringify({environment:'Real MV3 extension + synthetic DOM compatibility fixtures. Company PC and live installed 0.7.6 NOT tested.',results},null,2));
+ fs.writeFileSync(path.join(out,'selection-results.json'),JSON.stringify({environment:'Real MV3 extension + synthetic DOM compatibility fixtures. Company PC and live installed 0.7.7 NOT tested.',results},null,2));
 })().catch(e=>{console.error(e);process.exitCode=1;});
