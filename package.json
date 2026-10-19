@@ -1,8 +1,8 @@
 {
   "name": "askmarker",
-  "version": "0.9.1",
+  "version": "0.10.1",
   "private": true,
-  "description": "Highlight AI answers. Collect questions. Ask again.",
+  "description": "Mark AI answers, add comments, and export approved conversation snapshots.",
   "scripts": {
     "build": "node scripts/build.cjs",
     "check:build": "node scripts/build.cjs --check",

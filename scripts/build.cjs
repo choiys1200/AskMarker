@@ -43,3 +43,4 @@ console.log(`AskMarker ${version} ${targetName}: ${modules.size} modules, reprod
 }
 build('app.js','content.js');
 build('background.js','background.js');
+build('archive/page.js','archive.js');

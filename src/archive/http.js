@@ -1,0 +1,6 @@
+'use strict';
+class ArchiveError extends Error{constructor(code,status=0){super(code);this.code=code;this.status=status;}}
+function statusError(status){return new ArchiveError(({401:'AUTH_EXPIRED',403:'PERMISSION_DENIED',404:'NOT_FOUND',409:'CONFLICT',429:'RATE_LIMIT'})[status]||(status>=500?'SERVER_ERROR':'API_ERROR'),status);}
+async function request(url,options={},fetcher=fetch){let response,timedOut=false;const control=new AbortController(),abort=()=>control.abort(),timer=setTimeout(()=>{timedOut=true;control.abort();},30000);options.signal?.addEventListener('abort',abort,{once:true});if(options.signal?.aborted)control.abort();try{response=await fetcher(url,{...options,signal:control.signal,redirect:'error',cache:'no-store',credentials:'omit'});if(!response.ok)throw statusError(response.status);if(response.status===204)return {};try{return await response.json();}catch{throw new ArchiveError('INVALID_RESPONSE');}}catch(e){if(e instanceof ArchiveError)throw e;throw new ArchiveError(options.signal?.aborted?'CANCELLED':timedOut?'TIMEOUT':'NETWORK_OR_OFFLINE');}finally{clearTimeout(timer);options.signal?.removeEventListener('abort',abort);}}
+const ambiguous=e=>!['AUTH_EXPIRED','PERMISSION_DENIED','RATE_LIMIT','API_ERROR','NOT_FOUND'].includes(e.code);
+module.exports={ArchiveError,request,ambiguous};

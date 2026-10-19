@@ -13,9 +13,9 @@ def pack(name,files):
   for file in files:assert z.read('askmarker/'+file)==(root/file).read_bytes()
  archive.with_suffix('.sha256').write_text(hashlib.sha256(archive.read_bytes()).hexdigest()+'  '+archive.name+'\n',encoding='utf-8')
  print(archive.name)
-files=['manifest.json','content.js','background.js','README.md','README.ko.md','docs/VALIDATION.md','docs/ARCHITECTURE.md']
+files=['manifest.json','content.js','background.js','archive.js','archive.html','archive.css','README.md','README.ko.md','docs/VALIDATION.md','docs/ARCHITECTURE.md','docs/ARCHIVE-SETUP.md','docs/PRIVACY.md','docs/CHANGES-0.10.0.md','docs/CHANGES-0.10.1.md']
 files += [p.relative_to(root).as_posix() for folder in ['assets'] for p in sorted((root/folder).rglob('*')) if p.is_file() and p.suffix != '.svg']
 pack(f'askmarker-v{version}.zip',files)
-sources=[p.relative_to(root).as_posix() for p in sorted(root.rglob('*')) if p.is_file() and not p.relative_to(root).as_posix().startswith('docs/images/') and p.relative_to(root).parts[0] in {'src','tests','scripts','docs','assets'}]
-sources += ['manifest.json','content.js','background.js','README.md','README.ko.md','package.json','.gitignore','.gitattributes']
+sources=[p.relative_to(root).as_posix() for p in sorted(root.rglob('*')) if p.is_file() and not p.relative_to(root).as_posix().startswith('docs/images/') and p.relative_to(root).parts[0] in {'src','tests','scripts','docs','assets','backend'}]
+sources += ['manifest.json','content.js','background.js','archive.js','archive.html','archive.css','README.md','README.ko.md','package.json','.gitignore','.gitattributes']
 pack(f'askmarker-v{version}-source.zip',sorted(sources))

@@ -1,0 +1,17 @@
+{
+  "version": "0.10.0",
+  "environment": "Node language contracts + actual MV3 in isolated Chromium with synthetic ChatGPT HTML, real mouse gestures and real extension storage; test-only ChatGPT host grant for script reinjection. Not actual toolbar click, live AI service or user Chrome.",
+  "checks": [
+    "Pure language fallback, delayed hydration protection, and exact quote/question preservation in both prompt languages",
+    "Korean is the default even in an English browser",
+    "20 real mouse drag → add → empty cancel → reselect cycles pass in Korean/English",
+    "Language changes retain the same focused draft node, caret, source, highlight, and non-language storage; user text matching a UI label is untouched",
+    "Saved inline/sidebar labels, accessible names, fonts and color names translate together; question content and checkbox remain unchanged",
+    "New prompts use the selected language with exact originals; switching languages never overwrites an edited preview",
+    "Cross-language duplicate protection; English quick insert preserves existing AI input and deselects only delivered comments",
+    "Selected language survives hide/reinjection, reload and a new tab; preference changes synchronize between tabs",
+    "English toolbar title, 160% narrow-panel layout, dark/light UI and restored saved annotations",
+    "Validation status and toast translate, including the last displayed message after a locale change"
+  ],
+  "errors": []
+}

@@ -19,7 +19,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
    const ext=p.locator('#question-basket-extension'),dock=ext.locator('#dock'),panel=ext.locator('#panel'),drafts=()=>p.locator('[data-qb-inline^="draft-"]');await dock.waitFor();
    await ext.locator('#mode-compact').click();
    async function drag(id){const loc=p.locator('#'+id);await loc.scrollIntoViewIfNeeded();const b=await loc.boundingBox();await p.mouse.move(b.x+2,b.y+14);await p.mouse.down();await p.mouse.move(b.x+240,b.y+14,{steps:12});await p.mouse.up();await ext.locator('#selection-add').click();await drafts().waitFor();return drafts();}
-   let draft=await drag('first');await draft.getByRole('textbox').fill('숨겨도 남아 있어야 할 저장 질문');await draft.getByRole('button',{name:'질문 저장',exact:true}).click();await draft.waitFor({state:'detached'});await p.waitForFunction(()=>document.querySelector('#question-basket-extension').shadowRoot.getElementById('count').textContent==='1');
+   let draft=await drag('first');await draft.getByRole('textbox').fill('숨겨도 남아 있어야 할 저장 코멘트');await draft.getByRole('button',{name:'코멘트 저장',exact:true}).click();await draft.waitFor({state:'detached'});await p.waitForFunction(()=>document.querySelector('#question-basket-extension').shadowRoot.getElementById('count').textContent==='1');
    await ext.locator('#launcher').click();await ext.locator('#list .prompt-include').uncheck();await ext.locator('#close').click();
    draft=await drag('second');await draft.getByRole('textbox').fill('메뉴를 숨겨도 보존할 작성 중 초안');const id=await draft.getAttribute('data-qb-inline'),quote=await draft.locator('blockquote').textContent(),before=await worker.evaluate(()=>chrome.storage.local.get(null));
    for(let i=0;i<10;i++){
@@ -36,6 +36,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
    await p.emulateMedia({colorScheme:'dark'});await dock.screenshot({path:path.join(out,host+'-dock-dark.png'),animations:'disabled'});await p.emulateMedia({colorScheme:'light'});await dock.screenshot({path:path.join(out,host+'-dock-light.png'),animations:'disabled'});assert.deepEqual(await worker.evaluate(()=>chrome.storage.local.get(null)),before);checks.push('Compact hide button rendered in light/dark; no saved data changes');
    cases.push({host,result:'PASS',checks});console.log('PASS',host,'hide/reopen and state preservation');
   }
-  assert.deepEqual(errors,[]);fs.writeFileSync(path.join(out,'menu-visibility-results.json'),JSON.stringify({version:'0.9.1',environment:'Actual MV3 + synthetic ChatGPT/Gemini HTML; captured toolbar listener invoked programmatically, real scripting reinjection; test-only host grants instead of actual toolbar activeTab authorization. Not real toolbar UI/live site.',cases,errors},null,2));
+  assert.deepEqual(errors,[]);fs.writeFileSync(path.join(out,'menu-visibility-results.json'),JSON.stringify({version:'0.10.1',environment:'Actual MV3 + synthetic ChatGPT/Gemini HTML; captured toolbar listener invoked programmatically, real scripting reinjection; test-only host grants instead of actual toolbar activeTab authorization. Not real toolbar UI/live site.',cases,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

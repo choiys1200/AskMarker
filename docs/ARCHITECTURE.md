@@ -1,3 +1,22 @@
+# 0.10.0 아카이브 경계
+
+| 모듈 | 책임 |
+|---|---|
+| `archive/adapters.js` | 서비스별 공개 DOM 역할·대화 ID·관찰 범위 |
+| `archive/capture.js` | ON 이후 생성/삽입/전송 증거·답변 관찰과 별도 로컬 journal |
+| `archive/document.js` | 선택 스냅샷을 읽기 쉬운 Markdown으로 투영; 외부 I/O 없음 |
+| `archive/page.js`, `archive.html/css` | 확장 전용 미리보기, 선택, 연결 시작, 대상·스냅샷 승인 |
+| `archive/worker.js` | 메시지 발신자 검증, worker-only 세션 토큰, OAuth 경계 |
+| `archive/jobs.js` | 불변 승인, digest, durable receipt, 승인 세대/취소, 수동 재시도 |
+| `archive/google-drive-provider.js` | drive.file 파일 API, 사전 ID, 원격 결과 확인 |
+| `archive/notion-provider.js` | 부모 페이지/UUID 표식, 안전한 청크, 결과·부분 쓰기 확인 |
+| `archive/http.js` | 본문/토큰을 노출하지 않는 네트워크 오류 분류 |
+| `backend/notion-auth/server.cjs` | 서버 secret을 사용한 단회 OAuth 교환; 대화 API 없음 |
+
+기존 저장 스키마는 바꾸지 않았습니다. `app.js`에는 생성·삽입 알림과 내보내기 진입점만 연결합니다. 표시 설정은 아카이브/provider를 참조하지 않습니다. OAuth 연결은 content script가 실행할 수 없으며 외부 저장 명령은 `archive.html` 발신자만 허용합니다. CSP는 로컬 번들만 실행합니다.
+
+아래는 기존 구조 변경 이력입니다.
+
 # AskMarker 모듈 구조
 
 ## 검토 결과와 적용 원칙

@@ -1,4 +1,6 @@
 'use strict';
+const {installArchiveWorker}=require('./archive/worker');
+installArchiveWorker();
 const {LANGUAGE_KEY,languageOf,translate}=require('./i18n/index');
 let language='ko';
 const failedTabs=new Set();

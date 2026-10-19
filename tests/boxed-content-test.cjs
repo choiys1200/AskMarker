@@ -7,14 +7,14 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  body{font:16px/1.9 system-ui;padding:40px 430px 200px 80px;margin:0;background:#f8f9fc;color:#242938}main{max-width:720px}
  .box{border:1px solid #ccd1dc;border-radius:12px;background:white;margin:20px 0;padding:16px;overflow:clip}pre{font:14px/1.8 monospace;overflow:auto;margin:0}p{margin:16px 0}
  [contenteditable]{outline:none}#prompt-textarea{min-height:90px;background:white;border:1px solid #aaa;padding:16px}
- </style></head><body><main><small>검증용 예시 · 실제 ChatGPT가 아닙니다</small><h1>코드와 메일 예시에도 질문을 남기세요.</h1>
+ </style></head><body><main><small>검증용 예시 · 실제 ChatGPT가 아닙니다</small><h1>코드와 메일 예시에도 코멘트를 남기세요.</h1>
  <article data-chatgpt-selection-message-id="boxed-answer"><div data-dil-source-message-id="boxed-answer"><div data-dil-message-id="boxed-answer">
  <p id="normal">이 답변은 코드와 메일 예시를 함께 설명합니다.</p>
- <div class="box" id="code-box"><div>JavaScript <button>복사</button></div><pre><code><span id="code-line">const answer = questions.map(question =&gt; question.text);</span>\nconsole.log(answer);</code></pre></div>
- <div class="box" id="mail-box" data-oai-writing-block-surface data-testid="chatgpt-writing-block" data-writing-block-variant="email"><div>메일 예시 <button>복사</button></div><div class="writing-block-editor"><div contenteditable="true" role="textbox" class="ProseMirror"><p id="mail-line">안녕하세요. 제안해 주신 내용을 검토하고 다음 단계에 대해 질문드립니다.</p><p id="mail-second">가능한 일정과 필요한 자료를 알려 주시면 준비하겠습니다.</p></div></div></div>
- <p id="after">이 문장은 질문 말풍선 뒤에도 가려지지 않아야 합니다.</p>
+ <div class="box" id="code-box"><div>JavaScript <button>복사</button></div><pre><code><span id="code-line">const answer = comments.map(question =&gt; question.text);</span>\nconsole.log(answer);</code></pre></div>
+ <div class="box" id="mail-box" data-oai-writing-block-surface data-testid="chatgpt-writing-block" data-writing-block-variant="email"><div>메일 예시 <button>복사</button></div><div class="writing-block-editor"><div contenteditable="true" role="textbox" class="ProseMirror"><p id="mail-line">안녕하세요. 제안해 주신 내용을 검토하고 다음 단계에 대해 코멘트드립니다.</p><p id="mail-second">가능한 일정과 필요한 자료를 알려 주시면 준비하겠습니다.</p></div></div></div>
+ <p id="after">이 문장은 코멘트 말풍선 뒤에도 가려지지 않아야 합니다.</p>
  </div></div></article>
- <div contenteditable="true" id="other-editor"><p>답변 밖의 편집기에서는 질문이 생기지 않습니다.</p></div>
+ <div contenteditable="true" id="other-editor"><p>답변 밖의 편집기에서는 코멘트가 생기지 않습니다.</p></div>
  <div id="prompt-textarea" contenteditable="true" role="textbox"></div></main></body></html>`;
  async function run(dir,baseline){
   const ctx=await chromium.launchPersistentContext(fs.mkdtempSync(path.join(out,'profile-')),{headless:true,executablePath:process.env.QA_BROWSER,viewport:{width:1560,height:1200},args:[`--disable-extensions-except=${dir}`,`--load-extension=${dir}`]});
@@ -35,7 +35,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
    checks.push('Ten real mouse drag/add/cancel cycles in editable mail and syntax-highlighted code');
    const textBefore=await p.locator('#mail-box .ProseMirror').textContent();
    for(const[id,question,box]of [['code-line','이 코드의 map은 어떤 결과를 만드나요?','code-box'],['mail-line','이 메일을 조금 더 구체적으로 쓰려면 무엇을 추가하나요?','mail-box']]){
-    await drag(id);await ext.locator('#selection-add').click();await draft().getByRole('textbox').fill(question);await draft().getByRole('button',{name:'질문 저장',exact:true}).click();await draft().waitFor({state:'detached'});
+    await drag(id);await ext.locator('#selection-add').click();await draft().getByRole('textbox').fill(question);await draft().getByRole('button',{name:'코멘트 저장',exact:true}).click();await draft().waitFor({state:'detached'});
     const bubble=p.locator('[data-qb-inline]').filter({hasText:question});await bubble.waitFor();const b=await bubble.boundingBox(),a=await p.locator('#'+box).boundingBox();assert.ok(b.y>=a.y+a.height-1,'Bubble below complete box');
    }
    assert.equal(await p.locator('#mail-box .ProseMirror').textContent(),textBefore);assert.equal(await p.locator('#mail-box [data-qb-inline],pre [data-qb-inline]').count(),0);

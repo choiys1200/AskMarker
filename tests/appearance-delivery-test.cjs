@@ -6,7 +6,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  try{
   const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');
   const scope='https://chatgpt.com/c/appearance-delivery',quote='AI 답변을 읽다가 궁금한 문장을 드래그합니다.';
-  const notes=[1,2].map(i=>({id:'appearance-'+i,scope,messageId:'answer-one',quote,context:quote,question:'질문 '+i+'의 정확한 내용',color:i===1?'yellow':'blue',created:i}));
+  const notes=[1,2].map(i=>({id:'appearance-'+i,scope,messageId:'answer-one',quote,context:quote,question:'코멘트 '+i+'의 정확한 내용',color:i===1?'yellow':'blue',created:i}));
   await worker.evaluate(notes=>chrome.storage.local.set(Object.fromEntries(notes.map(n=>['qb:note:'+encodeURIComponent(n.scope)+':'+n.id,n]))),notes);
   const html=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8').replace('</article>','<pre><code id="code-font">const hello = "world";</code></pre></article>');
   await ctx.route('https://chatgpt.com/**',r=>r.fulfill({contentType:'text/html',body:html}));
@@ -45,13 +45,17 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   await composer.evaluate(el=>{el.addEventListener('input',()=>{if(el.dataset.reject==='true')el.textContent='기존 내용';});el.dataset.reject='true';el.textContent='기존 내용';});
   await ext.locator('#quick-insert').click();await p.waitForFunction(()=>document.querySelector('#question-basket-extension').shadowRoot.getElementById('status').textContent.includes('입력 결과'));await selected(2);
   await composer.evaluate(el=>delete el.dataset.reject);await ext.locator('#quick-insert').click();await selected(0);assert.ok((await composer.innerText()).startsWith('기존 내용'));for(const n of notes)assert.ok((await composer.innerText()).includes(n.question));assert.deepEqual(await noteData(),before);
+  await ext.locator('#toast').waitFor({state:'visible'});assert.equal(await ext.locator('#toast').textContent(),'입력창에 추가했습니다.');
+  const toastRect=await ext.locator('#toast').boundingBox(),inputRect=await composer.boundingBox();assert.ok(toastRect.y+toastRect.height<=inputRect.y-15,'Toast must stay above the input');
+  assert.equal(await ext.locator('#toast').evaluate(el=>getComputedStyle(el).pointerEvents),'none');
+  await p.waitForTimeout(1650);assert.equal(await ext.locator('#toast').isVisible(),false);check('Compact insertion notice stays above input, ignores pointer events, and disappears after 1.5 seconds');
   await composer.fill('');await composer.click();assert.equal(await ext.locator('#insert-offer').isVisible(),false);await p.reload();await ext.locator('#launcher').click();await selected(0);
   check('Copy/failure retain choices; verified append clears all consumed choices, persists on reload and never removes notes');
   // A new question starts selected; only it is offered for the next response.
-  const fresh={...notes[0],id:'fresh-round',question:'이번 답변에서 새로 모은 질문',created:3};await worker.evaluate(n=>chrome.storage.local.set({['qb:note:'+encodeURIComponent(n.scope)+':'+n.id]:n}),fresh);await selected(1);
+  const fresh={...notes[0],id:'fresh-round',question:'이번 답변에서 새로 모은 코멘트',created:3};await worker.evaluate(n=>chrome.storage.local.set({['qb:note:'+encodeURIComponent(n.scope)+':'+n.id]:n}),fresh);await selected(1);
   await composer.fill('다음 요청');await composer.click();await ext.locator('#insert-offer').waitFor();assert.match(await ext.locator('#offer-title').textContent(),/1개/);await ext.locator('#offer-accept').click();await selected(0);const inserted=await composer.innerText();assert.ok(inserted.includes(fresh.question));for(const n of notes)assert.ok(!inserted.includes(n.question));
   await boxes.first().check();await ext.locator('#generate').click();await ext.locator('#prompt').fill('사용자가 수정한 최종 프롬프트');await ext.locator('#insert').click();await selected(0);assert.ok((await composer.innerText()).includes('사용자가 수정한 최종 프롬프트'));
-  check('Next round includes only new questions; explicit reselection and edited preview both clear on successful insertion');
+  check('Next round includes only new comments; explicit reselection and edited preview both clear on successful insertion');
   await ext.locator('#select-all').click();await ext.locator('#reading-mode').click();await ext.locator('#font-family').selectOption('system');
   await p.screenshot({path:path.join(out,'appearance-light.png'),fullPage:true,animations:'disabled'});
   await p.emulateMedia({colorScheme:'dark'});await p.addStyleTag({content:'body{background:#14161d;color:#edf0f8}#prompt-textarea{background:#202127;color:#edf0f8}'});
@@ -59,6 +63,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   await ext.locator('#close').click();await p.screenshot({path:path.join(out,'compact-dark.png'),animations:'disabled'});
   await p.setViewportSize({width:850,height:600});await ext.locator('#launcher').click();await ext.locator('#font-family').selectOption('mono');await ext.locator('#select-all').scrollIntoViewIfNeeded();assert.equal(await ext.locator('#reading-mode').count(),1);
   assert.deepEqual(errors,[]);check('Light/dark and compact screenshots; short-window controls remain reachable; no runtime errors');
-  fs.writeFileSync(path.join(out,'appearance-delivery-results.json'),JSON.stringify({version:'0.9.1',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; not live ChatGPT',checks,errors},null,2));
+  fs.writeFileSync(path.join(out,'appearance-delivery-results.json'),JSON.stringify({version:'0.10.1',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; not live ChatGPT',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

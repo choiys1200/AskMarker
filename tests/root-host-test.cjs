@@ -17,11 +17,11 @@ const {chromium}=require('playwright');const fs=require('node:fs');const path=re
    await drag('first');
    if(!fixed){await p.waitForTimeout(200);assert.ok(errors.some(e=>/hasAttribute is not a function/.test(e)),JSON.stringify(errors));assert.equal(await p.locator('[data-qb-inline]').count(),0);results.push({version,documentHost:named,result:'REPRODUCED',errors,bubbleCount:0});return;}
    const drafts=()=>p.locator('[data-qb-inline^="draft-"]');await drafts().waitFor();
-   for(let i=0;i<10;i++){if(i)await drag(i%2?'second':'first');await drafts().waitFor();await drafts().getByRole('textbox',{name:'궁금한 점'}).fill(i===5?'그림자 DOM 입력 이벤트 확인':'');await drafts().getByRole('button',{name:i%2?'작성 취소':'취소',exact:true}).click();await drafts().waitFor({state:'detached'});}
-   await drag('first');await drafts().getByRole('textbox',{name:'궁금한 점'}).fill('예외 수정 후 첫 질문');await drafts().getByRole('button',{name:'질문 저장',exact:true}).click();await drafts().waitFor({state:'detached'});
-   await drag('second');await drafts().getByRole('textbox',{name:'궁금한 점'}).fill('예외 수정 후 두 번째 질문');await drafts().getByRole('button',{name:'질문 저장',exact:true}).click();await drafts().waitFor({state:'detached'});
+   for(let i=0;i<10;i++){if(i)await drag(i%2?'second':'first');await drafts().waitFor();await drafts().getByRole('textbox',{name:'코멘트'}).fill(i===5?'그림자 DOM 입력 이벤트 확인':'');await drafts().getByRole('button',{name:i%2?'작성 취소':'취소',exact:true}).click();await drafts().waitFor({state:'detached'});}
+   await drag('first');await drafts().getByRole('textbox',{name:'코멘트'}).fill('예외 수정 후 첫 코멘트');await drafts().getByRole('button',{name:'코멘트 저장',exact:true}).click();await drafts().waitFor({state:'detached'});
+   await drag('second');await drafts().getByRole('textbox',{name:'코멘트'}).fill('예외 수정 후 두 번째 코멘트');await drafts().getByRole('button',{name:'코멘트 저장',exact:true}).click();await drafts().waitFor({state:'detached'});
    await p.waitForFunction(()=>document.querySelector('#question-basket-extension').shadowRoot.getElementById('count').textContent==='2');
-   await ext.locator('#launcher').click();await ext.locator('#generate').click();assert.ok((await ext.locator('#prompt').inputValue()).includes('예외 수정 후 두 번째 질문'));await ext.locator('#preview-close').click();
+   await ext.locator('#launcher').click();await ext.locator('#generate').click();assert.ok((await ext.locator('#prompt').inputValue()).includes('예외 수정 후 두 번째 코멘트'));await ext.locator('#preview-close').click();
    await p.reload();await ext.waitFor();if(await ext.locator('#mode-compact').count())await ext.locator('#mode-compact').click();await injectHost();await p.waitForFunction(()=>document.querySelectorAll('[data-qb-inline]').length===2);assert.equal(await p.locator('form[name="host"]').count(),2);assert.deepEqual(errors,[]);
    await ext.locator('#launcher').click();await p.screenshot({path:path.join(out,'v040-root-host-fixed.png')});
    results.push({version,documentHost:named,result:'PASS',realMouseCancelCycles:10,savedAndRestored:2,promptVerified:true,siteNamedFormsUntouched:true,errors});

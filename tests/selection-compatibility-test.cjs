@@ -26,7 +26,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
    async function drag(id='first',reverse=false){const el=p.locator('#'+id);await el.scrollIntoViewIfNeeded();const b=await el.boundingBox();await p.mouse.move(b.x+(reverse?275:2),b.y+15);await p.mouse.down();await p.mouse.move(b.x+(reverse?2:275),b.y+15,{steps:12});await p.mouse.up();if(await ext.locator('#selection-add').isVisible())await ext.locator('#selection-add').click();}
    for(const [name,open,close,attr]of (baseline?variants.slice(0,3):variants)){
     console.log('START',version,name);
-    html=fixture.replace('<article data-message-id="answer-one" data-message-author-role="assistant">','<div id="boundary">'+open).replace('</article>',close+'</div><div data-user-message-bubble="true"><p id="user">사용자가 쓴 질문은 답변이 아닙니다.</p></div>');
+    html=fixture.replace('<article data-message-id="answer-one" data-message-author-role="assistant">','<div id="boundary">'+open).replace('</article>',close+'</div><div data-user-message-bubble="true"><p id="user">사용자가 쓴 코멘트는 답변이 아닙니다.</p></div>');
     await p.goto('https://chatgpt.com/c/'+name);await ext.locator('#mode-compact').click();await drag();
     if(baseline){assert.equal(await draft().count(),0);assert.match(await ext.locator('#status').textContent(),/본문으로 인식하지 못/);results.push({version,name,result:'REPRODUCED',selectedTextPresent:!!await p.evaluate(()=>getSelection().toString())});continue;}
     await draft().waitFor();await cancel();
@@ -35,7 +35,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
     // This synthetic Range setup is reported separately from the 10 real mouse gestures above.
     await p.evaluate(()=>{const first=document.getElementById('first'),body=first.closest('.markdown')||first.parentElement,r=document.createRange();r.selectNode(body);getSelection().removeAllRanges();getSelection().addRange(r);});
     const expected=await p.evaluate(()=>getSelection().toString());await ext.locator('#launcher').click();await ext.locator('#use-selection').click();await draft().waitFor();assert.equal(await draft().locator('blockquote').textContent(),expected);await cancel();
-    await drag();await draft().getByRole('textbox').fill('회사 PC 호환성 검증 질문');await draft().getByRole('button',{name:'질문 저장',exact:true}).click();await p.waitForFunction(()=>document.querySelector('#question-basket-extension').shadowRoot.getElementById('count').textContent==='1');
+    await drag();await draft().getByRole('textbox').fill('회사 PC 호환성 검증 코멘트');await draft().getByRole('button',{name:'코멘트 저장',exact:true}).click();await p.waitForFunction(()=>document.querySelector('#question-basket-extension').shadowRoot.getElementById('count').textContent==='1');
     const records=await worker.evaluate(async()=>Object.values(await chrome.storage.local.get(null)).filter(n=>n?.question));const note=records.find(n=>n.scope.endsWith('/'+name));assert.equal(note.anchor.rootAttribute,attr);
     await p.reload();await ext.locator('#mode-compact').click();await p.locator('[data-qb-inline]').waitFor();assert.equal(await p.locator('[data-qb-inline]').count(),1);
     if(!attr){
@@ -51,7 +51,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
    }
    if(!baseline){
     // Selection crosses a user message, two answers, or sidebar content: never use main as a fallback.
-    html=fixture.replace('</article>','</article><div data-user-message-bubble><p id="user">사용자 질문</p></div><article data-message-id="answer-two" data-message-author-role="assistant"><p id="other">두 번째 답변 문장입니다.</p></article>');
+    html=fixture.replace('</article>','</article><div data-user-message-bubble><p id="user">사용자 코멘트</p></div><article data-message-id="answer-two" data-message-author-role="assistant"><p id="other">두 번째 답변 문장입니다.</p></article>');
     await p.goto('https://chatgpt.com/c/reject-mixed');await ext.locator('#mode-compact').click();await ext.locator('#launcher').click();
     for(const target of ['user','other']){await p.evaluate(target=>{const r=document.createRange();r.setStart(document.getElementById('first').firstChild,0);const end=document.getElementById(target).firstChild;r.setEnd(end,end.length);getSelection().removeAllRanges();getSelection().addRange(r);},target);await ext.locator('#use-selection').click();assert.equal(await draft().count(),0);}
     // Contradictory IDs must still fail even with explicit assistant styling.
@@ -64,5 +64,5 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   }finally{await ctx.close();}
  }
  if(process.env.QA_BASELINE)await run(path.resolve(process.env.QA_BASELINE),true);await run(root);
- fs.writeFileSync(path.join(out,'selection-results.json'),JSON.stringify({environment:'Real MV3 extension + synthetic DOM compatibility fixtures. Company PC and live installed 0.9.1 NOT tested.',results},null,2));
+ fs.writeFileSync(path.join(out,'selection-results.json'),JSON.stringify({environment:'Real MV3 extension + synthetic DOM compatibility fixtures. Company PC and live installed 0.10.1 NOT tested.',results},null,2));
 })().catch(e=>{console.error(e);process.exitCode=1;});

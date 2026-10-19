@@ -6,7 +6,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  const checks=[],errors=[],check=s=>{checks.push(s);console.log('PASS',s);};
  try{
   const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker'),scope='https://chatgpt.com/c/dock-size';
-  const quote='AI 답변을 읽다가 궁금한 문장을 드래그합니다.',note={id:'saved',scope,messageId:'answer-one',quote,context:quote,question:'글씨를 바꾸어도 보존할 질문',color:'yellow',created:1};
+  const quote='AI 답변을 읽다가 궁금한 문장을 드래그합니다.',note={id:'saved',scope,messageId:'answer-one',quote,context:quote,question:'글씨를 바꾸어도 보존할 코멘트',color:'yellow',created:1};
   await worker.evaluate(n=>chrome.storage.local.set({['qb:note:'+encodeURIComponent(n.scope)+':'+n.id]:n,['qb:prompt-choice:'+encodeURIComponent(n.scope)+':'+n.id]:false}),note);
   await ctx.route('https://chatgpt.com/**',r=>r.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8')}));
   const p=ctx.pages()[0];p.on('pageerror',e=>errors.push(e.message));const cdp=await ctx.newCDPSession(p);await cdp.send('Runtime.enable');cdp.on('Runtime.exceptionThrown',e=>errors.push(e.exceptionDetails.exception?.description||e.exceptionDetails.text));await p.goto(scope);
@@ -67,7 +67,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
    await p.setViewportSize({width:1100,height});await ext.locator('#panel').evaluate(el=>el.scrollTop=0);
    assert.match(await ext.locator('#panel').evaluate(el=>getComputedStyle(el).overflowY),/auto|scroll/);
    const r=await ext.locator('#panel').boundingBox();await p.mouse.move(r.x+r.width/2,r.y+r.height-20);await p.mouse.wheel(0,2000);
-   await p.waitForFunction(()=>{const root=document.querySelector('#question-basket-extension').shadowRoot,panel=root.getElementById('panel'),r=panel.getBoundingClientRect(),last=panel.querySelector('footer>p:last-child').getBoundingClientRect();return last.bottom<=r.bottom&&last.top>=r.top;});
+   await p.waitForFunction(()=>{const root=document.querySelector('#question-basket-extension').shadowRoot,panel=root.getElementById('panel'),r=panel.getBoundingClientRect(),last=panel.querySelector('footer>:last-child').getBoundingClientRect();return last.bottom<=r.bottom&&last.top>=r.top;});
   }
   await p.setViewportSize({width:1560,height:1200});await ext.locator('#panel').evaluate(el=>el.scrollTop=0);
   check('160% text at 701/720/760/800px: real wheel scrolling reaches footer; no hidden-overflow trap');
@@ -75,6 +75,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   await ext.locator('#close').click();await handle.focus();await handle.press('Home');for(let i=0;i<12;i++)await handle.press('ArrowDown');await dock.screenshot({path:path.join(out,'dock-dark.png'),animations:'disabled'});
   await p.setViewportSize({width:440,height:420});await handle.press('End');b=await dock.boundingBox();assert.ok(b.y>=8&&b.y+b.height<=412.1);await ext.locator('#launcher').click();await ext.locator('#font-size-mode').scrollIntoViewIfNeeded();await ext.locator('#font-size-mode').selectOption('system');await ext.locator('#quick-copy').scrollIntoViewIfNeeded();assert.equal(await ext.locator('#quick-copy').isVisible(),true);
   assert.deepEqual(errors,[]);check('Light/dark 160% rendering, movable compact dock and short/narrow-window settings/actions remain accessible; no runtime errors');
-  fs.writeFileSync(path.join(out,'dock-text-size-results.json'),JSON.stringify({version:'0.9.1',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; browser default-size changes via CDP and one injected pointercancel; not live AI/user Chrome',checks,errors},null,2));
+  fs.writeFileSync(path.join(out,'dock-text-size-results.json'),JSON.stringify({version:'0.10.1',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; browser default-size changes via CDP and one injected pointercancel; not live AI/user Chrome',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

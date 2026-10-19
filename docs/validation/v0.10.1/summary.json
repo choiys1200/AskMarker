@@ -1,0 +1,19 @@
+{
+  "version": "0.10.1",
+  "date": "2026-10-20",
+  "suites": [
+    "appearance-delivery",
+    "archive-browser",
+    "language"
+  ],
+  "result": "PASS",
+  "environment": "Actual unpacked MV3 in isolated Chromium with synthetic AI HTML; archive API responses simulated; live sites not tested",
+  "runtimeSHA256": {
+    "manifest.json": "5b9a6140eb0e96f6789a06975385c2f702ab918ebbb435970b3ace5d1bf8f8c4",
+    "content.js": "d16d4002b33de1900e593010c338e865a47856a6a09158e6069709e58a654e6d",
+    "background.js": "d4a25f03e985a6439dbe8a54bcd8801449232b8a86a190757c4aac78532160d0",
+    "archive.js": "f285aa6beb7017d7a17ea33c6bfe60d963657f69e9d6711f140c6cb99906c3fd",
+    "archive.html": "3b781c821a391055d734d84a26089afa2298b3cbc4878d8a4d300b7532baaa7e",
+    "archive.css": "6151a1bb90abacbcbaea04cc5e4458ad8cc9d6c2f4c4c6d5a9913fb52b4d1d90"
+  }
+}

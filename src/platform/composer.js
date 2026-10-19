@@ -41,7 +41,7 @@ function createComposerAdapter({own,tell}) {
     // Give controlled editors a chance to accept/revert/re-render the input.
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
     const current=usableComposer(target)?target:findComposer();
-    if(!current){tell('입력창이 바뀌었습니다. 질문 선택은 유지됩니다.',true);return false;}
+    if(!current){tell('입력창이 바뀌었습니다. 코멘트 선택은 유지됩니다.',true);return false;}
     const after=current instanceof HTMLTextAreaElement?current.value:current.innerText;
     if(!normalized(after).includes(normalized(previous+addition))){tell('입력 결과를 확인해 주세요. 필요하면 복사를 이용해 주세요.',true);return;}
     return true;

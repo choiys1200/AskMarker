@@ -1,0 +1,16 @@
+{
+  "environment": "Node contracts; injected fake API responses; local HTTP broker; no real credentials/OAuth/provider calls",
+  "checks": [
+    "Korean/English Mark ordering, exact text, one trailing instruction, legacy pair detection and empty exclusion",
+    "Long Unicode source and Markdown injection boundaries preserved; Notion chunks fit rich-text limits",
+    "Offline, 401, 403, 429, 5xx classified without API bodies/tokens in errors",
+    "OFF makes zero provider calls; concurrent clicks, retries and worker restart retain one snapshot/remote receipt",
+    "Disconnect/delete generation cancels waiting uploads; tombstones survive restart; deleted Marks cannot be uploaded from stale previews",
+    "Drive pre-generated ID and appProperties reconcile a committed upload with lost response without creating again",
+    "Notion lost-create response reconciles only the exact child marker; unknown result never blindly re-creates",
+    "Notion ambiguous block append reconciles exact observed prefix without duplicated content",
+    "Local real HTTP broker with mocked Notion upstream: state, verifier, fixed redirect, single-use handoff, no conversation endpoint",
+    "Worker OAuth cancellation/denial leaves no token; content-script connect rejected; token stays session-only; disconnect and OFF block authentication",
+    "Late storage hydration cannot undo a newer archive enable choice"
+  ]
+}

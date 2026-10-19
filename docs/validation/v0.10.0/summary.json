@@ -1,0 +1,193 @@
+{
+  "version": "0.10.0",
+  "date": "2026-10-19",
+  "timezone": "Asia/Seoul",
+  "runtimeSHA256": {
+    "manifest.json": "9e17dd2a9067eb9e77601b84956514bbf48125a5e2c04b64737896ba3261d8a7",
+    "content.js": "8cc3cd30bb1fa0bbe2aacb65262d13b69b09635c87cbc383ebaecb3155f740ef",
+    "background.js": "3ab510aecbd459f443df7ff3ea29fa28caef9fefe1d949c41a28dea7e60ee2aa",
+    "archive.js": "7c747640ebb4850e73aebddb4dfdf8a621ef2305ab059eaa4ea388dd21dd2d83",
+    "archive.html": "3b781c821a391055d734d84a26089afa2298b3cbc4878d8a4d300b7532baaa7e",
+    "archive.css": "6151a1bb90abacbcbaea04cc5e4458ad8cc9d6c2f4c4c6d5a9913fb52b4d1d90"
+  },
+  "suites": [
+    {
+      "suite": "appearance-delivery-test",
+      "result": "PASS",
+      "report": "appearance-delivery-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "archive-adapters-test",
+      "result": "PASS",
+      "report": "archive-adapters-test.json",
+      "lastRun": "final-install-ZIP"
+    },
+    {
+      "suite": "archive-browser-test",
+      "result": "PASS",
+      "report": "archive-browser-test.json",
+      "lastRun": "final-install-ZIP"
+    },
+    {
+      "suite": "archive-contract-test",
+      "result": "PASS",
+      "report": "archive-contract-test.json",
+      "lastRun": "final-install-ZIP"
+    },
+    {
+      "suite": "automation-test",
+      "result": "PASS",
+      "report": "automation-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "backup-test",
+      "result": "PASS",
+      "report": "backup-test.json",
+      "lastRun": "final-install-ZIP"
+    },
+    {
+      "suite": "boxed-content-test",
+      "result": "PASS",
+      "report": "boxed-content-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "bubble-flow-test",
+      "result": "PASS",
+      "report": "bubble-flow-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "cross-site-composer-test",
+      "result": "PASS",
+      "report": "cross-site-composer-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "dock-text-size-test",
+      "result": "PASS",
+      "report": "dock-text-size-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "edge-test",
+      "result": "PASS",
+      "report": "edge-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "extension-test",
+      "result": "PASS",
+      "report": "extension-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "generic-sites-test",
+      "result": "PASS",
+      "report": "generic-sites-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "icon-upgrade-test",
+      "result": "PASS",
+      "report": "icon-upgrade-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "interaction-test",
+      "result": "PASS",
+      "report": "interaction-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "language-test",
+      "result": "PASS",
+      "report": "language-test.json",
+      "lastRun": "final-install-ZIP"
+    },
+    {
+      "suite": "menu-visibility-test",
+      "result": "PASS",
+      "report": "menu-visibility-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "mock-test",
+      "result": "PASS",
+      "report": "mock-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "modern-chatgpt-test",
+      "result": "PASS",
+      "report": "modern-chatgpt-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "module-contract-test",
+      "result": "PASS",
+      "report": "module-contract-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "prompt-selection-test",
+      "result": "PASS",
+      "report": "prompt-selection-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "reading-mode-test",
+      "result": "PASS",
+      "report": "reading-mode-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "root-host-test",
+      "result": "PASS",
+      "report": "root-host-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "selection-action-test",
+      "result": "PASS",
+      "report": "selection-action-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "suite": "selection-compatibility-test",
+      "result": "PASS",
+      "report": "selection-compatibility-test.json",
+      "lastRun": "full-regression"
+    }
+  ],
+  "fullRegressionExitCode": 0,
+  "securityRecheckExitCode": 0,
+  "environment": "Node contracts, isolated Chromium with unpacked MV3 and synthetic AI pages, injected fake provider responses, local HTTP OAuth broker with mocked Notion upstream",
+  "liveOAuth": false,
+  "liveProviderWrites": false,
+  "liveAIWithInstalledBuild": false,
+  "githubPushed": false,
+  "baselineRemoteCommit": "24fdf8b0a9a0c3bbabc6e1cc6d71ea0110b379f3",
+  "installZIPVerification": {
+    "result": "PASS",
+    "exitCode": 0,
+    "suites": [
+      "archive-adapters",
+      "archive-browser",
+      "archive-contract",
+      "backup",
+      "language"
+    ],
+    "runtimeMatchedSHA256": {
+      "manifest.json": "9e17dd2a9067eb9e77601b84956514bbf48125a5e2c04b64737896ba3261d8a7",
+      "content.js": "8cc3cd30bb1fa0bbe2aacb65262d13b69b09635c87cbc383ebaecb3155f740ef",
+      "background.js": "3ab510aecbd459f443df7ff3ea29fa28caef9fefe1d949c41a28dea7e60ee2aa",
+      "archive.js": "7c747640ebb4850e73aebddb4dfdf8a621ef2305ab059eaa4ea388dd21dd2d83",
+      "archive.html": "3b781c821a391055d734d84a26089afa2298b3cbc4878d8a4d300b7532baaa7e",
+      "archive.css": "6151a1bb90abacbcbaea04cc5e4458ad8cc9d6c2f4c4c6d5a9913fb52b4d1d90"
+    },
+    "note": "Final installation ZIP runtime extracted over source harness; no live OAuth or remote API; includes worker-auth and late hydration tests."
+  }
+}
