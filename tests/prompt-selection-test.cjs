@@ -5,7 +5,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  const ctx=await chromium.launchPersistentContext(fs.mkdtempSync(path.join(out,'profile-')),{headless:true,executablePath:process.env.QA_BROWSER,viewport:{width:1560,height:1300},permissions:['clipboard-read','clipboard-write'],acceptDownloads:true,args:[`--disable-extensions-except=${root}`,`--load-extension=${root}`]});
  const checks=[],errors=[],check=n=>{checks.push(n);console.log('PASS',n);};
  try{
-  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.10.1');
+  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.11.3');
   const scope='https://chatgpt.com/c/prompt-selection',key=n=>'qb:note:'+encodeURIComponent(n.scope)+':'+n.id,choice=n=>'qb:prompt-choice:'+encodeURIComponent(n.scope)+':'+n.id;
   const quotes=['AI 답변을 읽다가 궁금한 문장을 드래그합니다.','읽던 흐름을 유지하면서 여러 개의 코멘트를 모을 수 있습니다.','저장한 코멘트에는 선택한 원문이 함께 남습니다.'];
   const seeds=quotes.map((quote,i)=>({id:'selection-'+i,scope,quote,context:quote,messageId:'answer-one',question:['첫 번째 설명의 근거는 무엇인가요?','두 번째 설명을 쉽게 풀어 주세요.','세 번째 설명은 어떤 조건에서 성립하나요?'][i],color:['yellow','blue','green'][i],created:i+1}));
@@ -25,7 +25,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   await cards.nth(0).locator('.tag').click();await boxes.nth(1).uncheck();await waitSelected(1);
   assert.equal(await boxes.nth(0).isChecked(),false);assert.equal(await p.locator('[data-qb-inline]').count(),3);
   assert.equal(await p.evaluate(()=>[...CSS.highlights.values()].reduce((n,h)=>n+h.size,0)),3);
-  await ext.locator('#generate').click();let prompt=await ext.locator('#prompt').inputValue();assertPairs(prompt,[seeds[2]],seeds.slice(0,2));assert.ok(prompt.includes('Mark 3\n'));
+  await ext.locator('#generate').click();let prompt=await ext.locator('#prompt').inputValue();assertPairs(prompt,[seeds[2]],seeds.slice(0,2));assert.ok(prompt.includes('Q3\n'));
   await ext.locator('#copy').click();assert.equal((await p.evaluate(()=>navigator.clipboard.readText())).replace(/\r\n/g,'\n'),prompt);await ext.locator('#preview-close').click();
   await ext.locator('#quick-copy').click();assert.equal((await p.evaluate(()=>navigator.clipboard.readText())).replace(/\r\n/g,'\n'),prompt);
   check('Mouse label/checkbox exclusion keeps notes, bubbles and highlights; preview and both copy paths include checked pairs only');
@@ -77,6 +77,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   assert.equal((await cards.first().locator('.swatch').first().boundingBox()).width,12);
   await cards.nth(2).getByRole('button',{name:'삭제',exact:true}).click();await waitCount(3);await waitSelected(2);assert.equal(await p.locator('[data-qb-inline]').count(),3);assert.equal(await p.locator('[data-qb-inline="selection-0"]').count(),1);
   assert.deepEqual(errors,[]);check('Current light/dark implementation screenshots; compact colors retained; deleting an unchecked note keeps other annotations and selected choices; no runtime errors');
-  fs.writeFileSync(path.join(out,'prompt-selection-results.json'),JSON.stringify({version:'0.10.1',environment:'Real unpacked MV3 extension in Chromium; controlled HTML fixture; NOT live ChatGPT or company PC',checks,errors},null,2));
+  fs.writeFileSync(path.join(out,'prompt-selection-results.json'),JSON.stringify({version:'0.11.3',environment:'Real unpacked MV3 extension in Chromium; controlled HTML fixture; NOT live ChatGPT or company PC',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

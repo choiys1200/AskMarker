@@ -1,3 +1,91 @@
+# AskMarker 0.11.3 검증
+
+2026-10-23 Asia/Seoul. selection-action 검증 모음 통과.
+
+- 밝은/어두운 화면과 hover에서 불투명 버튼 배경·그림자·기존 높이·원문 아래 6px 간격 확인.
+- 10회 드래그와 10회 추가/취소/재선택, 클릭·키보드 열기, Esc·바깥 클릭, 초안 보존, 패널 접기, 스크롤·크기 변경·대화 전환 확인.
+- 버튼 CSS/배치 소스를 v0.11.1 배포 소스와 대조해 일치를 확인했습니다. 차분한 작성 말풍선·테마 소스도 v0.11.1과 일치합니다.
+
+실제 unpacked MV3 + 격리 Chromium + 합성 AI HTML 검증입니다. 사용자 Chrome과 실제 AI 서비스 화면은 미검증입니다.
+
+[실행 결과](validation/v0.11.3/summary.json) · [변경 내역](CHANGES-0.11.3.md)
+
+아래는 이전 버전의 검증 이력입니다.
+
+# AskMarker 0.11.2 검증
+
+2026-10-23 Asia/Seoul. 이번 변경과 관련된 selection-action, theme-q 2개 검증 모음 통과.
+
+- 코멘트 추가 버튼: 밝은/어두운 화면 및 마우스 hover에서 배경 알파 0, 그림자/흐림 없음, 글자 opacity 1 확인. 버튼은 더 작아지고 선택 영역 아래 간격은 2px입니다.
+- 10회 드래그·선택 유지와 10회 추가·취소·재선택, 클릭/Enter로 작성창 열기, Esc/바깥 클릭 해제, 스크롤·창 크기·대화 전환·초안 독립성 확인.
+- 8색 테마와 차분한 작성 말풍선, Q 표기·프롬프트·기존 기록/백업 호환 검증 유지.
+
+실제 unpacked MV3를 격리 Chromium에서 실행했으며 페이지는 합성 HTML입니다. 사용자의 실제 Chrome과 실제 ChatGPT/Gemini/Grok 사이트는 확인하지 않았습니다. 화면 캡처는 로컬 work 폴더에만 저장합니다.
+
+[실행 결과와 runtime SHA-256](validation/v0.11.2/summary.json) · [변경 내역](CHANGES-0.11.2.md)
+
+```powershell
+node scripts/build.cjs --check
+node scripts/test.cjs selection-action theme-q
+```
+
+아래는 이전 버전의 검증 이력입니다.
+
+# AskMarker 0.11.1 검증
+
+2026-10-23 Asia/Seoul. 변경에 관련된 6개 모음 통과: theme-q, appearance-delivery, selection-action, reading-mode, backup, module-contract.
+
+- 8색 × 밝은/어두운 화면에서 3px 원색 테두리, 색조를 낮춘 배경, 본체와 동일한 말풍선 꼬리, 1px 입력란 경계 확인.
+- 본문·입력·설명·placeholder 색 대비 4.5:1 이상, 카드와 입력 글자 opacity 1. 브라우저 다크 모드와 페이지 테마 class 모두 확인.
+- 색상 변경 중 초안 내용·원문 연결 유지. 전역 UI가 파랑이어도 저장된 핑크 Q의 수정 화면은 핑크 색조 유지. 목록과 본문 아래 편집을 각각 확인.
+- 10회 반복 드래그/취소/재선택, 초안 모드 전환, 저장·삭제·스크롤·크기 변경·재렌더·새로고침, 기존 프롬프트 보존·중복 방지·선택 해제, 구 JSON 백업 호환 확인.
+- 설치 ZIP을 새 폴더에 풀어 theme-q를 재실행하여 통과했고 최종 실행 파일과 바이트 일치를 확인했습니다.
+- v0.11.0 전체 26개 결과는 아래 과거 이력입니다. 이번 0.11.1에서 전체 26개를 재실행한 것으로 표시하지 않습니다.
+
+격리 Chromium에 실제 unpacked MV3 확장을 로드했으며 AI 페이지는 합성 HTML입니다. 실제 사용자 Chrome·실제 ChatGPT/Gemini/Grok 사이트·OAuth/API 업로드는 확인하지 않았습니다. 스크린샷은 로컬 work 폴더에만 보관합니다.
+
+[실행 결과와 runtime SHA-256](validation/v0.11.1/summary.json) · [변경 내역](CHANGES-0.11.1.md)
+
+```powershell
+node scripts/build.cjs --check
+node scripts/test.cjs theme-q appearance-delivery selection-action reading-mode backup module-contract
+```
+
+아래는 이전 버전의 검증 이력입니다.
+
+# AskMarker 0.11.0 검증
+
+2026-10-20 Asia/Seoul. **전체 26개 검증 모음 통과.** 마지막 브라우저 다크 모드 CSS 보완 후 `theme-q`와 `appearance-delivery`를 다시 통과했습니다. 기존 0.10.1의 입력 후 안내 위치·1.5초 표시도 유지합니다.
+
+## 이번 변경 확인
+
+- 8색 × 밝은/어두운 화면에서 주요 버튼·읽기 스위치·체크·포커스·배경·안내 테마 적용.
+- 작성 카드 3px 선택 색상 테두리, 배경 알파 0.9, 카드/입력 글자 opacity 1. 투명 입력란으로 배경 알파 중첩 방지.
+- 8색의 밝은/어두운 배경에서 본문 글자 대비 최소 4.5:1. 사이트 테마 class가 없는 브라우저 다크 모드도 확인.
+- 색 변경 중 초안 DOM·입력 내용·원문 연결 유지. 다른 Q 선택 시 전역 테마 유지, 항목별 저장 색 독립.
+- 새로고침 후 테마 복원, 내보내기 창에서 같은 테마 동기화.
+- 한국어·영어 목록/프롬프트/마지막 지시문/내보내기 문서가 Q1·Q2 사용. 코멘트 추가·내 코멘트·모아서 입력 유지.
+- 실제 사용자 데이터에 포함된 `Mark 1` 문자열은 다시 쓰지 않음. 기존 원문·question/markIds 키·JSON questions 구조와 구 프롬프트 중복 인식 유지.
+- 반복 드래그/취소, 코드·메일 박스, 저장/수정/삭제, 입력 보존·선택 해제, 백업 v3/v4, 아카이브 취소/재시도 등 기존 검증 모두 통과.
+
+## 환경과 한계
+
+실제 unpacked Manifest V3를 **격리 Chromium 프로필과 합성 AI HTML**에 로드했습니다. API·OAuth upstream은 모의 응답입니다. **사용자의 실제 Chrome·실제 ChatGPT/Gemini/Grok 화면·실제 OAuth/API 저장은 이번에 확인하지 않았습니다.** 로컬 스크린샷은 QA 폴더에만 보관하며 Git/ZIP에는 넣지 않습니다.
+
+색상/대비 계산은 순수 모듈, CSS 토큰 적용은 표시 전용 모듈로 분리합니다. 외부 권한·인증 서버·로컬 저장 형식은 추가 변경하지 않았습니다.
+
+[26개 모음 결과·runtime SHA-256](validation/v0.11.0/summary.json) · [색상/Q 검증](validation/v0.11.0/theme-q-test.json)
+
+```powershell
+node scripts/build.cjs --check
+node scripts/test.cjs
+node scripts/test.cjs theme-q appearance-delivery
+```
+
+설치 ZIP을 새 폴더에 풀어 `theme-q`, `backup` 2개 모음도 통과했습니다. 최종 패키지는 이 실행 파일의 SHA-256과 대조했습니다. 실제 서비스 검증을 의미하지 않습니다.
+
+아래는 이전 버전의 검증 이력입니다.
+
 # AskMarker 0.10.1 검증
 
 2026-10-20: 안내 위치·1.5초 표시·클릭 통과를 포함한 appearance-delivery, language, archive-browser 3개 모음 통과. 합성 HTML + 실제 unpacked MV3 + 격리 Chromium 검증이며 실제 AI 사이트는 미검증입니다. [실행 결과와 SHA-256](validation/v0.10.1/summary.json).

@@ -7,7 +7,7 @@
   <button id="hide-menu" class="quiet dock-hide" title="메뉴를 숨깁니다. 도구 모음의 AskMarker 아이콘을 누르면 다시 나타납니다.">숨기기</button>
   <span id="small-count" hidden>0</span>
 </div>
-<aside id="panel" class="surface" aria-label="Mark 목록" hidden>
+<aside id="panel" class="surface" aria-label="Q 목록" hidden>
   <header>
     <div class="row brand-row"><div class="brand"><span class="brand-mark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="10 14 108 108" fill="none" focusable="false"><path d="M29 20h70a16 16 0 0 1 16 16v46a16 16 0 0 1-16 16H55l-29 18V97A16 16 0 0 1 13 81V36a16 16 0 0 1 16-16Z" fill="#6554e8"/><rect x="35" y="73" width="58" height="12" rx="6" fill="#d7f68b"/><path d="M51 44c0-8 5-12 13-12s14 4 14 11c0 9-14 11-14 19" stroke="white" stroke-width="8" stroke-linecap="round"/><circle cx="64" cy="78" r="4" fill="#6554e8"/></svg></span><h1>AskMarker</h1><span id="version">v{{VERSION}}</span></div><span id="count" aria-label="저장한 코멘트 수">0</span></div>
     <div class="controls"><button id="reading-mode" data-i18n-dynamic class="control mode-control" aria-pressed="false">읽기 모드 OFF</button><button id="close" class="control panel-control" aria-label="AskMarker 접기" aria-expanded="true" aria-controls="panel">AskMarker 접기</button></div>
@@ -16,8 +16,8 @@
   <div id="body">
     <section id="appearance" aria-label="읽기 화면 설정">
       <div class="setting-row language-row"><label for="language">언어</label><select id="language" aria-label="언어"><option value="ko" lang="ko">한국어</option><option value="en" lang="en">English</option></select></div>
-      <div id="color-target" data-i18n-dynamic class="hint">다음 코멘트 · 박스와 포인터 색상</div>
-      <div id="color-palette" class="palette" role="group" aria-label="박스와 포인터 색상"></div>
+      <div id="color-target" data-i18n-dynamic class="hint">다음 코멘트 · 테마·박스·포인터 색상</div>
+      <div id="color-palette" class="palette" role="group" aria-label="테마·박스·포인터 색상"></div>
       <div class="setting-row"><label for="laser-opacity">포인터 진하기</label><input id="laser-opacity" type="range" min="0" max="100" step="5" value="60" aria-describedby="laser-opacity-value"><output id="laser-opacity-value" for="laser-opacity">60%</output></div>
       <div class="setting-row"><label for="font-family">글꼴</label><select id="font-family" aria-label="글꼴"></select></div>
       <p class="hint">코멘트 UI와 읽기 모드 본문에 적용 · 코드 글꼴 유지</p>

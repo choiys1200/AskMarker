@@ -4,7 +4,7 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
  const root=path.resolve(__dirname,'..'),out=path.resolve(process.env.QA_OUTPUT||'work/selection-action');fs.mkdirSync(out,{recursive:true});
  const ctx=await chromium.launchPersistentContext(fs.mkdtempSync(path.join(out,'profile-')),{headless:true,executablePath:process.env.QA_BROWSER,viewport:{width:1560,height:1100},args:[`--disable-extensions-except=${root}`,`--load-extension=${root}`]});const checks=[],errors=[],check=s=>{checks.push(s);console.log('PASS',s);};
  try{
-  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.10.1');
+  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),'0.11.3');
   let html=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8').replace('<article data-message-id="answer-one" data-message-author-role="assistant">','<article data-dil-source-message-id="answer-one"><div data-markdown-text-style="assistant-message">').replace('</article>','</div></article>');
   await ctx.route('https://chatgpt.com/**',r=>r.fulfill({contentType:'text/html',body:html}));const p=ctx.pages()[0];p.on('pageerror',e=>errors.push(e.message));const cdp=await ctx.newCDPSession(p);cdp.on('Runtime.exceptionThrown',e=>errors.push(e.exceptionDetails.exception?.description||e.exceptionDetails.text));await cdp.send('Runtime.enable');await p.goto('https://chatgpt.com/c/selection-action');
   const ext=p.locator('#question-basket-extension'),button=ext.locator('#selection-add'),drafts=()=>p.locator('[data-qb-inline^="draft-"]');
@@ -19,6 +19,15 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
    await drag(i%2?'second':'first',i%3===0);await button.waitFor({state:'visible'});assert.ok(await native());assert.equal(await drafts().count(),0);assert.equal(await highlights(),0);assert.equal((await values()).length,0);assert.equal(await p.evaluate(()=>document.activeElement?.tagName),'BODY');assert.equal((await p.locator('#second').boundingBox()).y,originalY);
   }
   check('Ten read-only drags keep native selection and focus; only one small button, no editor/highlight/record/layout shift');
+  const beforeAppearanceCheck=await native();
+  for(const scheme of ['light','dark']){
+   await p.emulateMedia({colorScheme:scheme});await p.evaluate(s=>{document.documentElement.className=s;document.body.style.background=s==='dark'?'#101010':'#fafbf9';document.body.style.color=s==='dark'?'#eceef4':'#233a30';},scheme);
+   for(const hover of [false,true]){if(hover)await button.hover();else await p.mouse.move(5,5);const style=await button.evaluate(el=>{const s=getComputedStyle(el);return {background:s.backgroundColor,shadow:s.boxShadow,blur:s.backdropFilter,opacity:s.opacity}});assert.match(style.background,/^rgb\(/);assert.notEqual(style.shadow,'none');assert.equal(style.opacity,'1');assert.equal(await native(),beforeAppearanceCheck);}
+   const box=await button.boundingBox();assert.ok(box.height>=30,`Restored button height: ${box.height}`);const sourceBottom=await p.evaluate(()=>[...getSelection().getRangeAt(0).getClientRects()].at(-1).bottom);assert.ok(Math.abs(box.y-sourceBottom-6)<1);
+   await p.screenshot({path:path.join(out,'selection-button-'+scheme+'.png'),animations:'disabled'});
+  }
+  check('Light/dark and hover: restored opaque background, shadow, original height and 6px source gap; native selection preserved');
+  await p.emulateMedia({colorScheme:'light'});await p.evaluate(()=>{document.documentElement.className='light';document.body.style.background='#fafbf9';document.body.style.color='#233a30';});
   await p.screenshot({path:path.join(out,'selection-button.png')});
   const selected=await native();await button.click();await drafts().waitFor();assert.equal(await button.isVisible(),false);assert.equal(await drafts().locator('blockquote').textContent(),selected);assert.equal(await native(),'');assert.equal(await highlights(),1);assert.equal(await drafts().getByRole('textbox').evaluate(el=>el===el.getRootNode().activeElement),true);
   await drafts().getByRole('button',{name:'취소',exact:true}).click();await drafts().waitFor({state:'detached'});
@@ -45,6 +54,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   check('Scroll/resize position follows selection; clipped or changed source never leaves a detached action button');
   await p.reload();await count(2);await ext.locator('#mode-compact').click();await drag('third');await button.focus();await button.press('Enter');await drafts().waitFor();await drafts().getByRole('textbox').fill('버튼을 눌러 연 입력창');await p.evaluate(()=>scrollTo(0,0));await p.screenshot({path:path.join(out,'after-question-add.png'),fullPage:true});await drafts().getByRole('button',{name:'취소',exact:true}).click();
   await drag('third');await p.evaluate(()=>history.pushState({},'', '/c/other-selection-action'));await count(0);assert.equal(await button.isVisible(),false);assert.equal(await drafts().count(),0);assert.deepEqual(errors,[]);check('Keyboard activation works; navigation clears only pending intent; no runtime errors');
-  fs.writeFileSync(path.join(out,'selection-action-results.json'),JSON.stringify({version:'0.10.1',environment:'Real unpacked MV3 in Chromium; controlled HTML; NOT live ChatGPT',checks,errors},null,2));
+  fs.writeFileSync(path.join(out,'selection-action-results.json'),JSON.stringify({version:'0.11.3',environment:'Real unpacked MV3 in Chromium; controlled HTML; NOT live ChatGPT',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

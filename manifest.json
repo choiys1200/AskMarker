@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AskMarker",
-  "version": "0.10.1",
+  "version": "0.11.3",
   "description": "선택한 내용에 코멘트를 남기고, 모아서 입력하고, 승인한 대화를 내보냅니다.",
   "minimum_chrome_version": "111",
   "permissions": [

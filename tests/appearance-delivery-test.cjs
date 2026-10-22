@@ -63,6 +63,6 @@ const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:
   await ext.locator('#close').click();await p.screenshot({path:path.join(out,'compact-dark.png'),animations:'disabled'});
   await p.setViewportSize({width:850,height:600});await ext.locator('#launcher').click();await ext.locator('#font-family').selectOption('mono');await ext.locator('#select-all').scrollIntoViewIfNeeded();assert.equal(await ext.locator('#reading-mode').count(),1);
   assert.deepEqual(errors,[]);check('Light/dark and compact screenshots; short-window controls remain reachable; no runtime errors');
-  fs.writeFileSync(path.join(out,'appearance-delivery-results.json'),JSON.stringify({version:'0.10.1',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; not live ChatGPT',checks,errors},null,2));
+  fs.writeFileSync(path.join(out,'appearance-delivery-results.json'),JSON.stringify({version:'0.11.3',environment:'Actual MV3 extension in isolated Chromium with synthetic HTML; not live ChatGPT',checks,errors},null,2));
  }finally{await ctx.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

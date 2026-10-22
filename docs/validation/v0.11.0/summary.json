@@ -1,0 +1,193 @@
+{
+  "version": "0.11.0",
+  "date": "2026-10-20",
+  "timezone": "Asia/Seoul",
+  "suiteCount": 26,
+  "fullRegressionExitCode": 0,
+  "finalCSSRecheckExitCode": 0,
+  "environment": "Node contracts + actual unpacked MV3 in isolated Chromium with synthetic AI HTML; API/broker upstreams simulated",
+  "liveAI": false,
+  "liveOAuth": false,
+  "runtimeSHA256": {
+    "manifest.json": "c7ffc5f9e7627f7ab7fdc7646c1c873ad22c062170dd769207b4481dca6a2d79",
+    "content.js": "14df7e94d4e8786dd0372d1b713f8cf7a001a50d162d0299f2f891d2fa582338",
+    "background.js": "681bf5ade163d509a5fe9c7cffb8d71b5f5acea7ebd36a3b6f9ba0fa9ff4a908",
+    "archive.js": "ed05c7a2526e34056442b348407634bb8d0da677aeba13b892632ee7d8d6edae",
+    "archive.html": "3b781c821a391055d734d84a26089afa2298b3cbc4878d8a4d300b7532baaa7e",
+    "archive.css": "4a1a744143da4f60ed156b1c3f412032364c0331e65e1f0886f63a3180e85d7e"
+  },
+  "suites": [
+    {
+      "name": "appearance-delivery-test",
+      "result": "PASS",
+      "report": "appearance-delivery-test.json",
+      "lastRun": "final-CSS-recheck"
+    },
+    {
+      "name": "archive-adapters-test",
+      "result": "PASS",
+      "report": "archive-adapters-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "archive-browser-test",
+      "result": "PASS",
+      "report": "archive-browser-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "archive-contract-test",
+      "result": "PASS",
+      "report": "archive-contract-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "automation-test",
+      "result": "PASS",
+      "report": "automation-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "backup-test",
+      "result": "PASS",
+      "report": "backup-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "boxed-content-test",
+      "result": "PASS",
+      "report": "boxed-content-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "bubble-flow-test",
+      "result": "PASS",
+      "report": "bubble-flow-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "cross-site-composer-test",
+      "result": "PASS",
+      "report": "cross-site-composer-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "dock-text-size-test",
+      "result": "PASS",
+      "report": "dock-text-size-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "edge-test",
+      "result": "PASS",
+      "report": "edge-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "extension-test",
+      "result": "PASS",
+      "report": "extension-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "generic-sites-test",
+      "result": "PASS",
+      "report": "generic-sites-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "icon-upgrade-test",
+      "result": "PASS",
+      "report": "icon-upgrade-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "interaction-test",
+      "result": "PASS",
+      "report": "interaction-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "language-test",
+      "result": "PASS",
+      "report": "language-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "menu-visibility-test",
+      "result": "PASS",
+      "report": "menu-visibility-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "mock-test",
+      "result": "PASS",
+      "report": "mock-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "modern-chatgpt-test",
+      "result": "PASS",
+      "report": "modern-chatgpt-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "module-contract-test",
+      "result": "PASS",
+      "report": "module-contract-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "prompt-selection-test",
+      "result": "PASS",
+      "report": "prompt-selection-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "reading-mode-test",
+      "result": "PASS",
+      "report": "reading-mode-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "root-host-test",
+      "result": "PASS",
+      "report": "root-host-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "selection-action-test",
+      "result": "PASS",
+      "report": "selection-action-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "selection-compatibility-test",
+      "result": "PASS",
+      "report": "selection-compatibility-test.json",
+      "lastRun": "full-regression"
+    },
+    {
+      "name": "theme-q-test",
+      "result": "PASS",
+      "report": "theme-q-test.json",
+      "lastRun": "final-CSS-recheck"
+    }
+  ],
+  "installZIPVerification": {
+    "result": "PASS",
+    "suites": [
+      "theme-q",
+      "backup"
+    ],
+    "runtimeSHA256": {
+      "manifest.json": "c7ffc5f9e7627f7ab7fdc7646c1c873ad22c062170dd769207b4481dca6a2d79",
+      "content.js": "14df7e94d4e8786dd0372d1b713f8cf7a001a50d162d0299f2f891d2fa582338",
+      "background.js": "681bf5ade163d509a5fe9c7cffb8d71b5f5acea7ebd36a3b6f9ba0fa9ff4a908",
+      "archive.js": "ed05c7a2526e34056442b348407634bb8d0da677aeba13b892632ee7d8d6edae",
+      "archive.html": "3b781c821a391055d734d84a26089afa2298b3cbc4878d8a4d300b7532baaa7e",
+      "archive.css": "4a1a744143da4f60ed156b1c3f412032364c0331e65e1f0886f63a3180e85d7e"
+    },
+    "environment": "Extracted installation ZIP runtime with source test harness; synthetic AI DOM, real MV3 and file downloads/imports."
+  }
+}

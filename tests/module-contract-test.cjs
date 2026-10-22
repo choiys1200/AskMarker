@@ -7,8 +7,8 @@ const {createPromptChoices}=require('../src/storage/prompt-choices');
 const {choiceKey}=require('../src/domain/notes');
 (async()=>{
  const checks=[],out=process.env.QA_OUTPUT;
- const notes=[{id:'a',scope:'chat-a',quote:'원문\n  그대로',question:'Mark 1'},{id:'b',scope:'chat-a',quote:'두 번째',question:'Mark 2'}];
- assert.ok(formatPrompt([notes[1]],notes).includes('Mark 2\n'));assert.ok(formatPrompt(notes).includes(notes[0].quote));
+ const notes=[{id:'a',scope:'chat-a',quote:'원문\n  그대로',question:'Q1'},{id:'b',scope:'chat-a',quote:'두 번째',question:'Q2'}];
+ assert.ok(formatPrompt([notes[1]],notes).includes('Q2\n'));assert.ok(formatPrompt(notes).includes(notes[0].quote));
  assert.equal(fontOf('invalid'),'system');assert.equal(opacityOf(NaN),60);assert.equal(opacityOf(150),100);assert.equal(opacityOf(-5),0);
  checks.push('Pure prompt formatting preserves exact pairs/order; appearance values validated without DOM');
  const queue=createWriteQueue(),data={},events=[];let fail=false;
@@ -21,7 +21,7 @@ const {choiceKey}=require('../src/domain/notes');
  // Enforce the boundary that prompted this refactor. Future appearance features
  // may depend only on their schema and documented site selectors, never notes.
  const root=path.resolve(__dirname,'../src');
- for(const name of ['ui/appearance.js','domain/appearance.js','ui/panel.js','ui/dock.js','ui/language.js','i18n/index.js','i18n/messages.js']){
+ for(const name of ['ui/appearance.js','domain/appearance.js','ui/theme.js','domain/theme.js','ui/panel.js','ui/dock.js','ui/language.js','i18n/index.js','i18n/messages.js']){
   const code=fs.readFileSync(path.join(root,name),'utf8');
   assert.ok(!/require\([^)]*\/(?:notes|prompt-choices|composer|source|app|cards)(?:\.js)?['"]\)/.test(code),name);
   assert.ok(!/qb:note:|qb:prompt-choice:/.test(code),name);

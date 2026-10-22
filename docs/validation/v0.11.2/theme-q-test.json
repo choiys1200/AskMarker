@@ -1,0 +1,13 @@
+{
+  "version": "0.11.2",
+  "environment": "Node theme/prompt contracts plus actual unpacked MV3 in isolated Chromium with synthetic ChatGPT HTML; no live AI or OAuth",
+  "checks": [
+    "Eight theme/editor color pairs meet 4.5:1 contrast; Q prompt headings preserve legacy user text and recognize old Mark prompts",
+    "All eight colors in light/dark: theme buttons/toggle, 3px editor border, subdued hue-matched surface and tail, soft input edge, opaque high-contrast text and unchanged draft/source ownership",
+    "Selecting an older Q retains the chosen global theme while each Q keeps its own color",
+    "Korean/English UI and prompts use Q1/Q2; original Mark text and legacy JSON fields remain byte-for-byte compatible",
+    "Theme survives reload and synchronizes to the archive page; archive headings use Q without migrating stored mark IDs or notes",
+    "Editing a saved pink Q under a blue global theme keeps its own muted surface/border in both inline and sidebar views"
+  ],
+  "errors": []
+}

@@ -1,0 +1,24 @@
+{
+  "version": "0.11.3",
+  "date": "2026-10-23",
+  "timezone": "Asia/Seoul",
+  "suiteCount": 1,
+  "suites": [
+    {
+      "name": "selection-action",
+      "result": "PASS",
+      "report": "selection-action-test.json"
+    }
+  ],
+  "environment": "Actual unpacked MV3 in isolated Chromium with synthetic AI HTML",
+  "liveAI": false,
+  "restoration": "Button styling/positioning matches v0.11.1; muted editor/theme source unchanged",
+  "runtimeSHA256": {
+    "manifest.json": "d2cc08f3d1a4b853f49f8ec88ba3b12c97820e9fe9f50502db44a2f05e4fc00d",
+    "content.js": "76257b3960f9265b0371d3c37fe60c107a4eeab592b7a00b1be0ac1552b62258",
+    "background.js": "a86ce0da83f39e2e422f2a501895caea8d1ab9aec42b858fbc0783360ed6259d",
+    "archive.js": "25b7d5818314459db48ef6aaabcdc4377210380af740a165049d3688770d8721",
+    "archive.html": "3b781c821a391055d734d84a26089afa2298b3cbc4878d8a4d300b7532baaa7e",
+    "archive.css": "4a1a744143da4f60ed156b1c3f412032364c0331e65e1f0886f63a3180e85d7e"
+  }
+}

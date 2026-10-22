@@ -1,6 +1,6 @@
 {
   "name": "askmarker",
-  "version": "0.10.1",
+  "version": "0.11.3",
   "private": true,
   "description": "Mark AI answers, add comments, and export approved conversation snapshots.",
   "scripts": {

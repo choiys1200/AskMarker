@@ -1,0 +1,55 @@
+{
+  "version": "0.11.1",
+  "date": "2026-10-23",
+  "timezone": "Asia/Seoul",
+  "suiteCount": 6,
+  "environment": "Node contracts and actual unpacked MV3 in isolated Chromium with synthetic AI HTML",
+  "liveAI": false,
+  "liveOAuth": false,
+  "suites": [
+    {
+      "name": "theme-q",
+      "result": "PASS",
+      "report": "theme-q-test.json"
+    },
+    {
+      "name": "appearance-delivery",
+      "result": "PASS",
+      "report": "appearance-delivery-test.json"
+    },
+    {
+      "name": "selection-action",
+      "result": "PASS",
+      "report": "selection-action-test.json"
+    },
+    {
+      "name": "reading-mode",
+      "result": "PASS",
+      "report": "reading-mode-test.json"
+    },
+    {
+      "name": "backup",
+      "result": "PASS",
+      "report": "backup-test.json"
+    },
+    {
+      "name": "module-contract",
+      "result": "PASS",
+      "report": "module-contract-test.json"
+    }
+  ],
+  "runtimeSHA256": {
+    "manifest.json": "ce1a3311f5087267fbde3472ad1887a84c19b9d510251ff6fe2d162d009b5160",
+    "content.js": "d09bf48cf6b4c56981f764e374dde93aa63059942ed44ef02b2267ff0fe1390b",
+    "background.js": "3e6c19eb0ed16748f8c19b1ce431f37e0b90b000ea33a3d26d3766adc232a312",
+    "archive.js": "fa22d1fe4c89084c58bd959fb8ca9ae2db76ed128fdda76b65e473808fa869a8",
+    "archive.html": "3b781c821a391055d734d84a26089afa2298b3cbc4878d8a4d300b7532baaa7e",
+    "archive.css": "4a1a744143da4f60ed156b1c3f412032364c0331e65e1f0886f63a3180e85d7e"
+  },
+  "installZIPVerification": {
+    "suite": "theme-q",
+    "result": "PASS",
+    "report": "install-theme-q.json",
+    "runtimeBytesMatched": true
+  }
+}

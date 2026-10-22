@@ -1,0 +1,28 @@
+{
+  "version": "0.11.2",
+  "date": "2026-10-23",
+  "timezone": "Asia/Seoul",
+  "suiteCount": 2,
+  "suites": [
+    {
+      "name": "selection-action",
+      "result": "PASS",
+      "report": "selection-action-test.json"
+    },
+    {
+      "name": "theme-q",
+      "result": "PASS",
+      "report": "theme-q-test.json"
+    }
+  ],
+  "environment": "Actual unpacked MV3 in isolated Chromium with synthetic AI HTML",
+  "liveAI": false,
+  "runtimeSHA256": {
+    "manifest.json": "e3a796e1ae1114e5b08c4a40b65229bf2821eb671fd05f4c66677939ce3e4873",
+    "content.js": "b9cdfdda0b4e2aacb47ddab1f42a158bddcc7383b24c07e512102865d3dc3d03",
+    "background.js": "ae1c1080a4a0b4abd55d00189a5e33bc4e9baee1ee44fcb49e858d7b2ceaa5be",
+    "archive.js": "e860c6e694c21dc85be9d9fe6c3099559303b01e62acff0b0ce8db64fbc98a60",
+    "archive.html": "3b781c821a391055d734d84a26089afa2298b3cbc4878d8a4d300b7532baaa7e",
+    "archive.css": "4a1a744143da4f60ed156b1c3f412032364c0331e65e1f0886f63a3180e85d7e"
+  }
+}

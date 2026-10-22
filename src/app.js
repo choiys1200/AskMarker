@@ -15,6 +15,7 @@ const {mountShell}=require('./ui/shell');
 const {createCards}=require('./ui/cards');
 const {createPanel}=require('./ui/panel');
 const {createAppearance}=require('./ui/appearance');
+const {applyTheme,applyCommentColor}=require('./ui/theme');
 const {createDock}=require('./ui/dock');
 const {FONT_KEY,OPACITY_KEY}=require('./domain/appearance');
 const VERSION='__ASKMARK_VERSION__'; // Replaced from manifest.json by the static build.
@@ -60,9 +61,10 @@ function start(){
   function activeColor() {return sessions.get(activeId)?.color||colorOf(notes.find(n=>n.id===activeId)||{color:lastColor});}
   function showActiveColor() {
     const color=activeColor(),n=notes.find(n=>n.id===activeId),draft=sessions.get(activeId);
+    applyTheme(document.documentElement,lastColor);
     $('laser').style.setProperty('--laser-rgb',rgbOf(color));
     $('color-palette').querySelectorAll('button').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.color===color));b.disabled=!!draft?.saving;});
-    $('color-target').textContent=t('{target} · 박스와 포인터 색상',{target:n?t('Mark {number}',{number:notes.indexOf(n)+1}):t(draft?'작성 중인 코멘트':'다음 코멘트')});
+    $('color-target').textContent=t('{target} · 테마·박스·포인터 색상',{target:n?t('Q{number}',{number:notes.indexOf(n)+1}):t(draft?'작성 중인 코멘트':'다음 코멘트')});
     $('active-color-name').textContent=t(COLORS[color][0]);
     $('color-palette').querySelectorAll('[data-color]').forEach(b=>{b.title=t(COLORS[b.dataset.color][0]);b.setAttribute('aria-label',b.title);});
     for(const [id,rec]of panelCards)rec.card.dataset.active=String(id===activeId);
@@ -268,9 +270,9 @@ function start(){
     const s=sessions.get(rec.id), editing=!!s && (s.surface===(rec.inline?'inline':'panel') || ((!located||!readingMode)&&!rec.inline));
     const c=rec.card,color=s?.color||colorOf(n);theme(rec.host);
     language.apply(c);rec.host.lang=language.current();
-    c.style.setProperty('--accent',COLORS[color][1]);
-    c.querySelector('.tag').textContent=s?t('{title} · 작성 중',{title:s.existing?t('Mark {number}',{number:index}):t('새 코멘트')}):t('Mark {number}',{number:index});
-    if(!rec.inline){const input=c.querySelector('.prompt-include');input.hidden=!index;input.checked=!!index&&included(n);input.setAttribute('aria-label',t('Mark {number} 프롬프트에 포함',{number:index}));}
+    applyCommentColor(c,color);c.dataset.editing=String(editing);
+    c.querySelector('.tag').textContent=s?t('{title} · 작성 중',{title:s.existing?t('Q{number}',{number:index}):t('새 코멘트')}):t('Q{number}',{number:index});
+    if(!rec.inline){const input=c.querySelector('.prompt-include');input.hidden=!index;input.checked=!!index&&included(n);input.setAttribute('aria-label',t('Q{number} 프롬프트에 포함',{number:index}));}
     c.querySelector('blockquote').textContent=n.quote;
     c.querySelector('.location').hidden=!!located;
     c.querySelector('.question').textContent=s?s.question||t('다른 입력란에서 작성 중입니다.'):n.question;
@@ -342,7 +344,7 @@ function start(){
   const {usableComposer,findComposer}=composer;
   const capture=createCapture({doc:document,loc:location,storage:chrome.storage.local,findComposer});
   chrome.storage.onChanged.addListener((changes,area)=>{if(area==='local')capture.onChanges(changes);});
-  $('archive-open').onclick=async()=>{if(legacyReview){tell('현재 대화로 돌아간 뒤 내보내기를 열어 주세요.',true);return;}try{checkRoute();capture.observe();await capture.flush();const meta=capture.adapter.identity(),all=await chrome.storage.local.get(null);if(meta.scope!==capture.adapter.identity().scope)return;const seed={meta,capturedAt:new Date().toISOString(),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,coverage:'현재 대화의 저장된 Mark와 관찰된 요청 묶음만 / saved Marks and observed request batches only'+(capture.issue()?' — '+capture.issue():''),captureIssue:capture.issue(),marks:notes.map((n,i)=>({id:n.id,number:i+1,scope:n.scope,quote:n.quote,comment:n.question,color:n.color,createdAt:n.created?new Date(n.created).toISOString():null})),requests:Object.entries(all).filter(([k,v])=>k.startsWith(HISTORY)&&v.meta?.scope===meta.scope).map(([,v])=>v)};const result=await chrome.runtime.sendMessage({channel:'askmarker-archive',op:'open',seed});if(!result?.ok)throw Error();}catch{tell('아카이브 화면을 열지 못했습니다.',true);}};
+  $('archive-open').onclick=async()=>{if(legacyReview){tell('현재 대화로 돌아간 뒤 내보내기를 열어 주세요.',true);return;}try{checkRoute();capture.observe();await capture.flush();const meta=capture.adapter.identity(),all=await chrome.storage.local.get(null);if(meta.scope!==capture.adapter.identity().scope)return;const seed={meta,capturedAt:new Date().toISOString(),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,coverage:'현재 대화의 저장된 Q와 관찰된 요청 묶음만 / saved Qs and observed request batches only'+(capture.issue()?' — '+capture.issue():''),captureIssue:capture.issue(),marks:notes.map((n,i)=>({id:n.id,number:i+1,scope:n.scope,quote:n.quote,comment:n.question,color:n.color,createdAt:n.created?new Date(n.created).toISOString():null})),requests:Object.entries(all).filter(([k,v])=>k.startsWith(HISTORY)&&v.meta?.scope===meta.scope).map(([,v])=>v)};const result=await chrome.runtime.sendMessage({channel:'askmarker-archive',op:'open',seed});if(!result?.ok)throw Error();}catch{tell('아카이브 화면을 열지 못했습니다.',true);}};
   $('insert').textContent=t('{name} 입력창에 추가',{name:composer.name});
   async function appendPrompt(text,target=findComposer(),entries=selectedEntries()) {
     if(inserting)return false;

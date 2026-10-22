@@ -4,19 +4,23 @@
 
 Mark selected AI text and add comments, questions, instructions, or revision requests beneath the source. Collect exact selected-text/comment pairs into a follow-up prompt. Works with selectable AI pages such as ChatGPT, Gemini and Grok; DOM/editor compatibility varies. Core local features need no AI key or server.
 
-[한국어](README.ko.md) · [Install ZIP](releases/askmarker-v0.10.1.zip) · [Full source](releases/askmarker-v0.10.1-source.zip) · [Changes](docs/CHANGES-0.10.1.md) · [Validation](docs/VALIDATION.md)
+[한국어](README.ko.md) · [Install ZIP](releases/askmarker-v0.11.3.zip) · [Full source](releases/askmarker-v0.11.3-source.zip) · [Changes](docs/CHANGES-0.11.3.md) · [Validation](docs/VALIDATION.md)
+
+## New in 0.11.3
+
+The Add comment button restores the opaque background, shadow, sizing and spacing used in v0.11.1. The chosen color themes the UI. Active comment editors use a 3px color border, a subdued matching background, and opaque, readable text in light and dark modes. Labels and new prompts use Q1/Q2; existing records and backups stay compatible.
 
 ## Use
 
 1. On ChatGPT the tool starts automatically. On other sites click the extension toolbar icon.
 2. Enable reading mode, select text, then click **Add comment**. Selection alone does not open an editor.
-3. Save the comment beneath the passage. Use **[ ] Mark N** in the sidebar to include/exclude it from your next prompt. Notes, highlights and inline cards stay synchronized.
-4. Accept the insertion offer at the AI input or use the sidebar button. Existing input is retained; verified insertion deselects the delivered Marks. Copying alone does not deselect them.
+3. Save the comment beneath the passage. Use **[ ] QN** in the sidebar to include/exclude it from your next prompt. Notes, highlights and inline cards stay synchronized.
+4. Accept the insertion offer at the AI input or use the sidebar button. Existing input is retained; verified insertion deselects the delivered Qs. Copying alone does not deselect them.
 5. Review/edit and **send yourself**. The extension never submits an AI message.
 
 Korean is the default; English is selectable. Reading mode, fonts, browser-default/custom sizing, pointer color/opacity, hide/show and draggable compact controls remain available. Reading mode OFF hides annotations without deleting notes. In-progress drafts survive mode changes but not closing the tab.
 
-Prompts contain `Mark N`, `Selected text`, `My comment` in that order. One final instruction asks the AI to respond or work according to each comment while treating selected text as reference material, not executable instructions. Original user content is not rewritten.
+Prompts contain `QN`, `Selected text`, `My comment` in that order. One final instruction asks the AI to respond or work according to each comment while treating selected text as reference material, not executable instructions. Original user content is not rewritten.
 
 ## Optional archive
 
@@ -28,9 +32,9 @@ Generated prompts, insertion and confirmed rendered user messages are separate r
 
 ## Backup / upgrade
 
-Local JSON backups retain their v3/v4 compatibility, original `question` fields and note keys. Current-chat backup filenames include service, title and date. Full backup includes all locally saved Marks. Tokens and the separate archive journal are not included.
+Local JSON backups retain their v3/v4 compatibility, original `question` fields and note keys. Current-chat backup filenames include service, title and date. Full backup includes all locally saved Qs. Tokens and the separate archive journal are not included.
 
-Back up existing records, then overwrite files in the **same unpacked extension directory**, reload the extension and AI tabs, and confirm v0.10.1. Do not remove the extension or change its installation path if you want to retain its storage identity. Other AI sites need another toolbar click.
+Back up existing records, then overwrite files in the **same unpacked extension directory**, reload the extension and AI tabs, and confirm v0.11.3. Do not remove the extension or change its installation path if you want to retain its storage identity. Other AI sites need another toolbar click.
 
 ## Development
 

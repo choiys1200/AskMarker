@@ -11,7 +11,7 @@ const fixture=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8');
  const check=(name,details)=>{results.push({name,result:'PASS',details});console.log('PASS',name);};
  try{
  const worker=ctx.serviceWorkers()[0]||await ctx.waitForEvent('serviceworker');
- const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.10.1');check('Real extension loaded',{version:manifest.version,browser:ctx.browser()?.version(),extensionId:await worker.evaluate(()=>chrome.runtime.id)});
+ const manifest=await worker.evaluate(()=>chrome.runtime.getManifest());assert.equal(manifest.version,'0.11.3');check('Real extension loaded',{version:manifest.version,browser:ctx.browser()?.version(),extensionId:await worker.evaluate(()=>chrome.runtime.id)});
  await ctx.route('https://chatgpt.com/**',r=>r.fulfill({status:200,contentType:'text/html',body:fixture}));
  const page=ctx.pages()[0]||await ctx.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto('https://chatgpt.com/c/local-fixture');
@@ -93,7 +93,7 @@ const fixture=fs.readFileSync(path.join(__dirname,'fixture.html'),'utf8');
  // Prompt should exactly contain saved quote/question pairs and no canceled drafts.
  const all=await storage();const saved=Object.values(all).filter(n=>n?.scope==='https://chatgpt.com/c/local-fixture'&&n.question).sort((a,b)=>a.created-b.created||a.id.localeCompare(b.id));
  await ext.locator('#generate').click();const preview=ext.locator('#prompt');const prompt=await preview.inputValue();
- for(let i=0;i<saved.length;i++)assert.ok(prompt.includes('Mark '+(i+1)+'\n선택한 내용: '+saved[i].quote+'\n내 코멘트: '+saved[i].question));assert.ok(!prompt.includes('아직 저장하지'));
+ for(let i=0;i<saved.length;i++)assert.ok(prompt.includes('Q'+(i+1)+'\n선택한 내용: '+saved[i].quote+'\n내 코멘트: '+saved[i].question));assert.ok(!prompt.includes('아직 저장하지'));
  await preview.fill(prompt+'\n검증용 추가 지시');
  await ext.locator('#copy').click();assert.equal((await page.evaluate(()=>navigator.clipboard.readText())).replace(/\r\n/g,'\n'),prompt+'\n검증용 추가 지시');
  await page.locator('#prompt-textarea').fill('기존 입력은 그대로 유지');await ext.locator('#insert').click();const inserted=await page.locator('#prompt-textarea').innerText();assert.ok(inserted.startsWith('기존 입력은 그대로 유지'));assert.ok(inserted.includes('검증용 추가 지시'));

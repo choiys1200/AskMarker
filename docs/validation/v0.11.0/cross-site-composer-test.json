@@ -1,0 +1,58 @@
+{
+  "version": "0.11.0",
+  "environment": "Actual MV3 + test-only host grants + synthetic Gemini Quill/Grok combobox/ProseMirror/textarea DOM. Live Gemini/Grok attributes were observed read-only; provider frameworks and real-site insertion NOT tested.",
+  "cases": [
+    {
+      "host": "gemini.google.com",
+      "result": "PASS",
+      "checks": [
+        "New question, palette and laser use icon purple; system/browser size is default; no extra color/Current option",
+        "Direct numeric text-size input synchronizes slider and preserves exact notes",
+        "Brief pointer transit, injected IME composition and actual typing cancel hover offers without inserting anything",
+        "Actual mouse hover opens an unfocused offer; confirmation appends exact quote/question strings in order after existing text and unchecks only delivered comments; no send",
+        "Already-present pairs never duplicate through click/hover/manual append",
+        "Right-panel OFF suppresses hover/click offers while manual append works and preserves input",
+        "Editor replacement between offer and acceptance re-resolves the visible editor",
+        "Retired Current mode is read as System without changing notes"
+      ]
+    },
+    {
+      "host": "grok.com",
+      "result": "PASS",
+      "checks": [
+        "New question, palette and laser use icon purple; system/browser size is default; no extra color/Current option",
+        "Direct numeric text-size input synchronizes slider and preserves exact notes",
+        "Actual mouse hover opens an unfocused offer; confirmation appends exact quote/question strings in order after existing text and unchecks only delivered comments; no send",
+        "Already-present pairs never duplicate through click/hover/manual append",
+        "Right-panel OFF suppresses hover/click offers while manual append works and preserves input",
+        "Editor replacement between offer and acceptance re-resolves the visible editor"
+      ]
+    },
+    {
+      "host": "claude.ai",
+      "result": "PASS",
+      "checks": [
+        "New question, palette and laser use icon purple; system/browser size is default; no extra color/Current option",
+        "Direct numeric text-size input synchronizes slider and preserves exact notes",
+        "Actual mouse hover opens an unfocused offer; confirmation appends exact quote/question strings in order after existing text and unchecks only delivered comments; no send",
+        "Already-present pairs never duplicate through click/hover/manual append",
+        "Right-panel OFF suppresses hover/click offers while manual append works and preserves input",
+        "Editor replacement between offer and acceptance re-resolves the visible editor"
+      ]
+    },
+    {
+      "host": "example.org",
+      "result": "PASS",
+      "checks": [
+        "New question, palette and laser use icon purple; system/browser size is default; no extra color/Current option",
+        "Direct numeric text-size input synchronizes slider and preserves exact notes",
+        "Two editors: manual append refuses an ambiguous target until the user points to one",
+        "Actual mouse hover opens an unfocused offer; confirmation appends exact quote/question strings in order after existing text and unchecks only delivered comments; no send",
+        "Already-present pairs never duplicate through click/hover/manual append",
+        "Right-panel OFF suppresses hover/click offers while manual append works and preserves input",
+        "Editor replacement between offer and acceptance re-resolves the visible editor"
+      ]
+    }
+  ],
+  "errors": []
+}

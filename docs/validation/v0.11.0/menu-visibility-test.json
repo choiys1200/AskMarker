@@ -1,0 +1,27 @@
+{
+  "version": "0.11.0",
+  "environment": "Actual MV3 + synthetic ChatGPT/Gemini HTML; captured toolbar listener invoked programmatically, real scripting reinjection; test-only host grants instead of actual toolbar activeTab authorization. Not real toolbar UI/live site.",
+  "cases": [
+    {
+      "host": "chatgpt.com",
+      "result": "PASS",
+      "checks": [
+        "Ten hide → registered toolbar callback → real content-script reinjection cycles restore compact menu with no duplicate roots, storage writes, source swaps or lost draft; reading mode and saved annotations remain",
+        "Hidden menu stays hidden during source rerender; toolbar recovery preserves sidebar-rescued draft",
+        "OFF mode and excluded prompt checkbox survive hide/reopen; saved question is intact",
+        "Compact hide button rendered in light/dark; no saved data changes"
+      ]
+    },
+    {
+      "host": "gemini.google.com",
+      "result": "PASS",
+      "checks": [
+        "Ten hide → registered toolbar callback → real content-script reinjection cycles restore compact menu with no duplicate roots, storage writes, source swaps or lost draft; reading mode and saved annotations remain",
+        "Hidden menu stays hidden during source rerender; toolbar recovery preserves sidebar-rescued draft",
+        "OFF mode and excluded prompt checkbox survive hide/reopen; saved question is intact",
+        "Compact hide button rendered in light/dark; no saved data changes"
+      ]
+    }
+  ],
+  "errors": []
+}

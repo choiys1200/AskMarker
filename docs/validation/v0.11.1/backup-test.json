@@ -1,0 +1,11 @@
+{
+  "version": "0.11.1",
+  "environment": "Pure Node contracts and actual MV3 in isolated Chromium with synthetic ChatGPT/Gemini HTML; test-only host grants for explicit injection. Real downloads/file imports. Live provider title DOM and user Chrome/company PC not tested.",
+  "checks": [
+    "Pure naming/date/service/title contracts, long/illegal filenames, unknown titles, project aliases, and exact immutable legacy data",
+    "Real current/all downloads use readable service/title/date names and per-conversation metadata without changing saved comments or checkboxes",
+    "Old v3 and new v4 current/all backups import safely; no overwrites or duplicated comments; exclusions restored",
+    "Synthetic Gemini uses its own service/title; English backup labels, unchanged original titles, and unsaved draft exclusion"
+  ],
+  "errors": []
+}
