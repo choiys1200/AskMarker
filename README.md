@@ -1,45 +1,59 @@
 # Qubble
 
+**Don't interrupt your reading to ask a question.**
+
+Qubble lets you attach questions to specific passages of AI answers, keep reading, and bring selected quote–question pairs together in one follow-up prompt.
+
 **Read. Mark. Ask again.**
 
-Leave questions and comments beneath selected AI text, keep reading, then collect the exact passage/comment pairs into one follow-up prompt. Works with selectable AI pages such as ChatGPT, Gemini and Grok; DOM/editor compatibility varies. Core local features need no AI key or server.
+[한국어](README.ko.md) · [Install ZIP](releases/qubble-v0.12.0.zip) · [Source ZIP](releases/qubble-v0.12.0-source.zip) · [Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md)
 
-[한국어](README.ko.md) · [Install ZIP](releases/qubble-v0.12.0.zip) · [Full source](releases/qubble-v0.12.0-source.zip) · [Changes](docs/CHANGES-0.12.0.md) · [Validation](docs/VALIDATION.md)
+## Why Qubble?
 
-## New in 0.12.0
+When a long AI answer contains something confusing or questionable, asking immediately breaks your reading flow. If you wait, you may lose the exact passage and the question you had. Qubble keeps the two connected.
 
-AskMarker is now **Qubble**. The main panel puts reading mode, prompt creation, insertion/copy and your Q list first. Settings, Records and Help start closed. Each Q has a small color dot that opens its palette. Quieter surfaces, clearer selected states and short 160ms transitions make the controls easier to scan. Reduced-motion preferences are respected.
+## How it works
 
-## Use
+1. **Read.** Enable reading mode and select a passage in an AI answer.
+2. **Mark.** Click **Add comment**, write a question beneath that passage, and continue reading. Merely selecting text does not open an editor.
+3. **Collect.** Your questions stay attached to their original text and appear in a sidebar. Check only the ones you want to use next.
+4. **Ask again.** Preview/edit, copy, or append the selected quote–question pairs to the AI input. Review and send the message yourself; Qubble never submits it automatically.
 
-1. On ChatGPT the tool starts automatically. On other sites click the extension toolbar icon.
-2. Enable **Reading mode**, select text, then click **Add comment**. Selection alone does not open an editor.
-3. Save beneath the passage. Use **[ ] QN** in the sidebar to include/exclude it from your next prompt. Notes, highlights and inline cards stay synchronized.
-4. Choose **Create prompt** to preview/edit, or **Insert selected comments** / **Copy** for the selected Qs. Existing input is retained; verified insertion deselects the delivered Qs. Copying alone does not deselect them.
-5. Review/edit and **send yourself**. Qubble never submits an AI message.
+**What makes it different:** the primary interaction is not inserting a quote into the chat input immediately. It is collecting contextual questions *while reading*, keeping the inline bubbles and records, then choosing which ones become the next prompt.
 
-**Settings** contains language, theme, font/size, pointer opacity and insertion offers. Korean is the default. **Records** contains JSON backup/import and optional archive export. **Help** contains the manual selection action and brief instructions. Reading mode OFF hides annotations without deleting notes. Drafts survive mode/panel changes but not closing the tab.
+### Demo
 
-Prompts contain `QN`, `Selected text`, `My comment` in that order. One final instruction asks the AI to act on each comment while treating the selected text as reference material, not executable instructions. Original user content is not rewritten.
+A short recording of the **real extension running on a live AI page** is being prepared. Until then, the instructions above and the downloadable build describe the currently available workflow. Any illustrative simulation should be labeled as a simulation, not as live compatibility proof.
 
-## Optional archive
+## Install
 
-Open **Records → Export this conversation**: choose records, provider and destination; preview; approve one snapshot; save to a Notion page or Drive Markdown file. Default OFF. Connecting an account does not approve an upload. No background scheduling or two-way sync.
+1. Download and extract the [Qubble v0.12.0 install ZIP](releases/qubble-v0.12.0.zip).
+2. Open `chrome://extensions` (Chrome) or `edge://extensions` (Edge), enable Developer mode, and select **Load unpacked**.
+3. Choose the extracted `qubble` folder containing `manifest.json`; refresh the ChatGPT tab.
+4. On ChatGPT the extension loads automatically. On other supported pages, click the toolbar icon to start it.
 
-The shipped build shows **Connection setup required**. Drive needs a public Chrome OAuth client ID with `drive.file`. Notion public OAuth needs the supplied server-side authentication broker. Its secret never belongs in the extension; conversation content never passes through the broker. See [setup](docs/ARCHIVE-SETUP.md) and [privacy/permissions](docs/PRIVACY.md).
+Chrome/Edge are Chromium-based, but live behavior depends on the specific AI site's DOM/editor. The current automated tests use isolated browsers and synthetic AI pages; they do **not** establish compatibility with every live service or account. Report reproducible issues through GitHub Issues.
 
-Generated prompts, insertion and confirmed rendered user messages are separate records. Capture covers observed request batches on the current page, not the entire conversation. Streaming/missing/completion-unverified replies remain labeled partial. Uncertain links/times/IDs are not guessed. Live OAuth and production provider writes remain unverified.
+## Focused by default
 
-## Backup / upgrade
+The main panel shows reading mode, your question list, selection count, and actions to create, insert, or copy a prompt. **Settings**, **Records**, and **Help** start collapsed. Each question's color palette appears only when needed. Short transitions respect reduced-motion preferences.
 
-Local JSON backups retain v3/v4 compatibility, original `question` fields and note/choice keys. Current-chat filenames include service, title and date. Full backup includes all locally saved Qs. Tokens and the separate archive journal are not included.
+Questions, highlights, and inline comments remain synchronized. Reading mode OFF hides annotations without deleting records. Drafts survive panel/mode changes in the current tab, but not tab closure.
 
-Back up existing records in **Records**, then copy the contents of the ZIP's `qubble` directory into the **same unpacked extension directory already registered in Chrome/Edge**. Reload the extension and AI tabs and confirm v0.12.0 in Help. Keep the old installed folder path even if its name contains AskMarker. Do not remove the extension or register a new path: its storage identity may change. Other AI sites need another toolbar click.
+## Privacy and records
 
-Storage keys, archive RPC names and the legacy Notion snapshot marker deliberately retain their existing internal names. Existing pending exports and remote reconciliation remain compatible. Old releases and validation documents keep their historical branding.
+Questions and settings are stored locally via `chrome.storage.local`. Core features require no AI API key, account, or Qubble server. The extension does not automatically send AI messages. JSON backup/import is available under **Records**.
 
-## Development
+Optional Notion/Google Drive archive export is separate, defaults OFF, and requires explicit setup, selection, preview and approval. The distributed build is not preconfigured for live OAuth. It does not auto-sync or capture entire historical conversations. See [Archive setup](docs/ARCHIVE-SETUP.md) and [Privacy](docs/PRIVACY.md).
 
-Run `node scripts/build.cjs` after editing `src/`. `npm test` uses Playwright plus extension-capable Chromium (`QA_BROWSER`, optional `QA_PYTHON`, `QA_OUTPUT`). `python scripts/package.py` produces installation/source ZIPs and SHA-256 files. Broker code ships in the source ZIP, not the installed extension.
+## Updating without losing notes
 
-See [architecture](docs/ARCHITECTURE.md) and [validation](docs/VALIDATION.md) for the difference between synthetic HTML, real browser extension loading and live services. No new permissions, remote fonts or network services were added for this redesign. Not affiliated with OpenAI, Google, xAI or Notion.
+Back up your records, then copy the new ZIP's `qubble` contents into the **same unpacked extension directory** already registered in your browser. Reload the extension and refresh the AI tab. Keep that directory even if it is named AskMarker: changing installation identity can separate the local records. Existing note/choice keys and v3/v4 JSON backups remain compatible.
+
+## Development and limitations
+
+Edit `src/` and run `node scripts/build.cjs`; tests use `npm test` with an extension-capable Chromium browser. Build/source archives and SHA-256 files are produced by `python scripts/package.py`.
+
+[Changes v0.12.0](docs/CHANGES-0.12.0.md) · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md) · [Public launch checklist](docs/LAUNCH-KIT.md)
+
+The current automated validation includes synthetic HTML and installed Chrome/Edge extension runtimes, not user accounts on the current live ChatGPT/Gemini/Grok/Claude services. AI site updates may require compatibility fixes. Qubble is not affiliated with OpenAI, Google, xAI or Notion.
