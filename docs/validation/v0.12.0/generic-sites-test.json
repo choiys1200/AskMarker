@@ -1,0 +1,32 @@
+{
+  "environment": "Actual MV3 content/storage with test-only host grants; synthetic ordinary DOM at Gemini/Grok URLs, NOT live site or toolbar permission verification",
+  "cases": [
+    {
+      "host": "gemini.google.com",
+      "result": "PASS",
+      "checks": [
+        "No automatic injection; scripting entry point works",
+        "Ten mouse drag/add/cancel cycles",
+        "Text/code notes, highlights, inline and sidebar views",
+        "Exact prompt preview, enabled append and clipboard; copy alone leaves input untouched",
+        "Reload restores unchanged source; changed source retains detached records",
+        "Different URL and different host records isolated"
+      ],
+      "limitation": "Generic main/body anchor: changes elsewhere in the indexed root may detach markers; list records remain. Live editor delivery tested separately from these synthetic textareas."
+    },
+    {
+      "host": "grok.com",
+      "result": "PASS",
+      "checks": [
+        "No automatic injection; scripting entry point works",
+        "Ten mouse drag/add/cancel cycles",
+        "Text/code notes, highlights, inline and sidebar views",
+        "Exact prompt preview, enabled append and clipboard; copy alone leaves input untouched",
+        "Reload restores unchanged source; changed source retains detached records",
+        "Different URL and different host records isolated"
+      ],
+      "limitation": "Generic main/body anchor: changes elsewhere in the indexed root may detach markers; list records remain. Live editor delivery tested separately from these synthetic textareas."
+    }
+  ],
+  "errors": []
+}

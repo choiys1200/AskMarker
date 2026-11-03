@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "AskMarker",
-  "version": "0.11.3",
-  "description": "선택한 내용에 코멘트를 남기고, 모아서 입력하고, 승인한 대화를 내보냅니다.",
+  "name": "Qubble",
+  "version": "0.12.0",
+  "description": "질문 때문에 읽던 흐름을 끊지 마세요. AI 답변에 질문을 남기고, 모아서 다시 물어보세요.",
   "minimum_chrome_version": "111",
   "permissions": [
     "activeTab",
@@ -15,7 +15,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "AskMarker 켜기 / 열기",
+    "default_title": "Qubble 켜기 / 열기",
     "default_icon": {
       "16": "assets/icons/markchat-16.png",
       "24": "assets/icons/markchat-24.png",

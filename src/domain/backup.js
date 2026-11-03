@@ -54,7 +54,7 @@ function createBackup(all,{kind='all',current=null,language='ko',now=new Date(),
   const title=single?conversations[0].service+' · '+conversations[0].title:t('전체 기록 · {count}개 대화',{count:conversations.length});
   let prefix;
   if(single){const c=conversations[0];prefix=safePart(c.service,32)+'_'+safePart(c.title+(c.titleSource==='unavailable'&&c.conversationId?' '+c.conversationId:''));}
-  else prefix=safePart(services.join('+')||'AskMarker',70)+'_'+safePart(t('전체 기록 · {count}개 대화',{count:conversations.length}),80);
+  else prefix=safePart(services.join('+')||'Qubble',70)+'_'+safePart(t('전체 기록 · {count}개 대화',{count:conversations.length}),80);
   if(kind==='all')prefix+='_'+safePart(t('전체 백업'),30);
   return {filename:prefix+'_'+date.stamp+'.json',backup:{format:'question-basket-backup',version:4,title,kind,extensionVersion,createdAt:date.createdAt,createdAtLocal:date.createdAtLocal,timeZone:Intl.DateTimeFormat().resolvedOptions().timeZone,conversationCount:conversations.length,questionCount:selected.length,conversations,data}};
 }

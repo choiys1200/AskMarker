@@ -1,0 +1,15 @@
+{
+  "version": "0.12.0",
+  "environment": "Actual MV3 in an isolated Chromium-family browser, synthetic HTML; no live AI or OAuth",
+  "browser": "153.0.8010.12",
+  "executable": "chrome.exe",
+  "checks": [
+    "Qubble primary screen exposes only reading/prompt/list actions; settings, records, help and per-Q palettes start closed; legacy choices remain intact",
+    "Disclosures open by keyboard; Escape returns focus and closed controls cannot receive focus",
+    "Rapid open/close never leaves a stale hidden panel; mode, draft text/source and all legacy note/choice values survive appearance changes",
+    "Compact color disclosure and editing synchronize with inline notes; copy preserves selection; verified insert appends only selected Qs and clears choices without deleting records",
+    "Light/dark snapshots, narrow 160% English layout and advanced controls remain reachable; reduced-motion disables animation",
+    "Reload restores preferences and saved Qs while secondary sections start closed; no runtime errors"
+  ],
+  "errors": []
+}

@@ -1,4 +1,4 @@
-/* Shared tokens, scoped to AskMarker shadow roots. */
+/* Shared tokens, scoped to Qubble shadow roots. */
 :host{all:initial;font:calc(14px * var(--askmark-ui-scale,1))/1.65 var(--askmark-font,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif);color:#20232b;color-scheme:light dark}
 *{box-sizing:border-box}[hidden]{display:none!important}
 button,textarea,input,select{font:inherit}
@@ -16,7 +16,7 @@ blockquote{white-space:pre-wrap;overflow-wrap:anywhere;border-left:2px solid var
 .swatch[aria-pressed="true"]{outline:2px solid var(--ink,#313b53);outline-offset:2px}.swatch[aria-pressed="true"]:after{content:'✓';font-size:calc(14px * var(--askmark-ui-scale,1));color:#18202a;font-weight:800}.color-name{font-size:calc(11px * var(--askmark-ui-scale,1));margin-left:3px;color:var(--muted,#697080)}
 .swatch[data-color="purple"][aria-pressed="true"]:after{color:#fff}
 .question{max-height:300px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0;font-size:calc(14px * var(--askmark-ui-scale,1))}.editor label{display:block;font-size:calc(12px * var(--askmark-ui-scale,1));font-weight:600;margin:7px 0}.editor .tools{margin-top:10px}
-.card{border:1px solid var(--line,#e3e4e8);border-left:3px solid var(--accent);background:var(--paper,#fff);border-radius:12px;padding:14px;margin-bottom:12px;min-width:0;box-shadow:0 2px 5px #10182805}
+.card{border:1px solid var(--line,#e3e4e8);border-left:3px solid var(--accent);background:var(--paper,#fff);border-radius:12px;padding:13px;margin-bottom:12px;min-width:0;box-shadow:0 2px 5px #10182805}
 .card[data-active="true"]{box-shadow:0 0 0 1px var(--accent),0 3px 12px #10182808}.tag{font-size:calc(12px * var(--askmark-ui-scale,1));font-weight:650;color:var(--ink,#35405a)}.location{font-size:calc(11px * var(--askmark-ui-scale,1));color:#b66b2e;margin:4px 0}
 .surface{--paper:var(--askmark-paper-light,#fff);--line:var(--askmark-line-light,#e4e6ed);--muted:#697080;--ink:#35405a;--hover:var(--askmark-hover-light,#f1f3f8);--brand:var(--askmark-brand,#6554e8);--brand-ink:var(--askmark-brand-ink,#fff);color:#232835;background:var(--askmark-page-light,#f8f9fc)}
 @media(prefers-color-scheme:dark){.surface{--paper:var(--askmark-paper-dark,#202127);--line:var(--askmark-line-dark,#373a45);--muted:#a3a9b8;--ink:#e3e7f1;--hover:var(--askmark-hover-dark,#2c2f3a);--brand:var(--askmark-brand,#6554e8);--brand-ink:var(--askmark-brand-ink,#fff);color:#eceef4;background:var(--askmark-page-dark,#191b22)}.danger{color:#f397a2}}
@@ -35,3 +35,11 @@ blockquote{white-space:pre-wrap;overflow-wrap:anywhere;border-left:2px solid var
 @media(prefers-color-scheme:dark){:host .card[data-editing="true"]{--comment-ink:var(--comment-dark-ink,#eceef4);--comment-background:var(--comment-dark-background,#24233e);--comment-muted:var(--comment-dark-muted,#bcbfcd);--comment-line:var(--comment-dark-line,#4b467e);--comment-field:var(--comment-dark-field,#191a2f)}}
 :host([data-theme="light"]) .card[data-editing="true"]{--comment-ink:var(--comment-light-ink,#232835);--comment-background:var(--comment-light-background,#f4f3fd);--comment-muted:var(--comment-light-muted,#555968);--comment-line:var(--comment-light-line,#c5bfee);--comment-field:var(--comment-light-field,#fbfaff)}
 :host([data-theme="dark"]) .card[data-editing="true"]{--comment-ink:var(--comment-dark-ink,#eceef4);--comment-background:var(--comment-dark-background,#24233e);--comment-muted:var(--comment-dark-muted,#bcbfcd);--comment-line:var(--comment-dark-line,#4b467e);--comment-field:var(--comment-dark-field,#191a2f)}
+
+/* One motion vocabulary for panels, previews, offers and disclosures. */
+.motion-surface{opacity:1;transform:translate(var(--motion-x,0px),0);transition:opacity 160ms ease,transform 160ms ease}
+.motion-surface[data-state="closed"]{opacity:0;transform:translate(var(--motion-x,0px),8px);pointer-events:none!important}
+#panel.motion-surface[data-state="closed"]{transform:translate(12px,0)}
+.disclosure-content{display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;transition:grid-template-rows 160ms ease,opacity 160ms ease,visibility 160ms}
+.disclosure-content>div{min-height:0;overflow:hidden}.disclosure-content[data-open="true"]{grid-template-rows:1fr;opacity:1;visibility:visible}
+@media(prefers-reduced-motion:reduce){.motion-surface,.disclosure-content,.disclosure-icon{transition:none!important}}

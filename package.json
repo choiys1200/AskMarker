@@ -1,8 +1,8 @@
 {
-  "name": "askmarker",
-  "version": "0.11.3",
+  "name": "qubble",
+  "version": "0.12.0",
   "private": true,
-  "description": "Mark AI answers, add comments, and export approved conversation snapshots.",
+  "description": "Read. Mark. Ask again. Collect questions without interrupting your reading.",
   "scripts": {
     "build": "node scripts/build.cjs",
     "check:build": "node scripts/build.cjs --check",

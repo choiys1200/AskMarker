@@ -1,0 +1,10 @@
+{
+  "environment": "Chromium synthetic service DOM; no live providers",
+  "checks": [
+    "ChatGPT: rendered roles, nested roots, hidden exclusion, streaming flag and stable conversation ID",
+    "Gemini: rendered roles, nested roots, hidden exclusion, streaming flag and stable conversation ID",
+    "Grok: rendered roles, nested roots, hidden exclusion, streaming flag and stable conversation ID",
+    "Claude: rendered roles, nested roots, hidden exclusion, streaming flag and stable conversation ID",
+    "Branch query changes isolate scope; unsupported adapter reports unavailable and collects nothing"
+  ]
+}

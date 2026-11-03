@@ -1,0 +1,14 @@
+{
+  "environment": "Actual unpacked MV3 in isolated Chromium; synthetic ChatGPT DOM and worker-injected simulated Drive fetch; no live AI, OAuth or provider API",
+  "checks": [
+    "Real extension page opens from sidebar, default OFF, setup-required state and explicit enabling; no OAuth launched",
+    "Generated and inserted states are distinct; clearing editor after click is never classified as sent",
+    "Send gesture plus a new visible user message confirms exact edited text; observed AI versions stay attached to the request batch and marked partial",
+    "Virtualized user message disappearance does not reattach the following text to a guessed request",
+    "Conversation transition stops attachment; re-opened export restores local observed batches without crawling history",
+    "Preview selection, title/clarification, explicit upload consent, chosen folder, result link and duplicate-click receipt verified with simulated Drive API; tokens absent from DOM/backup",
+    "Archive OFF prevents any further provider calls; no automatic retry",
+    "OFF remains usable during an in-flight upload and aborts the request; a busy save never locks out cancellation"
+  ],
+  "errors": []
+}

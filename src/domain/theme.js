@@ -16,10 +16,10 @@ function themePalette(value){
   commentLightLine:css(mix(c,commentLight,.32)),commentDarkLine:css(mix(c,commentDark,.38)),
   commentLightField:css(mix(c,light,.025)),commentDarkField:css(mix(c,[17,19,26],.10)),tokens:{
   '--askmark-brand':solid,'--askmark-brand-ink':ink(c),'--askmark-brand-hover':css(mix(c,[0,0,0],.88)),
-  '--askmark-page-light':css(mix(c,light,.06)),'--askmark-page-dark':css(mix(c,dark,.12)),
-  '--askmark-paper-light':css(mix(c,light,.025)),'--askmark-paper-dark':css(mix(c,[32,33,39],.06)),
-  '--askmark-line-light':css(mix(c,[225,227,233],.28)),'--askmark-line-dark':css(mix(c,[55,58,69],.28)),
-  '--askmark-hover-light':css(mix(c,light,.12)),'--askmark-hover-dark':css(mix(c,dark,.22)),
+  '--askmark-page-light':css(mix(c,light,.015)),'--askmark-page-dark':css(mix(c,dark,.035)),
+  '--askmark-paper-light':css(mix(c,light,.008)),'--askmark-paper-dark':css(mix(c,[32,33,39],.025)),
+  '--askmark-line-light':css(mix(c,[225,227,233],.12)),'--askmark-line-dark':css(mix(c,[55,58,69],.12)),
+  '--askmark-hover-light':css(mix(c,light,.055)),'--askmark-hover-dark':css(mix(c,dark,.10)),
   '--askmark-link-light':css(mix(c,[0,0,0],.55)),'--askmark-link-dark':css(mix(c,light,.55))
  }};
 }

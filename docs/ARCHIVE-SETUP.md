@@ -1,10 +1,10 @@
-# AskMarker 0.10.0 아카이브 설정 / Archive setup
+# Qubble 0.12.0 아카이브 설정 / Archive setup
 
 배포 ZIP의 OAuth 설정은 비어 있습니다. 로컬 Mark·코멘트·프롬프트·JSON 백업은 그대로 사용할 수 있습니다. **실제 OAuth 승인, 자격증명 발급, 서버 배포는 수행하지 않았습니다.** 연결 버튼은 미설정 상태를 성공으로 표시하지 않습니다.
 
 ## 사용 흐름
 
-1. 원래 AI 대화의 오른쪽 패널에서 **이 대화 내보내기**를 엽니다.
+1. 원래 AI 대화의 오른쪽 패널의 **기록 관리 → 이 대화 내보내기**를 엽니다.
 2. 처음에는 **아카이브 OFF**입니다. 켜면 이후 생성·삽입한 요청과 연결 가능한 화면 메시지를 로컬에 기록합니다. 이미 지나간 전송은 추정하지 않습니다. 기록을 활성화한 뒤 원래 대화로 돌아가 코멘트를 모아 입력하고 직접 전송하세요.
 3. 다시 내보내기를 열어 포함할 Mark와 요청 묶음을 선택합니다. 요청 묶음은 기본 미선택입니다. 묶음에는 생성 프롬프트·삽입·확인된 사용자 메시지·관찰한 답변이 함께 들어갑니다.
 4. Notion / Drive 선택 → 계정 연결 → 저장 대상 불러오기 → 대상 선택. **연결만으로 본문은 전송되지 않습니다.**
@@ -32,7 +32,7 @@ node scripts/build.cjs
 
 ### 폴더 선택과 MV3
 
-이 버전은 번들된 네이티브 선택 목록을 사용합니다. `drive.file`로 **이미 앱에 허용된 폴더만** 표시합니다. 다른 폴더가 없으면 **내 Drive에 새 AskMarker 폴더 만들기**를 선택할 수 있습니다. 이 폴더도 본문 저장을 승인할 때만 생성됩니다. 다음번에는 만들어진 폴더를 목록에서 고를 수 있습니다.
+이 버전은 번들된 네이티브 선택 목록을 사용합니다. `drive.file`로 **이미 앱에 허용된 폴더만** 표시합니다. 다른 폴더가 없으면 **내 Drive에 새 Qubble 폴더 만들기**를 선택할 수 있습니다. 이 폴더도 본문 저장을 승인할 때만 생성됩니다. 다음번에는 만들어진 폴더를 목록에서 고를 수 있습니다.
 
 임의의 기존 Drive 폴더 전체를 탐색하거나 폴더 ID 입력만으로 접근 권한을 얻지는 않습니다. 기존 폴더를 Picker로 새로 허용하는 별도 웹 연동은 이번 버전에 넣지 않았습니다. Google Picker의 원격 JS를 확장 페이지에 삽입하는 방식은 MV3의 번들 코드/CSP 제한과 맞지 않으므로 사용하지 않습니다. 이 제한을 없애려고 전체 Drive 권한을 추가하지 마세요.
 
@@ -87,7 +87,7 @@ state는 최대 10분, 교환할 access token과 단회 handoff는 최대 60초 
 
 The distributed build has no real OAuth client configuration. Local annotations remain usable. Enable the archive explicitly; connect separately; select included Marks/request batches and a destination; review; approve that immutable snapshot; then save. No scheduled upload or two-way sync exists.
 
-Drive uses Chrome Identity with `drive.file` only. Its bundled folder selector shows app-authorized folders and offers creation of a new AskMarker folder upon approved save. It does not embed Google Picker remote scripts or browse arbitrary Drive folders. Markdown goes directly to Google.
+Drive uses Chrome Identity with `drive.file` only. Its bundled folder selector shows app-authorized folders and offers creation of a new Qubble folder upon approved save. It does not embed Google Picker remote scripts or browse arbitrary Drive folders. Markdown goes directly to Google.
 
 Notion requires the supplied Node 22+ HTTPS OAuth broker, public connection configuration and a server-only client secret. The broker exchanges authentication data only, never conversation content. Disable/redact proxy access and request-body logs. Its state/handoff storage is ephemeral, single-process and single-use. Content goes directly from the extension worker to Notion. Restart/expiry may require user-initiated reconnection.
 

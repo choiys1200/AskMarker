@@ -1,0 +1,86 @@
+{
+  "environment": "Real unpacked MV3 extension + real Chromium; local fixture routed under chatgpt.com. NOT the live ChatGPT service.",
+  "results": [
+    {
+      "includeHidden": true,
+      "name": "Real extension loaded",
+      "result": "PASS",
+      "details": {
+        "version": "0.12.0",
+        "browser": "153.0.8010.12",
+        "extensionId": "efdadbcmlllopdnodijjmggejcfkpoda"
+      }
+    },
+    {
+      "includeHidden": true,
+      "name": "01–03: ten actual mouse drag/cancel cycles; same and different text",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "05: highlight remains with textarea focus and no native selection",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "04,06,07: three successive notes, five colors, last-color default, collapsed panel",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "Independent draft source ownership",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "08: edits and saved colors synchronize both directions",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "09: deleting one of shared-source notes retains other highlight and bubble",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "10: flow layout, internal scroll, resize, React-like replacement and reload",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "11–12: exact pairs, editable preview, clipboard, preserve composer, prevent duplicate",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "Changed source remains in list without guessing a match",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "Conversation isolation on SPA navigation",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "Multi-paragraph selection and reload preserves exact quote",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "v0.2 storage retained byte-for-byte, yellow fallback, exact legacy locate",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "Panel collapse and draft cancellation are independent",
+      "result": "PASS"
+    },
+    {
+      "includeHidden": true,
+      "name": "No page errors",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

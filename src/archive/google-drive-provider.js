@@ -13,7 +13,7 @@ class GoogleDriveProvider{
   if(parent==='new'){
    if(!job.folderId){const x=await this.call('/files/generateIds?count=1&space=drive&type=files');job.folderId=x.ids[0];await persist();}
    const folder=await this.get(job.folderId);
-   if(!folder)await this.call('/files',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:job.folderId,name:'AskMarker',mimeType:'application/vnd.google-apps.folder'})});
+   if(!folder)await this.call('/files',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:job.folderId,name:'Qubble',mimeType:'application/vnd.google-apps.folder'})});
    parent=job.folderId;
   }else{const folder=await this.get(parent);if(!folder||folder.trashed||folder.mimeType!=='application/vnd.google-apps.folder')throw new ArchiveError('DESTINATION_UNAVAILABLE');}
   const boundary='askmarker_'+snapshot.id.replaceAll('-','');

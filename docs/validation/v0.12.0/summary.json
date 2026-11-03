@@ -1,0 +1,187 @@
+{
+  "product": "Qubble",
+  "version": "0.12.0",
+  "date": "2026-11-03–04",
+  "timezone": "Asia/Seoul",
+  "baseline": "ce50e44ff1b8d4d8438b11769085c0bc636a7398",
+  "suiteCount": 28,
+  "suites": [
+    {
+      "name": "appearance-delivery",
+      "result": "PASS",
+      "report": "appearance-delivery-test.json"
+    },
+    {
+      "name": "archive-adapters",
+      "result": "PASS",
+      "report": "archive-adapters-test.json"
+    },
+    {
+      "name": "archive-browser",
+      "result": "PASS",
+      "report": "archive-browser-test.json"
+    },
+    {
+      "name": "archive-contract",
+      "result": "PASS",
+      "report": "archive-contract-test.json"
+    },
+    {
+      "name": "automation",
+      "result": "PASS",
+      "report": "automation-test.json"
+    },
+    {
+      "name": "backup",
+      "result": "PASS",
+      "report": "backup-test.json"
+    },
+    {
+      "name": "boxed-content",
+      "result": "PASS",
+      "report": "boxed-content-test.json"
+    },
+    {
+      "name": "bubble-flow",
+      "result": "PASS",
+      "report": "bubble-flow-test.json"
+    },
+    {
+      "name": "cross-site-composer",
+      "result": "PASS",
+      "report": "cross-site-composer-test.json"
+    },
+    {
+      "name": "dock-text-size",
+      "result": "PASS",
+      "report": "dock-text-size-test.json"
+    },
+    {
+      "name": "edge",
+      "result": "PASS",
+      "report": "edge-test.json"
+    },
+    {
+      "name": "extension",
+      "result": "PASS",
+      "report": "extension-test.json"
+    },
+    {
+      "name": "generic-sites",
+      "result": "PASS",
+      "report": "generic-sites-test.json"
+    },
+    {
+      "name": "icon-upgrade",
+      "result": "PASS",
+      "report": "icon-upgrade-test.json"
+    },
+    {
+      "name": "interaction",
+      "result": "PASS",
+      "report": "interaction-test.json"
+    },
+    {
+      "name": "language",
+      "result": "PASS",
+      "report": "language-test.json"
+    },
+    {
+      "name": "menu-visibility",
+      "result": "PASS",
+      "report": "menu-visibility-test.json"
+    },
+    {
+      "name": "mock",
+      "result": "PASS",
+      "report": "mock-test.json"
+    },
+    {
+      "name": "modern-chatgpt",
+      "result": "PASS",
+      "report": "modern-chatgpt-test.json"
+    },
+    {
+      "name": "module-contract",
+      "result": "PASS",
+      "report": "module-contract-test.json"
+    },
+    {
+      "name": "prompt-selection",
+      "result": "PASS",
+      "report": "prompt-selection-test.json"
+    },
+    {
+      "name": "qubble-ui",
+      "result": "PASS",
+      "report": "qubble-ui-test.json"
+    },
+    {
+      "name": "reading-mode",
+      "result": "PASS",
+      "report": "reading-mode-test.json"
+    },
+    {
+      "name": "rebrand-upgrade",
+      "result": "PASS",
+      "report": "rebrand-upgrade-test.json"
+    },
+    {
+      "name": "root-host",
+      "result": "PASS",
+      "report": "root-host-test.json"
+    },
+    {
+      "name": "selection-action",
+      "result": "PASS",
+      "report": "selection-action-test.json"
+    },
+    {
+      "name": "selection-compatibility",
+      "result": "PASS",
+      "report": "selection-compatibility-test.json"
+    },
+    {
+      "name": "theme-q",
+      "result": "PASS",
+      "report": "theme-q-test.json"
+    }
+  ],
+  "environment": "Isolated Chromium with real MV3 loading and synthetic AI HTML; Node contracts and mocked provider APIs",
+  "additionalBrowser": {
+    "name": "Microsoft Edge",
+    "version": "156.0.4314.58",
+    "suite": "qubble-ui",
+    "result": "PASS",
+    "page": "synthetic HTML"
+  },
+  "liveAI": false,
+  "liveOAuth": false,
+  "userBrowserProfileUsed": false,
+  "compatibility": "Same registered extension path retained. v0.11.3 overwrite plus extension reload and browser restart preserved all local values and ID. No permission or storage-schema change.",
+  "runtimeSHA256": {
+    "manifest.json": "d6d945a9034922b492b48f7f128caa9b1aac526ae567bf02e4b2e9e9d89c7577",
+    "content.js": "a0684afeabfd69f4860a6d8c5641c28bb03da9ff6779b9e1b21d839dcbce4763",
+    "background.js": "f7ab97e1bde2ff124f434e68e2bc19c82f8598b86cad97c4f983d56d611796d5",
+    "archive.js": "b533b7a2a977cc52a1ceeb14d0df09897e8bd46332fc9980ef2659f994a7fa00",
+    "archive.html": "ff4e3a494c3f0c06408bc06a36c38fe9323b0f02d5bc768adb96ed7d7f682603",
+    "archive.css": "4a1a744143da4f60ed156b1c3f412032364c0331e65e1f0886f63a3180e85d7e"
+  },
+  "packagedRuntimeValidation": [
+    {
+      "browser": "chromium",
+      "version": "153.0.8010.12",
+      "result": "PASS",
+      "report": "package-chromium-ui.json",
+      "installZipRuntimeMatchesSource": true
+    },
+    {
+      "browser": "edge",
+      "version": "156.0.4314.58",
+      "result": "PASS",
+      "report": "package-edge-ui.json",
+      "installZipRuntimeMatchesSource": true
+    }
+  ],
+  "completedDate": "2026-11-04"
+}

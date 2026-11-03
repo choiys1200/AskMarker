@@ -1,0 +1,9 @@
+{
+  "version": "0.12.0",
+  "environment": "Real v0.11.3 ZIP upgraded in isolated Chromium on the identical installed path; synthetic AI page",
+  "checks": [
+    "v0.11.3 overwrite update retains the same extension ID, every local key/value and all permission/CSP/OAuth settings",
+    "New UI/toolbar branding, Q membership and exact multilingual text restore; JSON format round-trip and archive history/receipt remain unchanged"
+  ],
+  "errors": []
+}

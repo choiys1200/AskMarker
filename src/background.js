@@ -4,7 +4,7 @@ installArchiveWorker();
 const {LANGUAGE_KEY,languageOf,translate}=require('./i18n/index');
 let language='ko';
 const failedTabs=new Set();
-const title=()=>translate(language,'AskMarker 켜기 / 열기');
+const title=()=>translate(language,'Qubble 켜기 / 열기');
 const errorTitle=()=>translate(language,'이 페이지에서는 사용할 수 없습니다. 일반 웹페이지에서 열어 주세요.');
 async function updateTitles(){
   await chrome.action.setTitle({title:title()});
@@ -19,9 +19,9 @@ chrome.storage.local.get(LANGUAGE_KEY).then(data=>{if(languageRevision===readRev
 // The only icon from now on is the MarkChat PNG declared in the manifest.
 function restoreMarkChat() {
   chrome.action.setIcon({path: chrome.runtime.getManifest().action.default_icon})
-    .catch(() => console.warn('AskMarker: 기본 아이콘을 적용하지 못했습니다.'));
+    .catch(() => console.warn('Qubble: 기본 아이콘을 적용하지 못했습니다.'));
   chrome.storage.local.remove('qb:appearance:icon:v1')
-    .catch(() => console.warn('AskMarker: 이전 아이콘 설정을 정리하지 못했습니다.'));
+    .catch(() => console.warn('Qubble: 이전 아이콘 설정을 정리하지 못했습니다.'));
 }
 chrome.runtime.onInstalled.addListener(restoreMarkChat);
 // Unpacked overwrite updates may start the new worker without onInstalled.
