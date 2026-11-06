@@ -1,18 +1,18 @@
 # Qubble 0.12.0 아카이브 설정 / Archive setup
 
-배포 ZIP의 OAuth 설정은 비어 있습니다. 로컬 Mark·코멘트·프롬프트·JSON 백업은 그대로 사용할 수 있습니다. **실제 OAuth 승인, 자격증명 발급, 서버 배포는 수행하지 않았습니다.** 연결 버튼은 미설정 상태를 성공으로 표시하지 않습니다.
+배포 ZIP의 OAuth 설정은 비어 있습니다. 로컬 Q·코멘트·프롬프트·JSON 백업은 그대로 사용할 수 있습니다. **실제 OAuth 승인, 자격증명 발급, 서버 배포는 수행하지 않았습니다.** 연결 버튼은 미설정 상태를 성공으로 표시하지 않습니다.
 
 ## 사용 흐름
 
 1. 원래 AI 대화의 오른쪽 패널의 **기록 관리 → 이 대화 내보내기**를 엽니다.
 2. 처음에는 **아카이브 OFF**입니다. 켜면 이후 생성·삽입한 요청과 연결 가능한 화면 메시지를 로컬에 기록합니다. 이미 지나간 전송은 추정하지 않습니다. 기록을 활성화한 뒤 원래 대화로 돌아가 코멘트를 모아 입력하고 직접 전송하세요.
-3. 다시 내보내기를 열어 포함할 Mark와 요청 묶음을 선택합니다. 요청 묶음은 기본 미선택입니다. 묶음에는 생성 프롬프트·삽입·확인된 사용자 메시지·관찰한 답변이 함께 들어갑니다.
+3. 다시 내보내기를 열어 포함할 Q와 요청 묶음을 선택합니다. 요청 묶음은 기본 미선택입니다. 묶음에는 생성 프롬프트·삽입·확인된 사용자 메시지·관찰한 답변이 함께 들어갑니다.
 4. Notion / Drive 선택 → 계정 연결 → 저장 대상 불러오기 → 대상 선택. **연결만으로 본문은 전송되지 않습니다.**
 5. 제목과 시각·연결 관계 설명을 보완할 수 있습니다. 보완한 정보는 사용자 입력으로 구분하며 전송 증거로 취급하지 않습니다.
 6. 미리보기를 만든 뒤 본문·대상을 확인하고 승인 체크 → 저장. 저장 결과가 확인되면 문서 링크를 표시합니다.
 7. 오류는 자동 재시도하지 않습니다. **시도 기록 불러오기**에서 같은 스냅샷을 선택하고 재승인하면 먼저 원격 결과를 확인합니다. 브라우저 재시작 후에는 계정을 다시 연결해야 할 수 있습니다.
 
-미리보기의 Markdown 본문은 읽기 전용입니다. Mark 코멘트는 원래 패널에서 수정하고 내보내기를 다시 여세요. 한 스냅샷의 선택 내용과 대상은 승인 이후 고정됩니다. 새 미리보기는 별도 문서가 되는 새 스냅샷입니다.
+미리보기의 Markdown 본문은 읽기 전용입니다. Q 코멘트는 원래 패널에서 수정하고 내보내기를 다시 여세요. 한 스냅샷의 선택 내용과 대상은 승인 이후 고정됩니다. 새 미리보기는 별도 문서가 되는 새 스냅샷입니다.
 
 ## Google Drive
 
@@ -85,7 +85,7 @@ state는 최대 10분, 교환할 access token과 단회 handoff는 최대 60초 
 
 ## English operational summary
 
-The distributed build has no real OAuth client configuration. Local annotations remain usable. Enable the archive explicitly; connect separately; select included Marks/request batches and a destination; review; approve that immutable snapshot; then save. No scheduled upload or two-way sync exists.
+The distributed build has no real OAuth client configuration. Local annotations remain usable. Enable the archive explicitly; connect separately; select included Qs/request batches and a destination; review; approve that immutable snapshot; then save. No scheduled upload or two-way sync exists.
 
 Drive uses Chrome Identity with `drive.file` only. Its bundled folder selector shows app-authorized folders and offers creation of a new Qubble folder upon approved save. It does not embed Google Picker remote scripts or browse arbitrary Drive folders. Markdown goes directly to Google.
 

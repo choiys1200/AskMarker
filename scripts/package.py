@@ -13,12 +13,13 @@ def pack(name,files):
   for file in files:assert z.read('qubble/'+file)==(root/file).read_bytes()
  archive.with_suffix('.sha256').write_text(hashlib.sha256(archive.read_bytes()).hexdigest()+'  '+archive.name+'\n',encoding='utf-8')
  print(archive.name)
-files=['manifest.json','content.js','background.js','archive.js','archive.html','archive.css','README.md','README.ko.md','docs/VALIDATION.md','docs/ARCHITECTURE.md','docs/ARCHIVE-SETUP.md','docs/PRIVACY.md','docs/CHANGES-0.10.0.md','docs/CHANGES-0.10.1.md','docs/CHANGES-0.11.0.md','docs/CHANGES-0.11.1.md','docs/CHANGES-0.11.2.md','docs/CHANGES-0.11.3.md','docs/CHANGES-0.12.0.md']
+files=['manifest.json','content.js','background.js','archive.js','archive.html','archive.css','README.md','README.ko.md','docs/VALIDATION.md','docs/ARCHITECTURE.md','docs/ARCHIVE-SETUP.md','docs/PRIVACY.md','docs/CHANGES-0.10.0.md','docs/CHANGES-0.10.1.md','docs/CHANGES-0.11.0.md','docs/CHANGES-0.11.1.md','docs/CHANGES-0.11.2.md','docs/CHANGES-0.11.3.md','docs/CHANGES-0.12.0.md','docs/README.md','docs/COMPATIBILITY.md','releases/README.md']
+files += [p.relative_to(root).as_posix() for p in sorted((root/'docs/history').glob('*.md'))]
 files += [p.relative_to(root).as_posix() for folder in ['assets'] for p in sorted((root/folder).rglob('*')) if p.is_file() and p.suffix != '.svg']
 files += [p.relative_to(root).as_posix() for p in sorted((root/'docs/validation'/f'v{version}').glob('*.json'))]
 pack(f'qubble-v{version}.zip',files)
 sources=[p.relative_to(root).as_posix() for p in sorted(root.rglob('*')) if p.is_file() and not p.relative_to(root).as_posix().startswith('docs/images/') and p.relative_to(root).parts[0] in {'src','tests','scripts','docs','assets','backend'}]
 sources += ['manifest.json','content.js','background.js','archive.js','archive.html','archive.css','README.md','README.ko.md','package.json','.gitignore','.gitattributes']
 # The actual-upgrade tests need both historical install fixtures.
-sources += ['releases/askmarker-v0.7.3.zip','releases/askmarker-v0.11.3.zip']
+sources += ['releases/README.md','releases/askmarker-v0.7.3.zip','releases/askmarker-v0.11.3.zip']
 pack(f'qubble-v{version}-source.zip',sorted(sources))

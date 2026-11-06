@@ -1,5 +1,7 @@
 # 0.10.0 변경 내역
 
+> 과거 버전의 개발 이력입니다. 현재 제품 안내는 [Qubble 문서](README.md)를 확인하세요.
+
 ## 기준 확인 / 2026-10-19 KST
 
 - 실제 로컬 저장소: `outputs/askmark`, remote `choiys1200/AskMarker`.

@@ -25,3 +25,7 @@
 5. `tests/qubble-ui-test.cjs`, 업데이트/기존 회귀 테스트: 실제 확장 로드 환경의 보존 확인.
 
 검증 범위와 아직 미확인인 실제 AI/OAuth 범위는 [VALIDATION.md](VALIDATION.md)를 참고하세요. `content.js`, `background.js`, `archive.js`는 빌드 생성물입니다.
+
+## 2026-11-07 저장소 안내 정리
+
+GitHub 소개와 최신 릴리스, 한영 README·설정·개인정보·구조 문서를 Qubble의 현재 동작에 맞췄습니다. 이전 구조/검증 설명은 개발 이력으로 분리했습니다. 확장 버전과 런타임·저장 스키마는 같은 v0.12.0입니다. 설치/소스 ZIP의 문서도 갱신하며 기존 구버전 파일은 보존합니다.

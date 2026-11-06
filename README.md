@@ -4,11 +4,11 @@
 
 Leave questions and comments beneath selected AI text, keep reading, then collect the exact passage/comment pairs into one follow-up prompt. Works with selectable AI pages such as ChatGPT, Gemini and Grok; DOM/editor compatibility varies. Core local features need no AI key or server.
 
-[한국어](README.ko.md) · [Install ZIP](releases/qubble-v0.12.0.zip) · [Full source](releases/qubble-v0.12.0-source.zip) · [Changes](docs/CHANGES-0.12.0.md) · [Validation](docs/VALIDATION.md)
+[한국어](README.ko.md) · [Latest release](https://github.com/choiys1200/Qubble/releases/latest) · [Install ZIP](releases/qubble-v0.12.0.zip) · [Full source](releases/qubble-v0.12.0-source.zip) · [Changes](docs/CHANGES-0.12.0.md) · [Validation](docs/VALIDATION.md)
 
 ## New in 0.12.0
 
-AskMarker is now **Qubble**. The main panel puts reading mode, prompt creation, insertion/copy and your Q list first. Settings, Records and Help start closed. Each Q has a small color dot that opens its palette. Quieter surfaces, clearer selected states and short 160ms transitions make the controls easier to scan. Reduced-motion preferences are respected.
+**Qubble v0.12.0** focuses on reading, leaving comments and asking again. The main panel puts reading mode, prompt creation, insertion/copy and your Q list first. Settings, Records and Help start closed. Each Q has a small color dot that opens its palette. Quieter surfaces, clearer selected states and short 160ms transitions make the controls easier to scan. Reduced-motion preferences are respected.
 
 ## Use
 
@@ -34,12 +34,12 @@ Generated prompts, insertion and confirmed rendered user messages are separate r
 
 Local JSON backups retain v3/v4 compatibility, original `question` fields and note/choice keys. Current-chat filenames include service, title and date. Full backup includes all locally saved Qs. Tokens and the separate archive journal are not included.
 
-Back up existing records in **Records**, then copy the contents of the ZIP's `qubble` directory into the **same unpacked extension directory already registered in Chrome/Edge**. Reload the extension and AI tabs and confirm v0.12.0 in Help. Keep the old installed folder path even if its name contains AskMarker. Do not remove the extension or register a new path: its storage identity may change. Other AI sites need another toolbar click.
+Back up existing records in **Records**, then copy the contents of the ZIP's `qubble` directory into the **same unpacked extension directory already registered in Chrome/Edge**. Reload the extension and AI tabs and confirm v0.12.0 in Help. Keep the existing installation path even if the folder uses a previous product name. Do not remove the extension or register a new path: its storage identity may change. Other AI sites need another toolbar click.
 
-Storage keys, archive RPC names and the legacy Notion snapshot marker deliberately retain their existing internal names. Existing pending exports and remote reconciliation remain compatible. Old releases and validation documents keep their historical branding.
+Storage keys, archive RPC names and the legacy Notion snapshot marker deliberately retain their existing internal names. Existing pending exports and remote reconciliation remain compatible. See [compatibility](docs/COMPATIBILITY.md) for retained internal identifiers and [development history](docs/history/README.md) for old releases.
 
 ## Development
 
 Run `node scripts/build.cjs` after editing `src/`. `npm test` uses Playwright plus extension-capable Chromium (`QA_BROWSER`, optional `QA_PYTHON`, `QA_OUTPUT`). `python scripts/package.py` produces installation/source ZIPs and SHA-256 files. Broker code ships in the source ZIP, not the installed extension.
 
-See [architecture](docs/ARCHITECTURE.md) and [validation](docs/VALIDATION.md) for the difference between synthetic HTML, real browser extension loading and live services. No new permissions, remote fonts or network services were added for this redesign. Not affiliated with OpenAI, Google, xAI or Notion.
+See the [documentation index](docs/README.md), [architecture](docs/ARCHITECTURE.md) and [validation](docs/VALIDATION.md) for the difference between synthetic HTML, real browser extension loading and live services. No new permissions, remote fonts or network services were added for this redesign. Not affiliated with OpenAI, Google, xAI or Notion.
